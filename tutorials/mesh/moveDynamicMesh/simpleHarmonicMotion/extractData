@@ -1,0 +1,42 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+#    \\/     M anipulation  |
+#-------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM.
+#
+#     OpenFOAM is free software: you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+#     for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Script
+#     extractData
+#
+# Description
+#     Extracts motion data from a simple harmonic motion dynamicMesh case
+#
+#------------------------------------------------------------------------------
+
+grep "Centre of mass" $1 | cut -d ":" -f 2 | cut -d " " -f 4 | tr -d ")" > cM
+grep "Linear velocity" $1 | cut -d ":" -f 2 | cut -d " " -f 4 | tr -d ")" > lV
+grep -e "^Time = " $1 | cut -d " " -f 3 > times
+
+paste times cM > t_vs_cm
+paste times lV > t_vs_lv
+
+rm cM lV times
+
+#------------------------------------------------------------------------------

@@ -1,0 +1,2 @@
+c++DBUG     =
+c++OPT      = -xSSE3 -O2 -no-prec-div

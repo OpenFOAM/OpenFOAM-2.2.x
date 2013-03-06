@@ -1,0 +1,20 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # run from this directory
+
+# Source tutorial run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+# copy wigley surface from resources folder
+cp $FOAM_TUTORIALS/resources/geometry/wigley-scaled-oriented.stl.gz constant/triSurface/
+
+runApplication blockMesh
+runApplication snappyHexMesh -overwrite
+if [ ! -e log.transformPoints ]
+then
+    transformPoints -scale '(2 1 1)' > log.transformPoints 2>&1
+fi
+cp 0/alpha1.org 0/alpha1
+runApplication setFields
+runApplication `getApplication`
+
+# ----------------------------------------------------------------- end-of-file

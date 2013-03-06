@@ -1,0 +1,89 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+actions
+(
+    {
+        name    baffleFaces;
+        type    faceSet;
+        action  new;
+        source  boxToFace;
+        sourceInfo
+        {
+            box (0.296 0 0) (0.306 0.18 2);
+        }
+    }
+
+    {
+        name    baffleFacesSlaveCells;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+        sourceInfo
+        {
+            box (0 0 0) (0.295 0.2 2);
+        }
+    }
+
+    {
+        name    baffleFaces;
+        type    faceZoneSet;
+        action  new;
+        source  setsToFaceZone;
+        sourceInfo
+        {
+            faceSet baffleFaces;
+            cellSet baffleFacesSlaveCells;
+        }
+    }
+
+    {
+        name    baffleFaces2;
+        type    faceSet;
+        action  new;
+        source  boxToFace;
+        sourceInfo
+        {
+            box (0.5944 0 0) (0.605 0.18 2);
+        }
+    }
+
+    {
+        name    baffleFacesSlaveCells2;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+        sourceInfo
+        {
+            box (0 0 0) (0.594 0.2 2);
+        }
+    }
+
+    {
+        name    baffleFaces2;
+        type    faceZoneSet;
+        action  new;
+        source  setsToFaceZone;
+        sourceInfo
+        {
+            faceSet baffleFaces2;
+            cellSet baffleFacesSlaveCells2;
+        }
+    }
+);
+
+// ************************************************************************* //

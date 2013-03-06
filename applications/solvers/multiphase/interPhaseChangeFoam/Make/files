@@ -1,0 +1,8 @@
+interPhaseChangeFoam.C
+phaseChangeTwoPhaseMixtures/phaseChangeTwoPhaseMixture/phaseChangeTwoPhaseMixture.C
+phaseChangeTwoPhaseMixtures/phaseChangeTwoPhaseMixture/newPhaseChangeTwoPhaseMixture.C
+phaseChangeTwoPhaseMixtures/Kunz/Kunz.C
+phaseChangeTwoPhaseMixtures/Merkle/Merkle.C
+phaseChangeTwoPhaseMixtures/SchnerrSauer/SchnerrSauer.C
+
+EXE = $(FOAM_APPBIN)/interPhaseChangeFoam

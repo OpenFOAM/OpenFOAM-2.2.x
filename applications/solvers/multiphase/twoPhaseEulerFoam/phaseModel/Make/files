@@ -1,0 +1,3 @@
+phaseModel/phaseModel.C
+
+LIB = $(FOAM_LIBBIN)/libphaseModel

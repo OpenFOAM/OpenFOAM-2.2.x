@@ -1,0 +1,169 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      changeDictionaryDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dictionaryReplacement
+{
+    alphat
+    {
+        boundaryField
+        {
+            "region0_to_.*"
+            {
+                type            alphatWallFunction;
+                value           uniform 0;
+            }
+        }
+    }
+    epsilon
+    {
+        boundaryField
+        {
+            "region0_to_.*"
+            {
+                type            compressible::epsilonWallFunction;
+                value           uniform 0.01;
+            }
+        }
+    }
+    k
+    {
+        boundaryField
+        {
+            "region0_to_.*"
+            {
+                type            compressible::kqRWallFunction;
+                value           uniform 0.01;
+            }
+
+        }
+    }
+    mut
+    {
+        boundaryField
+        {
+            "region0_to_.*"
+            {
+                type            mutkWallFunction;
+                value           uniform 0.0;
+            }
+        }
+    }
+    p
+    {
+        boundaryField
+        {
+            "region0_to_.*"
+            {
+                type            calculated;
+                value           $internalField;
+            }
+        }
+    }
+    p_rgh
+    {
+        boundaryField
+        {
+            "region0_to_.*"
+            {
+                type            fixedFluxPressure;
+                value           $internalField;
+            }
+
+        }
+    }
+    T
+    {
+        boundaryField
+        {
+
+            "region0_to.*"
+            {
+                type                compressible::thermalBaffle;
+
+                // Coupled BC.
+                neighbourFieldName  T;
+                kappa               fluidThermo;
+                kappaName           none;
+
+                // Thermo baffle model
+                thermalBaffleModel   thermalBaffle;
+                regionName          baffleRegion;
+                infoOutput          no;
+                active              yes;
+                thermalBaffleCoeffs
+                {
+                }
+
+                // Solid thermo
+                thermoType
+                {
+                    type            heSolidThermo;
+                    mixture         pureMixture;
+                    transport       constIso;
+                    thermo          hConst;
+                    equationOfState rhoConst;
+                    specie          specie;
+                    energy          sensibleEnthalpy;
+                }
+
+                mixture
+                {
+                    specie
+                    {
+                        nMoles          1;
+                        molWeight       20;
+                    }
+                    transport
+                    {
+                        kappa           0.01;
+                    }
+                    thermodynamics
+                    {
+                        Hf              0;
+                        Cp              15;
+                    }
+                    equationOfState
+                    {
+                        rho             80;
+                    }
+                }
+
+                radiation
+                {
+                    radiationModel  opaqueSolid;
+                    absorptionEmissionModel none;
+                    scatterModel    none;
+                }
+
+                value               uniform 300;
+            }
+        }
+    }
+    U
+    {
+        boundaryField
+        {
+            "region0_to_.*"
+            {
+                type            fixedValue;
+                value           uniform (0 0 0);
+            }
+
+        }
+    }
+}
+
+// ************************************************************************* //

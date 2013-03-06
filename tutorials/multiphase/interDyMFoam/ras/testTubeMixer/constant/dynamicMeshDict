@@ -1,0 +1,62 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      dynamicMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dynamicFvMesh   solidBodyMotionFvMesh;
+
+solidBodyMotionFvMeshCoeffs
+{
+    solidBodyMotionFunction multiMotion;
+
+    multiMotionCoeffs
+    {
+        // Table rotating in z axis
+        rotatingTable
+        {
+            solidBodyMotionFunction rotatingMotion;
+            rotatingMotionCoeffs
+            {
+                CofG            (0 0.1 0);
+                radialVelocity  (0 0 360);    // degrees/s
+            }
+        }
+
+        //// Box rotates on rotating table
+        //rotatingBox
+        //{
+        //    solidBodyMotionFunction rotatingMotion;
+        //    rotatingMotionCoeffs
+        //    {
+        //        CofG            (0 0 0);
+        //        radialVelocity  (720 0 0);    // degrees/s
+        //    }
+        //}
+        // Tube rocking on rotating table
+        rotatingBox
+        {
+            solidBodyMotionFunction oscillatingRotatingMotion;
+            oscillatingRotatingMotionCoeffs
+            {
+                CofG            (0 0 0);
+                omega           40;         // rad/s
+                amplitude       (45 0 0);   // 45 degrees max tilt
+            }
+        }
+    }
+}
+
+
+// ************************************************************************* //

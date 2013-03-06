@@ -1,0 +1,30 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # run from this directory
+
+set -x
+
+if [ -n "$CGAL_ARCH_PATH" ]
+then
+    echo
+    echo "Compiling surfaceFeatureExtract with CGAL curvature support"
+    echo
+
+    wmake "ENABLE_CURVATURE=-DENABLE_CURVATURE \
+           EXE_FROUNDING_MATH=-frounding-math \
+           USE_F2C=-DCGAL_USE_F2C \
+           CGAL_LIBDIR=-L$CGAL_ARCH_PATH/lib \
+           LAPACK_LIB=-llapack \
+           BLAS_LIB=-lblas \
+           CGAL_LIB=-lCGAL \
+           CGAL_BOOST_LIB=-lboost_thread \
+           CGAL_MPFR_LIB=-lmpfr"
+else
+    echo
+    echo "Compiling surfaceFeatureExtract without CGAL curvature support"
+    echo
+
+    wmake
+fi
+
+
+# ----------------------------------------------------------------- end-of-file

@@ -1,0 +1,16 @@
+cellSet heater new boxToCell (-0.01    0 -100 )(0.01 0.01 100)
+cellSet heater add boxToCell (-0.01 -100 -0.01)(0.01 0.01 0.01)
+cellZoneSet heater new setToCellZone heater
+cellSet leftSolid new boxToCell (-100 0 -100 )(-0.01 0.01 100)
+cellZoneSet leftSolid new setToCellZone leftSolid
+cellSet rightSolid new boxToCell (0.01 0 -100 )(100 0.01 100)
+cellZoneSet rightSolid new setToCellZone rightSolid
+cellSet topAir new boxToCell (-100 0.01 -100 )(100 100 100)
+cellZoneSet topAir new setToCellZone topAir
+cellSet bottomAir clear
+cellSet bottomAir add cellToCell heater
+cellSet bottomAir add cellToCell leftSolid
+cellSet bottomAir add cellToCell rightSolid
+cellSet bottomAir add cellToCell topAir
+cellSet bottomAir invert
+cellZoneSet bottomAir new setToCellZone bottomAir

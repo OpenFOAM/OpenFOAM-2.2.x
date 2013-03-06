@@ -1,0 +1,7 @@
+EXE_INC = \
+    -I$(WM_THIRD_PARTY_DIR)/metis-5.0pre2/include \
+    -I../../dummyThirdParty/metisDecomp  /* location of dummy metis.h */ \
+    -I../decompositionMethods/lnInclude
+
+LIB_LIBS = \
+    -L$(FOAM_EXT_LIBBIN) -lmetis -lGKlib

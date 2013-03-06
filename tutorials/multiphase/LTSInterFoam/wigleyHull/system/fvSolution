@@ -1,0 +1,106 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+solvers
+{
+    pcorr
+    {
+        solver          PCG;
+
+        preconditioner
+        {
+            preconditioner  GAMG;
+
+            smoother        DICGaussSeidel;
+            agglomerator    faceAreaPair;
+            mergeLevels     1;
+            nCellsInCoarsestLevel 10;
+            cacheAgglomeration true;
+
+            tolerance       1e-5;
+            relTol          0;
+        };
+
+        tolerance       1e-5;
+        relTol          0;
+    };
+
+    p_rgh
+    {
+        solver          GAMG;
+
+        smoother        GaussSeidel;
+        agglomerator    faceAreaPair;
+        mergeLevels     1;
+        nCellsInCoarsestLevel 10;
+        cacheAgglomeration true;
+
+        tolerance       1e-6;
+        relTol          0.01;
+    };
+
+    p_rghFinal
+    {
+        $p_rgh;
+        tolerance       1e-6;
+        relTol          0;
+    }
+
+    "(U|k|omega).*"
+    {
+        solver          smoothSolver;
+
+        smoother        GaussSeidel;
+        nSweeps         1;
+
+        tolerance       1e-7;
+        relTol          0.1;
+    };
+}
+
+PIMPLE
+{
+    momentumPredictor yes;
+
+    nCorrectors     1;
+    nNonOrthogonalCorrectors 0;
+
+    nAlphaCorr      1;
+    nAlphaSubCycles 1;
+    cAlpha          1;
+
+    maxCo           0.9;
+    maxAlphaCo      0.2;
+    nAlphaSweepIter 1;
+
+    rDeltaTSmoothingCoeff 0.1;
+    rDeltaTDampingCoeff 1;
+    maxDeltaT       1;
+}
+
+relaxationFactors
+{
+    fields
+    {
+    }
+    equations
+    {
+    }
+}
+
+
+// ************************************************************************* //

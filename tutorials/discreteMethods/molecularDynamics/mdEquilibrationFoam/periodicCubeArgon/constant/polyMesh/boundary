@@ -1,0 +1,70 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       polyBoundaryMesh;
+    location    "constant/polyMesh";
+    object      boundary;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+6
+(
+    periodicX_half0
+    {
+        type            cyclic;
+        nFaces          144;
+        startFace       4752;
+        matchTolerance  0.0001;
+        neighbourPatch  periodicX_half1;
+    }
+    periodicX_half1
+    {
+        type            cyclic;
+        nFaces          144;
+        startFace       4896;
+        matchTolerance  0.0001;
+        neighbourPatch  periodicX_half0;
+    }
+    periodicY_half0
+    {
+        type            cyclic;
+        nFaces          144;
+        startFace       5040;
+        matchTolerance  0.0001;
+        neighbourPatch  periodicY_half1;
+    }
+    periodicY_half1
+    {
+        type            cyclic;
+        nFaces          144;
+        startFace       5184;
+        matchTolerance  0.0001;
+        neighbourPatch  periodicY_half0;
+    }
+    periodicZ_half0
+    {
+        type            cyclic;
+        nFaces          144;
+        startFace       5328;
+        matchTolerance  0.0001;
+        neighbourPatch  periodicZ_half1;
+    }
+    periodicZ_half1
+    {
+        type            cyclic;
+        nFaces          144;
+        startFace       5472;
+        matchTolerance  0.0001;
+        neighbourPatch  periodicZ_half0;
+    }
+)
+
+// ************************************************************************* //

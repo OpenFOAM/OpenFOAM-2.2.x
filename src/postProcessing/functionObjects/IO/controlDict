@@ -1,0 +1,95 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// So we get a decent warning if we have multiple functionObject entries
+// with the same name.
+#inputMode error;
+
+application     icoFoam;
+
+startFrom       startTime;
+
+startTime       0;
+
+stopAt          endTime;
+
+endTime         0.5;
+
+deltaT          0.005;
+
+writeControl    timeStep;
+
+writeInterval   20;
+
+purgeWrite      0;
+
+writeFormat     ascii;
+
+writePrecision  6;
+
+writeCompression uncompressed;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable yes;
+
+functions
+{
+    partialWrite
+    {
+        // Write some registered objects more often than others.
+        // Above writeControl determines most frequent dump.
+
+        type            partialWrite;
+
+        // Where to load it from
+        functionObjectLibs ("libIOFunctionObjects.so");
+
+        // Optional mesh region to operate on. Only one partialWrite per
+        // region allowed.
+        region wallFilmRegion;
+
+        // Execute upon outputTime
+        outputControl   outputTime;
+
+        // Objects (fields or lagrangian fields in any of the clouds)
+        // to write every outputTime
+        objectNames    (p positions nParticle);
+        // Write as normal every writeInterval'th outputTime.
+        writeInterval   3;
+    }
+
+    dumpObjects
+    {
+        // Forcibly write registered objects. E.g. fields that have been
+        // created with NO_WRITE.
+
+        type            writeRegisteredObject;
+
+        // Where to load it from
+        functionObjectLibs ("libIOFunctionObjects.so");
+
+        // Execute upon outputTime
+        outputControl   outputTime;
+
+        // Objects to write
+        objectNames    ();
+    }
+}
+
+// ************************************************************************* //

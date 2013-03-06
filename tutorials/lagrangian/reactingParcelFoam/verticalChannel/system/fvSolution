@@ -1,0 +1,102 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+solvers
+{
+    rho
+    {
+        solver          PCG;
+        preconditioner  DIC;
+        tolerance       1e-05;
+        relTol          0.1;
+    }
+
+    rhoFinal
+    {
+        $rho;
+        tolerance       1e-05;
+        relTol          0;
+    }
+
+    "(U|h|k|omega)"
+    {
+        solver          PBiCG;
+        preconditioner  DILU;
+        tolerance       1e-06;
+        relTol          0.1;
+    }
+
+    "(U|h|k|omega)Final"
+    {
+        $U;
+        tolerance       1e-06;
+        relTol          0;
+    }
+
+    p
+    {
+        solver          GAMG;
+        tolerance       0;
+        relTol          0.1;
+        smoother        DICGaussSeidel;
+        nPreSweeps      0;
+        nPostSweeps     2;
+        cacheAgglomeration true;
+        nCellsInCoarsestLevel 10;
+        agglomerator    faceAreaPair;
+        mergeLevels     1;
+        maxIter         50;
+    }
+
+    pFinal
+    {
+        $p;
+        tolerance       1e-06;
+        relTol          0;
+    }
+
+    "(Yi|O2|N2|H2O)"
+    {
+        $hFinal;
+    }
+}
+
+PIMPLE
+{
+    nCorrectors     3;
+    nNonOrthogonalCorrectors 0;
+    momentumPredictor yes;
+}
+
+potentialFlow
+{
+    // used for potentialFoam initialisation
+    nNonOrthogonalCorrectors 5;
+}
+
+relaxationFactors
+{
+    fields
+    {
+    }
+    equations
+    {
+        ".*"       1;
+    }
+}
+
+// ************************************************************************* //

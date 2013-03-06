@@ -1,0 +1,110 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+actions
+(
+    {
+        name    innerCylinderSmall;
+        type    cellSet;
+        action  new;
+        source  cylinderToCell;
+        sourceInfo
+        {
+            p1      (0 -0.08 0);
+            p2      (0 0.06 0);
+            radius  0.12;
+        }
+    }
+    {
+        name    outerCells;
+        type    cellSet;
+        action  new;
+        source  cellToCell;
+        sourceInfo
+        {
+            set innerCylinderSmall;
+        }
+    }
+    {
+        name    outerCells;
+        type    cellSet;
+        action  invert;
+    }
+
+    {
+        name    innerCylinderSmall;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+        sourceInfo
+        {
+            set     innerCylinderSmall;
+        }
+    }
+
+
+
+    {
+        name    innerCylinderSmallFace;
+        type    faceSet;
+        action  new;
+        source  cellToFace;
+        sourceInfo
+        {
+            set     innerCylinderSmall;
+            option  all;
+        }
+    }
+    {
+        name    innerCylinderSmallFace;
+        type    faceSet;
+        action  subset;
+        source  cellToFace;
+        sourceInfo
+        {
+            set     outerCells;
+            option  all;
+        }
+    }
+    {
+        name    innerCylinderSmall;
+        type    faceZoneSet;
+        action  new;
+        source  setsToFaceZone;
+        sourceInfo
+        {
+            faceSet     innerCylinderSmallFace;
+            cellSet     innerCylinderSmall;
+        }
+    }
+
+
+    // Dummy faceSet for creating initial patches
+    {
+        name    dummyFaces;
+        type    faceSet;
+        action  new;
+        source  labelToFace;
+        sourceInfo
+        {
+            value ();
+        }
+    }
+
+);
+
+// ************************************************************************* //

@@ -1,0 +1,165 @@
+/*---------------------------------------------------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     |
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
+     \\/     M anipulation  |
+-------------------------------------------------------------------------------
+License
+    This file is part of OpenFOAM.
+
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+    for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
+
+Class
+    Foam::extrude2DMesh
+
+Description
+    Given a 2D mesh insert all the topology changes to extrude. Does not work
+    in parallel.
+
+SourceFiles
+    extrude2DMesh.C
+
+\*---------------------------------------------------------------------------*/
+
+#ifndef extrude2DMesh_H
+#define extrude2DMesh_H
+
+#include "typeInfo.H"
+#include "label.H"
+#include "scalar.H"
+#include "labelList.H"
+#include "dictionary.H"
+#include "extrudeModel.H"
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+namespace Foam
+{
+
+// Forward declaration of classes
+class polyMesh;
+class polyTopoChange;
+class mapPolyMesh;
+class mapDistributePolyMesh;
+
+/*---------------------------------------------------------------------------*\
+                        Class extrude2DMesh Declaration
+\*---------------------------------------------------------------------------*/
+
+class extrude2DMesh
+{
+    // Private data
+
+        //- Reference to 2D mesh
+        polyMesh& mesh_;
+
+        //- Extrusion dictionary
+        const dictionary dict_;
+
+        //const dictionary patchDict_;
+
+        //- The extrusion model
+        const extrudeModel& model_;
+
+        //- Type of the patches that will be created by the extrusion.
+        const word patchType_;
+
+        //- Patch ID of the front patch
+        label frontPatchI_;
+
+        //- Patch ID of the back patch
+        label backPatchI_;
+
+
+    // Private Member Functions
+
+        //- Check the mesh is 2D
+        void check2D() const;
+
+        //- Find extrusion direction
+        //void findExtrudeDirection();
+
+        //- Disallow default bitwise copy construct
+        extrude2DMesh(const extrude2DMesh&);
+
+        //- Disallow default bitwise assignment
+        void operator=(const extrude2DMesh&);
+
+
+public:
+
+    //- Runtime type information
+    ClassName("extrude2DMesh");
+
+
+    // Constructors
+
+        //- Construct from a 2D polyMesh, a dictionary and an extrusion model
+        extrude2DMesh
+        (
+            polyMesh&,
+            const dictionary& dict,
+            const extrudeModel& model
+        );
+
+
+    //- Destructor
+    ~extrude2DMesh();
+
+
+    // Member Functions
+
+        // Access
+
+            //- Return the patch ID of the front patch
+            inline label frontPatchI() const
+            {
+                return frontPatchI_;
+            }
+
+            //- Return the patch ID of the back patch
+            inline label backPatchI() const
+            {
+                return backPatchI_;
+            }
+
+
+        // Edit
+
+            //- Add front and back patches
+            void addFrontBackPatches();
+
+            //- Play commands into polyTopoChange to extrude mesh.
+            void setRefinement(polyTopoChange&);
+
+            //- Force recalculation of locally stored data on topological change
+            void updateMesh(const mapPolyMesh&)
+            {}
+
+            //- Force recalculation of locally stored data for mesh distribution
+            void distribute(const mapDistributePolyMesh&)
+            {}
+};
+
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+} // End namespace Foam
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#endif
+
+// ************************************************************************* //

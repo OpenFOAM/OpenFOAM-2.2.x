@@ -1,0 +1,101 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+solvers
+{
+    p
+    {
+        solver          GAMG;
+        smoother        DIC;
+        nPreSweeps      0;
+        nPostSweeps     2;
+        nFinestSweeps   2;
+        cacheAgglomeration true;
+        nCellsInCoarsestLevel 10;
+        agglomerator    faceAreaPair;
+        mergeLevels     1;
+        tolerance       1e-08;
+        relTol          0.01;
+    }
+
+    pFinal
+    {
+        $p;
+        tolerance       1e-08;
+        relTol          0;
+    }
+
+    "U.*"
+    {
+        solver          PBiCG;
+        preconditioner  DILU;
+        tolerance       1e-05;
+        relTol          0;
+    }
+
+    "h.*"
+    {
+        solver          PBiCG;
+        preconditioner  DILU;
+        tolerance       1e-8;
+        relTol          0;
+    }
+
+    "alpha.*"
+    {
+        solver          PBiCG;
+        preconditioner  DILU;
+        tolerance       1e-10;
+        relTol          0;
+    }
+
+    "(k|epsilon|Theta).*"
+    {
+        solver          PBiCG;
+        preconditioner  DILU;
+        tolerance       1e-05;
+        relTol          0;
+    }
+}
+
+PIMPLE
+{
+    nOuterCorrectors 1;
+    nCorrectors     2;
+    nNonOrthogonalCorrectors 0;
+    nAlphaCorr      1;
+    nAlphaSubCycles 2;
+}
+
+relaxationFactors
+{
+    fields
+    {
+    }
+    equations
+    {
+        "U.*"           1;
+        "h.*"           1;
+        "alpha.*"       1;
+        "Theta.*"       1;
+        "k.*"           1;
+        "epsilon.*"     1;
+    }
+}
+
+
+// ************************************************************************* //

@@ -1,0 +1,52 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      extrude2DMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Type of extrusion
+extrudeModel        linearDirection;
+//extrudeModel        wedge;
+
+// Patch type the extruded patches will take
+patchType           empty;
+//patchType           wedge;
+
+// Number of layers to extrude
+nLayers             1;
+
+// Expansion ratio. If >1 then grows the layers
+expansionRatio      1.0;
+
+linearDirectionCoeffs
+{
+    // Direction of extrusion
+    direction       (0 0 1);
+
+    // Width of newly extruded cells
+    thickness       0.1;
+}
+
+wedgeCoeffs
+{
+    // Point the extrusion axis goes through
+    axisPt          (0 0 0);
+
+    // Axis to extrude around
+    axis            (1 0 0);
+
+    // Total angle of the wedge in degrees
+    angle           10;
+}
+
+// ************************************************************************* //

@@ -1,0 +1,3 @@
+compressibleTwoPhaseEulerFoam.C
+
+EXE = $(FOAM_APPBIN)/compressibleTwoPhaseEulerFoam

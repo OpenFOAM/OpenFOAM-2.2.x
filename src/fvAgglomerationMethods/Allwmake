@@ -1,0 +1,15 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # run from this directory
+makeType=${1:-libso}
+set -x
+
+export ParMGridGen=$WM_THIRD_PARTY_DIR/ParMGridGen-1.0
+
+if [ -d "$ParMGridGen/MGridGen/Lib" ]
+then
+    wmake $makeType MGridGenGamgAgglomeration
+fi
+
+wmake $makeType pairPatchAgglomeration
+
+# ----------------------------------------------------------------- end-of-file

@@ -1,0 +1,29 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      interfacialProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dragModel1          GidaspowErgunWenYu;
+dragModel2          GidaspowErgunWenYu;
+
+heatTransferModel1  RanzMarshall;
+heatTransferModel2  RanzMarshall;
+
+dispersedPhase      "1";
+
+residualPhaseFraction   1e-3;
+residualSlip            1e-2;
+
+// ************************************************************************* //

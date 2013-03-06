@@ -1,0 +1,7 @@
+laminarFlameSpeed/laminarFlameSpeed.C
+laminarFlameSpeed/laminarFlameSpeedNew.C
+constant/constant.C
+Gulders/Gulders.C
+GuldersEGR/GuldersEGR.C
+
+LIB = $(FOAM_LIBBIN)/liblaminarFlameSpeedModels

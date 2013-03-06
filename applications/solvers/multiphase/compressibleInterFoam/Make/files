@@ -1,0 +1,4 @@
+derivedFvPatchFields/wallHeatTransfer/wallHeatTransferFvPatchScalarField.C
+compressibleInterFoam.C
+
+EXE = $(FOAM_APPBIN)/compressibleInterFoam

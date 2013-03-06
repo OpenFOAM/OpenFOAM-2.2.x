@@ -1,0 +1,29 @@
+edgeMesh.C
+edgeMeshIO.C
+edgeMeshNew.C
+
+edgeMeshFormats = edgeMeshFormats
+$(edgeMeshFormats)/edgeMeshFormatsCore.C
+
+$(edgeMeshFormats)/edgeMesh/edgeMeshFormat.C
+$(edgeMeshFormats)/edgeMesh/edgeMeshFormatRunTime.C
+
+$(edgeMeshFormats)/nas/NASedgeFormat.C
+$(edgeMeshFormats)/nas/NASedgeFormatRunTime.C
+
+$(edgeMeshFormats)/obj/OBJedgeFormat.C
+$(edgeMeshFormats)/obj/OBJedgeFormatRunTime.C
+
+$(edgeMeshFormats)/starcd/STARCDedgeFormat.C
+$(edgeMeshFormats)/starcd/STARCDedgeFormatRunTime.C
+
+$(edgeMeshFormats)/vtk/VTKedgeFormat.C
+$(edgeMeshFormats)/vtk/VTKedgeFormatRunTime.C
+
+extendedFeatureEdgeMesh/extendedFeatureEdgeMesh.C
+
+featureEdgeMesh/featureEdgeMesh.C
+
+
+
+LIB = $(FOAM_LIBBIN)/libedgeMesh

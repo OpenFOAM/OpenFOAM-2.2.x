@@ -1,0 +1,13 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # run from this directory
+set -x
+
+wmake blockMesh
+wmake all extrude
+
+extrude2DMesh/Allwmake
+
+wmake snappyHexMesh
+
+
+# ----------------------------------------------------------------- end-of-file

@@ -1,0 +1,47 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      surfaceSubsetDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Select triangles by label
+faces #include "badFaces";
+
+// Select triangles using given points (local point numbering)
+localPoints ( );
+
+// Select triangles using given edges
+edges ();
+
+// Select triangles (with face centre) inside box
+zone
+(
+    (0      -10000  125)
+    (10000   10000  10000)
+);
+
+// Select triangles (with face centre) inside or outside of another surface.
+// (always selects triangles that are 'on' other surface)
+surface
+{
+    name "sphere.stl";
+    outside     yes;
+}
+
+// Extend selection with edge neighbours
+addFaceNeighbours no;
+
+// Invert selection
+invertSelection false;
+
+// ************************************************************************* //

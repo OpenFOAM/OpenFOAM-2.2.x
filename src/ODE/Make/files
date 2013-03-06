@@ -1,0 +1,19 @@
+ODE  =  ODE
+ODESolvers  =  ODESolvers
+ODESolversODESolver  =  ODESolvers/ODESolver
+ODESolversKRR4  =  ODESolvers/KRR4
+ODESolversRK  =  ODESolvers/RK
+ODESolversSIBS  =  ODESolvers/SIBS
+
+$(ODESolversODESolver)/ODESolver.C
+$(ODESolversODESolver)/ODESolverNew.C
+
+$(ODESolversRK)/RK.C
+
+$(ODESolversKRR4)/KRR4.C
+
+$(ODESolversSIBS)/SIBS.C
+$(ODESolversSIBS)/SIMPR.C
+$(ODESolversSIBS)/polyExtrapolate.C
+
+LIB = $(FOAM_LIBBIN)/libODE
