@@ -28,7 +28,7 @@
     [[http://www.OpenFOAM.org/git.php]]
 
 * Release notes
-  [[http://www.OpenFOAM.com/version2.2.0]]
+  [[http://www.OpenFOAM.org/version2.2.0]]
 
 * Documentation
   [[http://www.OpenFOAM.com/docs]]
