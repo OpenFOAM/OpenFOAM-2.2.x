@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -40,7 +40,7 @@ Foam::FitData<Form, ExtendedStencil, Polynomial>::FitData
     const scalar centralWeight
 )
 :
-    MeshObject<fvMesh, Form>(mesh),
+    MeshObject<fvMesh, Foam::MoveableMeshObject, Form>(mesh),
     stencil_(stencil),
     linearCorrection_(linearCorrection),
     linearLimitFactor_(linearLimitFactor),

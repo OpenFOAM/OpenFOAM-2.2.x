@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -37,8 +37,7 @@ SourceFiles
 
 #include "MeshObject.H"
 #include "fvMesh.H"
-#include "surfaceFieldsFwd.H"
-#include "labelPair.H"
+#include "surfaceFields.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -51,19 +50,19 @@ namespace Foam
 
 class leastSquaresVectors
 :
-    public MeshObject<fvMesh, leastSquaresVectors>
+    public MeshObject<fvMesh, MoveableMeshObject, leastSquaresVectors>
 {
     // Private data
 
         //- Least-squares gradient vectors
-        mutable surfaceVectorField* pVectorsPtr_;
-        mutable surfaceVectorField* nVectorsPtr_;
+        surfaceVectorField pVectors_;
+        surfaceVectorField nVectors_;
 
 
     // Private Member Functions
 
         //- Construct Least-squares gradient vectors
-        void makeLeastSquaresVectors() const;
+        void calcLeastSquaresVectors();
 
 
 public:
@@ -85,11 +84,16 @@ public:
     // Member functions
 
         //- Return reference to owner least square vectors
-        const surfaceVectorField& pVectors() const;
+        const surfaceVectorField& pVectors() const
+        {
+            return pVectors_;
+        }
 
         //- Return reference to neighbour least square vectors
-        const surfaceVectorField& nVectors() const;
-
+        const surfaceVectorField& nVectors() const
+        {
+            return nVectors_;
+        }
 
         //- Delete the least square vectors when the mesh moves
         virtual bool movePoints();

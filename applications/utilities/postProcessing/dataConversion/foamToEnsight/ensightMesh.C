@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -1150,13 +1150,13 @@ void Foam::ensightMesh::write
                 labelList pointToGlobal;
                 labelList uniqueMeshPointLabels;
                 autoPtr<globalIndex> globalPointsPtr =
-                mesh_.globalData().mergePoints
-                (
-                    p.meshPoints(),
-                    p.meshPointMap(),
-                    pointToGlobal,
-                    uniqueMeshPointLabels
-                );
+                    mesh_.globalData().mergePoints
+                    (
+                        p.meshPoints(),
+                        p.meshPointMap(),
+                        pointToGlobal,
+                        uniqueMeshPointLabels
+                    );
 
                 pointField uniquePoints(mesh_.points(), uniqueMeshPointLabels);
                 // Renumber the patch faces
@@ -1225,13 +1225,13 @@ void Foam::ensightMesh::write
             labelList pointToGlobal;
             labelList uniqueMeshPointLabels;
             autoPtr<globalIndex> globalPointsPtr =
-            mesh_.globalData().mergePoints
-            (
-                fz().meshPoints(),
-                fz().meshPointMap(),
-                pointToGlobal,
-                uniqueMeshPointLabels
-            );
+                mesh_.globalData().mergePoints
+                (
+                    fz().meshPoints(),
+                    fz().meshPointMap(),
+                    pointToGlobal,
+                    uniqueMeshPointLabels
+                );
 
             pointField uniquePoints(mesh_.points(), uniqueMeshPointLabels);
 

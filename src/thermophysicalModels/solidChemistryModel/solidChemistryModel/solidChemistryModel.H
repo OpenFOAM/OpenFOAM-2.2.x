@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2013-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -25,23 +25,24 @@ Class
     Foam::solidChemistryModel
 
 Description
-    Chemistry model for solid thermodynamics
+    Extends base solid chemistry model by adding a thermo package, and ODE
+    functions.
+    Introduces chemistry equation system and evaluation of chemical source
+    terms.
 
 SourceFiles
     solidChemistryModelI.H
     solidChemistryModel.C
-    newChemistrySolidModel.C
 
 \*---------------------------------------------------------------------------*/
 
 #ifndef solidChemistryModel_H
 #define solidChemistryModel_H
 
-#include "basicChemistryModel.H"
-#include "autoPtr.H"
-#include "runTimeSelectionTables.H"
-#include "solidReactionThermo.H"
-
+#include "Reaction.H"
+#include "ODE.H"
+#include "volFieldsFwd.H"
+#include "DimensionedField.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -52,17 +53,16 @@ namespace Foam
 class fvMesh;
 
 /*---------------------------------------------------------------------------*\
-                     class solidChemistryModel Declaration
+                   Class solidChemistryModel Declaration
 \*---------------------------------------------------------------------------*/
 
+template<class CompType, class SolidThermo>
 class solidChemistryModel
 :
-    public basicChemistryModel
+    public CompType,
+    public ODE
 {
     // Private Member Functions
-
-        //- Construct as copy (not implemented)
-        solidChemistryModel(const solidChemistryModel&);
 
         //- Disallow default bitwise assignment
         void operator=(const solidChemistryModel&);
@@ -70,27 +70,40 @@ class solidChemistryModel
 
 protected:
 
-    // Protected data
+        //- Reference to solid mass fractions
+        PtrList<volScalarField>& Ys_;
 
-        //- Solid thermo package
-        autoPtr<solidReactionThermo> solidThermo_;
+        //- Reactions
+        const PtrList<Reaction<SolidThermo> >& reactions_;
+
+        //- Thermodynamic data of solids
+        const PtrList<SolidThermo>& solidThermo_;
+
+        //- Number of solid components
+        label nSolids_;
+
+        //- Number of solid reactions
+        label nReaction_;
+
+        //- List of reaction rate per solid [kg/m3/s]
+        PtrList<DimensionedField<scalar, volMesh> > RRs_;
+
+        //- List of active reacting cells
+        List<bool> reactingCells_;
+
+    // Protected Member Functions
+
+        //- Write access to source terms for solids
+        inline PtrList<DimensionedField<scalar, volMesh> >& RRs();
+
+        //- Set reacting status of cell, cellI
+        void setCellReacting(const label cellI, const bool active);
 
 
 public:
 
     //- Runtime type information
-    TypeName("solid");
-
-
-    //- Declare run-time constructor selection tables
-    declareRunTimeSelectionTable
-    (
-        autoPtr,
-        solidChemistryModel,
-        fvMesh,
-        (const fvMesh& mesh),
-        (mesh)
-    );
+    TypeName("solidChemistryModel");
 
 
     // Constructors
@@ -99,56 +112,108 @@ public:
         solidChemistryModel(const fvMesh& mesh);
 
 
-    //- Selector
-    static autoPtr<solidChemistryModel> New(const fvMesh& mesh);
-
-
     //- Destructor
     virtual ~solidChemistryModel();
 
 
     // Member Functions
 
-        //- Return access to the solid thermo package
-        inline solidReactionThermo& solidThermo();
+        //- The reactions
+        inline const PtrList<Reaction<SolidThermo> >& reactions() const;
 
-        //- Return const access to the solid thermo package
-        inline const solidReactionThermo& solidThermo() const;
+        //- The number of reactions
+        inline label nReaction() const;
 
-        //- Return total gases mass source term [kg/m3/s]
-        virtual tmp<DimensionedField<scalar, volMesh> > RRg() const = 0;
 
-        //- Return total solids mass source term [kg/m3/s]
-        virtual tmp<DimensionedField<scalar, volMesh> > RRs() const = 0;
-
-        //- Return chemical source terms for solids [kg/m3/s]
-        virtual const DimensionedField<scalar, volMesh>& RRs
+        //- dc/dt = omega, rate of change in concentration, for each species
+        virtual scalarField omega
         (
-            const label i
+            const scalarField& c,
+            const scalar T,
+            const scalar p,
+            const bool updateC0 = false
         ) const = 0;
 
-        //- Return chemical source terms for gases [kg/m3/s]
-        virtual const DimensionedField<scalar, volMesh>& RRg
+        //- Return the reaction rate for reaction r and the reference
+        //  species and charateristic times
+        virtual scalar omega
         (
-            const label i
+            const Reaction<SolidThermo>& r,
+            const scalarField& c,
+            const scalar T,
+            const scalar p,
+            scalar& pf,
+            scalar& cf,
+            label& lRef,
+            scalar& pr,
+            scalar& cr,
+            label& rRef
         ) const = 0;
-
-        //- Return sensible enthalpy for gas i [J/Kg]
-        virtual tmp<volScalarField> gasHs
-        (
-            const volScalarField& p,
-            const volScalarField& T,
-            const label i
-        ) const = 0;
-
-        //- Return specie Table for gases
-        virtual const speciesTable& gasTable() const = 0;
-
-        //- Set reacting status of cell, cellI
-        virtual void setCellReacting(const label cellI, const bool active) = 0;
 
         //- Calculates the reaction rates
         virtual void calculate() = 0;
+
+
+        // Chemistry model functions
+
+            //- Return const access to the chemical source terms for solids
+            inline const DimensionedField<scalar, volMesh>& RRs
+            (
+                const label i
+            ) const;
+
+            //- Return total solid source term
+            inline tmp<DimensionedField<scalar, volMesh> > RRs() const;
+
+            //- Return const access to the total source terms
+            inline const DimensionedField<scalar, volMesh>& RR
+            (
+                const label i
+            ) const;
+
+
+            //- Solve the reaction system for the given start time and time
+            //  step and return the characteristic time
+            virtual scalar solve(const scalar t0, const scalar deltaT) = 0;
+
+            //- Return the chemical time scale
+            virtual tmp<volScalarField> tc() const;
+
+            //- Return source for enthalpy equation [kg/m/s3]
+            virtual tmp<volScalarField> Sh() const;
+
+            //- Return the heat release, i.e. enthalpy/sec [m2/s3]
+            virtual tmp<volScalarField> dQ() const;
+
+
+        // ODE functions (overriding abstract functions in ODE.H)
+
+            //- Number of ODE's to solve
+            virtual label nEqns() const = 0;
+
+            virtual void derivatives
+            (
+                const scalar t,
+                const scalarField& c,
+                scalarField& dcdt
+            ) const = 0;
+
+            virtual void jacobian
+            (
+                const scalar t,
+                const scalarField& c,
+                scalarField& dcdt,
+                scalarSquareMatrix& dfdc
+            ) const = 0;
+
+            virtual scalar solve
+            (
+                scalarField &c,
+                const scalar T,
+                const scalar p,
+                const scalar t0,
+                const scalar dt
+            ) const = 0;
 };
 
 
@@ -158,7 +223,13 @@ public:
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#include "solidChemistryModelI.H"
+#   include "solidChemistryModelI.H"
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#ifdef NoRepository
+#   include "solidChemistryModel.C"
+#endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

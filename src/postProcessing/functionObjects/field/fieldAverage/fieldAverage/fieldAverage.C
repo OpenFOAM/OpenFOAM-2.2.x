@@ -167,7 +167,6 @@ void Foam::fieldAverage::calcAverages()
         prevTimeIndex_ = currentTimeIndex;
     }
 
-
     Info<< "Calculating averages" << nl << endl;
 
     addMeanSqrToPrime2Mean<scalar, scalar>

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -25,6 +25,7 @@ License
 
 #include "phaseModel.H"
 #include "fixedValueFvPatchFields.H"
+#include "slipFvPatchFields.H"
 #include "surfaceInterpolate.H"
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
@@ -114,7 +115,11 @@ Foam::phaseModel::phaseModel
 
         forAll(U_.boundaryField(), i)
         {
-            if (isA<fixedValueFvPatchVectorField>(U_.boundaryField()[i]))
+            if
+            (
+                isA<fixedValueFvPatchVectorField>(U_.boundaryField()[i])
+             || isA<slipFvPatchVectorField>(U_.boundaryField()[i])
+            )
             {
                 phiTypes[i] = fixedValueFvPatchScalarField::typeName;
             }

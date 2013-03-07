@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -311,7 +311,7 @@ void qZeta::correct()
 
     tmp<volScalarField> S2 = 2*magSqr(symm(fvc::grad(U_)));
 
-    volScalarField G(type() + ".G", nut_/(2.0*q_)*S2);
+    volScalarField G(GName(), nut_/(2.0*q_)*S2);
     const volScalarField E(nu()*nut_/q_*fvc::magSqrGradGrad(U_));
 
 

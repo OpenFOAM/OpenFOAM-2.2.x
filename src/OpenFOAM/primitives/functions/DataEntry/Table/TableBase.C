@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -411,6 +411,36 @@ Foam::dimensioned<Type> Foam::TableBase<Type>::dimIntegrate
         dimensions_,
         this->integrate(x2, x1)
     );
+}
+
+
+template<class Type>
+Foam::tmp<Foam::scalarField> Foam::TableBase<Type>::x() const
+{
+    tmp<scalarField> tfld(new scalarField(table_.size(), 0.0));
+    scalarField& fld = tfld();
+
+    forAll(table_, i)
+    {
+        fld[i] = table_[i].first();
+    }
+
+    return tfld;
+}
+
+
+template<class Type>
+Foam::tmp<Foam::Field<Type> > Foam::TableBase<Type>::y() const
+{
+    tmp<Field<Type> > tfld(new Field<Type>(table_.size(), pTraits<Type>::zero));
+    Field<Type>& fld = tfld();
+
+    forAll(table_, i)
+    {
+        fld[i] = table_[i].second();
+    }
+
+    return tfld;
 }
 
 

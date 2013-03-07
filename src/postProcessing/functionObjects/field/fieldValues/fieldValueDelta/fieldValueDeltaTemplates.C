@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -25,6 +25,7 @@ License
 
 #include "GeometricField.H"
 #include "volMesh.H"
+#include "surfaceMesh.H"
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
@@ -59,6 +60,11 @@ Type Foam::fieldValues::fieldValueDelta::applyOperation
             result = max(value1, value2);
             break;
         }
+        case opAverage:
+        {
+            result = 0.5*(value1 + value2);
+            break;
+        }
         default:
         {
             FatalErrorIn
@@ -83,6 +89,7 @@ template<class Type>
 void Foam::fieldValues::fieldValueDelta::processFields(bool& found)
 {
     typedef GeometricField<Type, fvPatchField, volMesh> vf;
+    typedef GeometricField<Type, fvsPatchField, surfaceMesh> sf;
 
     const wordList& fields1 = source1Ptr_->fields();
 
@@ -95,7 +102,12 @@ void Foam::fieldValues::fieldValueDelta::processFields(bool& found)
     forAll(fields1, i)
     {
         const word& fieldName = fields1[i];
-        if (obr_.foundObject<vf>(fieldName) && results2.found(fieldName))
+
+        if
+        (
+            (obr_.foundObject<vf>(fieldName) || obr_.foundObject<sf>(fieldName))
+         && results2.found(fieldName)
+        )
         {
             results1.lookup(fieldName) >> r1;
             results2.lookup(fieldName) >> r2;

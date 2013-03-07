@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -303,7 +303,7 @@ void reactingOneDim::calculateMassTransfer()
 reactingOneDim::reactingOneDim(const word& modelType, const fvMesh& mesh)
 :
     pyrolysisModel(modelType, mesh),
-    solidChemistry_(solidChemistryModel::New(regionMesh())),
+    solidChemistry_(basicSolidChemistryModel::New(regionMesh())),
     solidThermo_(solidChemistry_->solidThermo()),
     radiation_(radiation::radiationModel::New(solidThermo_.T())),
     rho_
@@ -386,7 +386,7 @@ reactingOneDim::reactingOneDim
 )
 :
     pyrolysisModel(modelType, mesh, dict),
-    solidChemistry_(solidChemistryModel::New(regionMesh())),
+    solidChemistry_(basicSolidChemistryModel::New(regionMesh())),
     solidThermo_(solidChemistry_->solidThermo()),
     radiation_(radiation::radiationModel::New(solidThermo_.T())),
     rho_

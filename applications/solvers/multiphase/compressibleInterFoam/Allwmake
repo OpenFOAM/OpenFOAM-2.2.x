@@ -2,7 +2,7 @@
 cd ${0%/*} || exit 1    # run from this directory
 set -x
 
-wmake libso phaseEquationsOfState
+wmake libso twoPhaseMixtureThermo
 wmake
 wmake compressibleInterDyMFoam
 

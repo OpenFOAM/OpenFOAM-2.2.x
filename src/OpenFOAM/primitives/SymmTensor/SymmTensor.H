@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -50,7 +50,7 @@ namespace Foam
                            Class SymmTensor Declaration
 \*---------------------------------------------------------------------------*/
 
-template <class Cmpt>
+template<class Cmpt>
 class SymmTensor
 :
     public VectorSpace<SymmTensor<Cmpt>, Cmpt, 6>
@@ -91,8 +91,9 @@ public:
         //- Construct null
         inline SymmTensor();
 
-        //- Construct given VectorSpace
-        inline SymmTensor(const VectorSpace<SymmTensor<Cmpt>, Cmpt, 6>&);
+        //- Construct given VectorSpace of the same rank
+        template<class Cmpt2>
+        inline SymmTensor(const VectorSpace<SymmTensor<Cmpt2>, Cmpt2, 6>&);
 
         //- Construct given SphericalTensor
         inline SymmTensor(const SphericalTensor<Cmpt>&);

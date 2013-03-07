@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -136,6 +136,8 @@ Notes:
 #include "pointFields.H"
 //#include "ReadFields.H"
 #include "fvMeshTools.H"
+#include "OBJstream.H"
+#include "PatchTools.H"
 
 using namespace Foam;
 
@@ -1234,6 +1236,252 @@ void setCouplingInfo
     mesh.removeFvBoundary();
     mesh.addFvPatches(newPatches, true);
 }
+
+
+// Extrude and write geometric properties
+void extrudeGeometricProperties
+(
+    const polyMesh& mesh,
+    const primitiveFacePatch& extrudePatch,
+    const createShellMesh& extruder,
+    const polyMesh& regionMesh,
+    const extrudeModel& model
+)
+{
+     const pointIOField patchFaceCentres
+     (
+        IOobject
+        (
+            "patchFaceCentres",
+            mesh.pointsInstance(),
+            mesh.meshSubDir,
+            mesh,
+            IOobject::MUST_READ
+        )
+    );
+
+    const pointIOField patchEdgeCentres
+    (
+        IOobject
+        (
+            "patchEdgeCentres",
+            mesh.pointsInstance(),
+            mesh.meshSubDir,
+            mesh,
+            IOobject::MUST_READ
+        )
+    );
+
+    //forAll(extrudePatch.edges(), edgeI)
+    //{
+    //    const edge& e = extrudePatch.edges()[edgeI];
+    //    Pout<< "Edge:" << e.centre(extrudePatch.localPoints()) << nl
+    //        << "read:" << patchEdgeCentres[edgeI]
+    //        << endl;
+    //}
+
+
+    // Determine edge normals on original patch
+    labelList patchEdges;
+    labelList coupledEdges;
+    PackedBoolList sameEdgeOrientation;
+    PatchTools::matchEdges
+    (
+        extrudePatch,
+        mesh.globalData().coupledPatch(),
+        patchEdges,
+        coupledEdges,
+        sameEdgeOrientation
+    );
+
+    pointField patchEdgeNormals
+    (
+        PatchTools::edgeNormals
+        (
+            mesh,
+            extrudePatch,
+            patchEdges,
+            coupledEdges
+        )
+    );
+
+
+    pointIOField faceCentres
+    (
+        IOobject
+        (
+            "faceCentres",
+            regionMesh.pointsInstance(),
+            regionMesh.meshSubDir,
+            regionMesh,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE,
+            false
+        ),
+        regionMesh.nFaces()
+    );
+
+
+    // Work out layers. Guaranteed in columns so no fancy parallel bits.
+
+
+    forAll(extruder.faceToFaceMap(), faceI)
+    {
+        if (extruder.faceToFaceMap()[faceI] != 0)
+        {
+            // 'horizontal' face
+            label patchFaceI = mag(extruder.faceToFaceMap()[faceI])-1;
+
+            label cellI = regionMesh.faceOwner()[faceI];
+            if (regionMesh.isInternalFace(faceI))
+            {
+                cellI = max(cellI, regionMesh.faceNeighbour()[faceI]);
+            }
+
+            // Calculate layer from cell numbering (see createShellMesh)
+            label layerI = (cellI % model.nLayers());
+
+            if
+            (
+               !regionMesh.isInternalFace(faceI)
+             && extruder.faceToFaceMap()[faceI] > 0
+            )
+            {
+                // Top face
+                layerI++;
+            }
+
+
+            // Recalculate based on extrusion model
+            faceCentres[faceI] = model
+            (
+                patchFaceCentres[patchFaceI],
+                extrudePatch.faceNormals()[patchFaceI],
+                layerI
+            );
+        }
+        else
+        {
+            // 'vertical face
+            label patchEdgeI = extruder.faceToEdgeMap()[faceI];
+            label layerI =
+            (
+                regionMesh.faceOwner()[faceI]
+              % model.nLayers()
+            );
+
+            // Extrude patch edge centre to this layer
+            point pt0 = model
+            (
+                patchEdgeCentres[patchEdgeI],
+                patchEdgeNormals[patchEdgeI],
+                layerI
+            );
+            // Extrude patch edge centre to next layer
+            point pt1 = model
+            (
+                patchEdgeCentres[patchEdgeI],
+                patchEdgeNormals[patchEdgeI],
+                layerI+1
+            );
+
+            // Interpolate
+            faceCentres[faceI] = 0.5*(pt0+pt1);
+        }
+    }
+
+    pointIOField cellCentres
+    (
+        IOobject
+        (
+            "cellCentres",
+            regionMesh.pointsInstance(),
+            regionMesh.meshSubDir,
+            regionMesh,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE,
+            false
+        ),
+        regionMesh.nCells()
+    );
+
+    forAll(extruder.cellToFaceMap(), cellI)
+    {
+        label patchFaceI = extruder.cellToFaceMap()[cellI];
+
+        // Calculate layer from cell numbering (see createShellMesh)
+        label layerI = (cellI % model.nLayers());
+
+        // Recalculate based on extrusion model
+        point pt0 = model
+        (
+            patchFaceCentres[patchFaceI],
+            extrudePatch.faceNormals()[patchFaceI],
+            layerI
+        );
+        point pt1 = model
+        (
+            patchFaceCentres[patchFaceI],
+            extrudePatch.faceNormals()[patchFaceI],
+            layerI+1
+        );
+
+        // Interpolate
+        cellCentres[cellI] = 0.5*(pt0+pt1);
+    }
+
+
+    // Bit of checking
+    if (false)
+    {
+        OBJstream faceStr(regionMesh.time().path()/"faceCentres.obj");
+        OBJstream cellStr(regionMesh.time().path()/"cellCentres.obj");
+
+        forAll(faceCentres, faceI)
+        {
+            Pout<< "Model     :" << faceCentres[faceI] << endl
+                << "regionMesh:" << regionMesh.faceCentres()[faceI] << endl;
+            faceStr.write
+            (
+                linePointRef
+                (
+                    faceCentres[faceI],
+                    regionMesh.faceCentres()[faceI]
+                )
+            );
+        }
+        forAll(cellCentres, cellI)
+        {
+            Pout<< "Model     :" << cellCentres[cellI] << endl
+                << "regionMesh:" << regionMesh.cellCentres()[cellI] << endl;
+            cellStr.write
+            (
+                linePointRef
+                (
+                    cellCentres[cellI],
+                    regionMesh.cellCentres()[cellI]
+                )
+            );
+        }
+    }
+
+
+
+    Info<< "Writing geometric properties for mesh " << regionMesh.name()
+        << " to " << regionMesh.pointsInstance() << nl
+        << endl;
+
+    bool ok = faceCentres.write() && cellCentres.write();
+
+    if (!ok)
+    {
+        FatalErrorIn("extrudeGeometricProperties(..)")
+            << "Failed writing " << faceCentres.objectPath()
+            << " and " << cellCentres.objectPath()
+            << exit(FatalError);
+    }
+}
+
 
 
 
@@ -2392,6 +2640,36 @@ int main(int argc, char *argv[])
             << "Failed writing mesh " << regionMesh.name()
             << " at location " << regionMesh.facesInstance()
             << exit(FatalError);
+    }
+
+
+    // See if we need to extrude coordinates as well
+    {
+        autoPtr<pointIOField> patchFaceCentresPtr;
+
+        IOobject io
+        (
+            "patchFaceCentres",
+            mesh.pointsInstance(),
+            mesh.meshSubDir,
+            mesh,
+            IOobject::MUST_READ
+        );
+        if (io.headerOk())
+        {
+            // Read patchFaceCentres and patchEdgeCentres
+            Info<< "Reading patch face,edge centres : "
+                << io.name() << " and patchEdgeCentres" << endl;
+
+            extrudeGeometricProperties
+            (
+                mesh,
+                extrudePatch,
+                extruder,
+                regionMesh,
+                model()
+            );
+        }
     }
 
 

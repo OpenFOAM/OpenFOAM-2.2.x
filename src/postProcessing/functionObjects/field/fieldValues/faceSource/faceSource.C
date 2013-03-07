@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -48,10 +48,11 @@ namespace Foam
 
 
     template<>
-    const char* NamedEnum<fieldValues::faceSource::operationType, 11>::names[] =
+    const char* NamedEnum<fieldValues::faceSource::operationType, 12>::names[] =
     {
         "none",
         "sum",
+        "sumDirection",
         "average",
         "weightedAverage",
         "areaAverage",
@@ -74,7 +75,7 @@ namespace Foam
 const Foam::NamedEnum<Foam::fieldValues::faceSource::sourceType, 3>
     Foam::fieldValues::faceSource::sourceTypeNames_;
 
-const Foam::NamedEnum<Foam::fieldValues::faceSource::operationType, 11>
+const Foam::NamedEnum<Foam::fieldValues::faceSource::operationType, 12>
     Foam::fieldValues::faceSource::operationTypeNames_;
 
 
@@ -487,6 +488,46 @@ void Foam::fieldValues::faceSource::writeFileHeader(const label i)
 
 
 template<>
+Foam::scalar Foam::fieldValues::faceSource::processValues
+(
+    const Field<scalar>& values,
+    const vectorField& Sf,
+    const scalarField& weightField
+) const
+{
+    switch (operation_)
+    {
+        case opSumDirection:
+        {
+            const vector direction(dict_.lookup("direction"));
+
+            scalar v = 0.0;
+
+            forAll(Sf, i)
+            {
+                scalar d = Sf[i] & direction;
+                if (d > 0)
+                {
+                    v += pos(values[i])*values[i];
+                }
+                else
+                {
+                    v += neg(values[i])*values[i];
+                }
+            }
+
+            return v;
+        }
+        default:
+        {
+            // Fall through to other operations
+            return processSameTypeValues(values, Sf, weightField);
+        }
+    }
+}
+
+
+template<>
 Foam::vector Foam::fieldValues::faceSource::processValues
 (
     const Field<vector>& values,
@@ -496,14 +537,19 @@ Foam::vector Foam::fieldValues::faceSource::processValues
 {
     switch (operation_)
     {
+        case opSumDirection:
+        {
+            const vector direction(dict_.lookup("direction"));
+            return sum(pos(values & direction)*values);
+        }
         case opAreaNormalAverage:
         {
-            scalar result = sum(values&Sf)/sum(mag(Sf));
+            scalar result = sum(values & Sf)/sum(mag(Sf));
             return vector(result, 0.0, 0.0);
         }
         case opAreaNormalIntegrate:
         {
-            scalar result = sum(values&Sf);
+            scalar result = sum(values & Sf);
             return vector(result, 0.0, 0.0);
         }
         default:

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -427,7 +427,7 @@ public:
 
         //- Interpolates cCoords,pCoords. Uses the references to the original
         //  fields used to create the iso surface.
-        template <class Type>
+        template<class Type>
         tmp<Field<Type> > interpolate
         (
             const GeometricField<Type, fvPatchField, volMesh>& cCoords,

@@ -79,6 +79,7 @@ dimensionedScalar tan(const dimensionedScalar&);
 dimensionedScalar asin(const dimensionedScalar&);
 dimensionedScalar acos(const dimensionedScalar&);
 dimensionedScalar atan(const dimensionedScalar&);
+dimensionedScalar atan2(const dimensionedScalar&, const dimensionedScalar&);
 dimensionedScalar sinh(const dimensionedScalar&);
 dimensionedScalar cosh(const dimensionedScalar&);
 dimensionedScalar tanh(const dimensionedScalar&);

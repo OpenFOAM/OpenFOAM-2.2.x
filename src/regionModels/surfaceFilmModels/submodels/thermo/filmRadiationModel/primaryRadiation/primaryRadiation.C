@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -97,7 +97,7 @@ tmp<volScalarField> primaryRadiation::Shs()
         (
             IOobject
             (
-                typeName + "::Shs",
+                typeName + ":Shs",
                 owner().time().timeName(),
                 owner().regionMesh(),
                 IOobject::NO_READ,

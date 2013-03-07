@@ -106,7 +106,7 @@ public:
 
 ////IMPLEMENTATION////////////////////////////////////////////////////
 
-template < class TPoly , class VertexPropertyMap>
+template< class TPoly , class VertexPropertyMap>
 void T_PolyhedralSurf_rings <TPoly, VertexPropertyMap>::
 push_neighbours_of(Vertex* start, int ith,
                    std::vector< Vertex* >& nextRing,
@@ -129,7 +129,7 @@ push_neighbours_of(Vertex* start, int ith,
 }
 
 
-template <class TPoly, class VertexPropertyMap>
+template<class TPoly, class VertexPropertyMap>
 void T_PolyhedralSurf_rings <TPoly, VertexPropertyMap>::
 collect_ith_ring(int ith, std::vector< Vertex* >& currentRing,
                  std::vector< Vertex* >& nextRing,
@@ -146,7 +146,7 @@ collect_ith_ring(int ith, std::vector< Vertex* >& currentRing,
 }
 
 
-template <class TPoly, class VertexPropertyMap>
+template<class TPoly, class VertexPropertyMap>
 void T_PolyhedralSurf_rings <TPoly, VertexPropertyMap>::
 reset_ring_indices(std::vector< Vertex* >& vces,
                    VertexPropertyMap& vpm)
@@ -161,7 +161,7 @@ reset_ring_indices(std::vector< Vertex* >& vces,
 }
 
 
-template <class TPoly, class VertexPropertyMap>
+template<class TPoly, class VertexPropertyMap>
 void T_PolyhedralSurf_rings <TPoly, VertexPropertyMap>::
 collect_i_rings(Vertex* v,
                 int ring_i,
@@ -192,7 +192,7 @@ collect_i_rings(Vertex* v,
 }
 
 
-template <class TPoly, class VertexPropertyMap>
+template<class TPoly, class VertexPropertyMap>
 void T_PolyhedralSurf_rings <TPoly, VertexPropertyMap>::
 collect_enough_rings(Vertex* v,
                      unsigned int min_nb,

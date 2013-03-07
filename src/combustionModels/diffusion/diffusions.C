@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2013-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -36,11 +36,12 @@ namespace Foam
 {
 namespace combustionModels
 {
+    // Combustion models based on sensibleEnthalpy
     makeCombustionTypesThermo
     (
         diffusion,
         psiThermoCombustion,
-        gasThermoPhysics,
+        gasHThermoPhysics,
         psiCombustionModel
     );
 
@@ -48,7 +49,7 @@ namespace combustionModels
     (
         diffusion,
         psiThermoCombustion,
-        constGasThermoPhysics,
+        constGasHThermoPhysics,
         psiCombustionModel
     );
 
@@ -56,7 +57,7 @@ namespace combustionModels
     (
         diffusion,
         rhoThermoCombustion,
-        gasThermoPhysics,
+        gasHThermoPhysics,
         rhoCombustionModel
     );
 
@@ -64,7 +65,41 @@ namespace combustionModels
     (
         diffusion,
         rhoThermoCombustion,
-        constGasThermoPhysics,
+        constGasHThermoPhysics,
+        rhoCombustionModel
+    );
+
+     // Combustion models based on sensibleInternalEnergy
+
+    makeCombustionTypesThermo
+    (
+        diffusion,
+        psiThermoCombustion,
+        gasEThermoPhysics,
+        psiCombustionModel
+    );
+
+    makeCombustionTypesThermo
+    (
+        diffusion,
+        psiThermoCombustion,
+        constGasEThermoPhysics,
+        psiCombustionModel
+    );
+
+    makeCombustionTypesThermo
+    (
+        diffusion,
+        rhoThermoCombustion,
+        gasEThermoPhysics,
+        rhoCombustionModel
+    );
+
+    makeCombustionTypesThermo
+    (
+        diffusion,
+        rhoThermoCombustion,
+        constGasEThermoPhysics,
         rhoCombustionModel
     );
 }

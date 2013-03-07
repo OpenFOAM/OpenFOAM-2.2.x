@@ -8,10 +8,10 @@
 License
     This file is part of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 3 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     Foam::fv::explicitPorositySource
@@ -28,23 +27,26 @@ Class
 Description
     Explicit porosity source
 
-    Sources described by, for example using the DarcyForchheimer model:
+    \heading Source usage
 
-        explicitPorositySourceCoeffs
+    Example usage, here employing the Darcy-Forchheimer model:
+    \verbatim
+    explicitPorositySourceCoeffs
+    {
+        type            DarcyForchheimer;
+        DarcyForchheimerCoeffs
         {
-            type            DarcyForchheimer;
-            DarcyForchheimerCoeffs
-            {
-                d   d [0 -2 0 0 0 0 0] (5e7 -1000 -1000);
-                f   f [0 -1 0 0 0 0 0] (0 0 0);
+            d   d [0 -2 0 0 0 0 0] (5e7 -1000 -1000);
+            f   f [0 -1 0 0 0 0 0] (0 0 0);
 
-                coordinateSystem
-                {
-                    e1  (0.70710678 0.70710678 0);
-                    e2  (0 0 1);
-                }
+            coordinateSystem
+            {
+                e1  (0.70710678 0.70710678 0);
+                e2  (0 0 1);
             }
         }
+    }
+    \endverbatim
 
 Note:
     The porous region must be selected as a cellZone.

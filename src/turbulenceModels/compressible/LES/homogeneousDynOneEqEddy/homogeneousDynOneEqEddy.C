@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -145,7 +145,7 @@ void homogeneousDynOneEqEddy::correct(const tmp<volTensorField>& tgradU)
 
     volSymmTensorField D(dev(symm(gradU)));
     volScalarField divU(fvc::div(phi()/fvc::interpolate(rho())));
-    volScalarField G(type() + ".G", 2*muSgs_*(gradU && D));
+    volScalarField G(GName(), 2*muSgs_*(gradU && D));
 
     tmp<fvScalarMatrix> kEqn
     (

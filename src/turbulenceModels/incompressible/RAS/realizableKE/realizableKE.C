@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -297,7 +297,7 @@ void realizableKE::correct()
     const volScalarField eta(magS*k_/epsilon_);
     tmp<volScalarField> C1 = max(eta/(scalar(5) + eta), scalar(0.43));
 
-    volScalarField G(type() + ".G", nut_*S2);
+    volScalarField G(GName(), nut_*S2);
 
     // Update epsilon and G at the wall
     epsilon_.boundaryField().updateCoeffs();

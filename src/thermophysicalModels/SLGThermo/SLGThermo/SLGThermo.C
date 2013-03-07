@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -37,7 +37,15 @@ namespace Foam
 
 Foam::SLGThermo::SLGThermo(const fvMesh& mesh, fluidThermo& thermo)
 :
-    MeshObject<fvMesh, SLGThermo>(mesh),
+    regIOobject
+    (
+        IOobject
+        (
+            SLGThermo::typeName,
+            mesh.polyMesh::instance(),
+            mesh
+        )
+    ),
     thermo_(thermo),
     carrier_(NULL),
     liquids_(NULL),
@@ -246,4 +254,3 @@ bool Foam::SLGThermo::hasSolids() const
 
 
 // ************************************************************************* //
-

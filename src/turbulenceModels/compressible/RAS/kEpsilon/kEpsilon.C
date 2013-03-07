@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -281,7 +281,7 @@ void kEpsilon::correct()
     }
 
     tmp<volTensorField> tgradU = fvc::grad(U_);
-    volScalarField G(type() + ".G", mut_*(tgradU() && dev(twoSymm(tgradU()))));
+    volScalarField G(GName(), mut_*(tgradU() && dev(twoSymm(tgradU()))));
     tgradU.clear();
 
     // Update epsilon and G at the wall

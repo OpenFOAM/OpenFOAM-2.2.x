@@ -28,141 +28,20 @@
 
     #include "createPhi.H"
 
-    Info<< "Reading field T\n" << endl;
-    volScalarField T
-    (
-        IOobject
-        (
-            "T",
-            runTime.timeName(),
-            mesh,
-            IOobject::MUST_READ,
-            IOobject::AUTO_WRITE
-        ),
-        mesh
-    );
-
-    volScalarField p
-    (
-        IOobject
-        (
-            "p",
-            runTime.timeName(),
-            mesh,
-            IOobject::READ_IF_PRESENT,
-            IOobject::AUTO_WRITE
-        ),
-        p_rgh
-    );
-
-
-    Info<< "Reading transportProperties\n" << endl;
-    twoPhaseMixture twoPhaseProperties(U, phi);
+    Info<< "Constructing twoPhaseMixtureThermo\n" << endl;
+    twoPhaseMixtureThermo twoPhaseProperties(mesh);
 
     volScalarField& alpha1(twoPhaseProperties.alpha1());
+    volScalarField& alpha2(twoPhaseProperties.alpha2());
 
-    Info<< "Calculating phase-fraction alpha" << twoPhaseProperties.phase2Name()
-        << nl << endl;
-    volScalarField alpha2
-    (
-        "alpha" + twoPhaseProperties.phase2Name(),
-        scalar(1) - alpha1
-    );
+    Info<< "Reading thermophysical properties\n" << endl;
 
-    dimensionedScalar k1
-    (
-        "k",
-        dimensionSet(1, 1, -3, -1, 0),
-        twoPhaseProperties.subDict
-        (
-            twoPhaseProperties.phase1Name()
-        ).lookup("k")
-    );
-
-    dimensionedScalar k2
-    (
-        "k",
-        dimensionSet(1, 1, -3, -1, 0),
-        twoPhaseProperties.subDict
-        (
-            twoPhaseProperties.phase2Name()
-        ).lookup("k")
-    );
-
-    dimensionedScalar Cv1
-    (
-        "Cv",
-        dimensionSet(0, 2, -2, -1, 0),
-        twoPhaseProperties.subDict
-        (
-            twoPhaseProperties.phase1Name()
-        ).lookup("Cv")
-    );
-
-    dimensionedScalar Cv2
-    (
-        "Cv",
-        dimensionSet(0, 2, -2, -1, 0),
-        twoPhaseProperties.subDict
-        (
-            twoPhaseProperties.phase2Name()
-        ).lookup("Cv")
-    );
-
-    autoPtr<phaseEquationOfState> eos1
-    (
-        phaseEquationOfState::New
-        (
-            twoPhaseProperties.subDict
-            (
-                twoPhaseProperties.phase1Name()
-            )
-        )
-    );
-
-    autoPtr<phaseEquationOfState> eos2
-    (
-        phaseEquationOfState::New
-        (
-            twoPhaseProperties.subDict
-            (
-                twoPhaseProperties.phase2Name()
-            )
-        )
-    );
-
-    volScalarField psi1
-    (
-        IOobject
-        (
-            "psi1",
-            runTime.timeName(),
-            mesh
-        ),
-        eos1->psi(p, T)
-    );
-    psi1.oldTime();
-
-    volScalarField psi2
-    (
-        IOobject
-        (
-            "psi2",
-            runTime.timeName(),
-            mesh
-        ),
-        eos2->psi(p, T)
-    );
-    psi2.oldTime();
-
-    dimensionedScalar pMin(twoPhaseProperties.lookup("pMin"));
-
-    Info<< "Calculating field g.h\n" << endl;
-    volScalarField gh("gh", g & mesh.C());
-    surfaceScalarField ghf("ghf", g & mesh.Cf());
-
-    volScalarField rho1("rho1", eos1->rho(p, T));
-    volScalarField rho2("rho2", eos2->rho(p, T));
+    volScalarField& p = twoPhaseProperties.p();
+    volScalarField& T = twoPhaseProperties.T();
+    const volScalarField& rho1 = twoPhaseProperties.thermo1().rho();
+    const volScalarField& psi1 = twoPhaseProperties.thermo1().psi();
+    const volScalarField& rho2 = twoPhaseProperties.thermo2().rho();
+    const volScalarField& psi2 = twoPhaseProperties.thermo2().psi();
 
     volScalarField rho
     (
@@ -177,6 +56,12 @@
         alpha1*rho1 + alpha2*rho2
     );
 
+
+    dimensionedScalar pMin(twoPhaseProperties.lookup("pMin"));
+
+    Info<< "Calculating field g.h\n" << endl;
+    volScalarField gh("gh", g & mesh.C());
+    surfaceScalarField ghf("ghf", g & mesh.Cf());
 
     // Mass flux
     // Initialisation does not matter because rhoPhi is reset after the
@@ -202,8 +87,24 @@
     // Construct interface from alpha1 distribution
     interfaceProperties interface(alpha1, U, twoPhaseProperties);
 
-    // Construct incompressible turbulence model
-    autoPtr<incompressible::turbulenceModel> turbulence
+    // Construct compressible turbulence model
+    autoPtr<compressible::turbulenceModel> turbulence
     (
-        incompressible::turbulenceModel::New(U, phi, twoPhaseProperties)
+        compressible::turbulenceModel::New(rho, U, rhoPhi, twoPhaseProperties)
     );
+
+    Info<< "Creating field dpdt\n" << endl;
+    volScalarField dpdt
+    (
+        IOobject
+        (
+            "dpdt",
+            runTime.timeName(),
+            mesh
+        ),
+        mesh,
+        dimensionedScalar("dpdt", p.dimensions()/dimTime, 0)
+    );
+
+    Info<< "Creating field kinetic energy K\n" << endl;
+    volScalarField K("K", 0.5*magSqr(U));

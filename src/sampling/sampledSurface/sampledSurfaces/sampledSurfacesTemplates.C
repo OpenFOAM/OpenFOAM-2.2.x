@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -166,20 +166,25 @@ void Foam::sampledSurfaces::sampleAndWrite
 
 
 template<class GeoField>
-void Foam::sampledSurfaces::sampleAndWrite(const IOobjectList& allObjects)
+void Foam::sampledSurfaces::sampleAndWrite()
 {
+    DynamicList<wordRe> fields;
+    bool found = false;
     forAll (fieldSelection_, fieldI)
     {
         const wordRe field = fieldSelection_[fieldI];
-        IOobject* fieldIOPtr = allObjects.lookup(field);
-
-        if
-        (
-            fieldIOPtr != NULL
-         && fieldIOPtr->headerClassName() == GeoField::typeName
-        )
+        if (mesh_.thisDb().foundObject<GeoField>(field))
         {
-            if (Pstream::master() && verbose_)
+            found = true;
+            fields.append(field);
+        }
+    }
+    if (fields.size() && found)
+    {
+        forAll (fields, fieldI)
+        {
+            const wordRe field = fields[fieldI];
+            if ((Pstream::master()) && verbose_)
             {
                 Pout<< "sampleAndWrite: " << field << endl;
             }

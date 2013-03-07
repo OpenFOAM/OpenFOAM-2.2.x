@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -262,6 +262,9 @@ public:
                 const word& name,
                 const word& format
             ) const;
+
+            //- Helper function to convert string name into appropriate word
+            static word wordify(const string& sname);
 
 
     // Friend operators

@@ -4,8 +4,8 @@
         p =
         (
             rho
-          - (1.0 - gamma)*rhol0
-          - ((gamma*psiv + (1.0 - gamma)*psil) - psi)*pSat
+          - gamma2*rhol0
+          - ((gamma*psiv + gamma2*psil) - psi)*pSat
         )/psi;
     }
 
@@ -49,8 +49,8 @@
     rho == max
     (
         psi*p
-      + (1.0 - gamma)*rhol0
-      + ((gamma*psiv + (1.0 - gamma)*psil) - psi)*pSat,
+      + gamma2*rhol0
+      + ((gamma*psiv + gamma2*psil) - psi)*pSat,
         rhoMin
     );
 
@@ -59,8 +59,8 @@
     p =
     (
         rho
-      - (1.0 - gamma)*rhol0
-      - ((gamma*psiv + (1.0 - gamma)*psil) - psi)*pSat
+      - gamma2*rhol0
+      - ((gamma*psiv + gamma2*psil) - psi)*pSat
     )/psi;
 
     p.correctBoundaryConditions();

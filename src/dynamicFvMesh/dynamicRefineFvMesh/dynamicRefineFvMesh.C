@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -302,11 +302,11 @@ Foam::dynamicRefineFvMesh::refine
             Pout<< "Found " << masterFaces.size() << " split faces " << endl;
         }
 
-        HashTable<const surfaceScalarField*> fluxes
+        HashTable<surfaceScalarField*> fluxes
         (
             lookupClass<surfaceScalarField>()
         );
-        forAllConstIter(HashTable<const surfaceScalarField*>, fluxes, iter)
+        forAllIter(HashTable<surfaceScalarField*>, fluxes, iter)
         {
             if (!correctFluxes_.found(iter.key()))
             {
@@ -336,7 +336,7 @@ Foam::dynamicRefineFvMesh::refine
                     << endl;
             }
 
-            surfaceScalarField& phi = const_cast<surfaceScalarField&>(*iter());
+            surfaceScalarField& phi = *iter();
             const surfaceScalarField phiU
             (
                 fvc::interpolate
@@ -519,11 +519,11 @@ Foam::dynamicRefineFvMesh::unrefine
         const labelList& reversePointMap = map().reversePointMap();
         const labelList& reverseFaceMap = map().reverseFaceMap();
 
-        HashTable<const surfaceScalarField*> fluxes
+        HashTable<surfaceScalarField*> fluxes
         (
             lookupClass<surfaceScalarField>()
         );
-        forAllConstIter(HashTable<const surfaceScalarField*>, fluxes, iter)
+        forAllIter(HashTable<surfaceScalarField*>, fluxes, iter)
         {
             if (!correctFluxes_.found(iter.key()))
             {
@@ -553,7 +553,7 @@ Foam::dynamicRefineFvMesh::unrefine
                     << endl;
             }
 
-            surfaceScalarField& phi = const_cast<surfaceScalarField&>(*iter());
+            surfaceScalarField& phi = *iter();
             surfaceScalarField::GeometricBoundaryField& bphi =
                 phi.boundaryField();
 

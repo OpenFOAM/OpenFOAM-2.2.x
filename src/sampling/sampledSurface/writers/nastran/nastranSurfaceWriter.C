@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -336,15 +336,17 @@ Foam::nastranSurfaceWriter::nastranSurfaceWriter()
 :
     surfaceWriter(),
     writeFormat_(wfShort),
-    fieldMap_()
+    fieldMap_(),
+    scale_(1.0)
 {}
 
 
 Foam::nastranSurfaceWriter::nastranSurfaceWriter(const dictionary& options)
 :
     surfaceWriter(),
-    writeFormat_(wfShort),
-    fieldMap_()
+    writeFormat_(wfLong),
+    fieldMap_(),
+    scale_(options.lookupOrDefault("scale", 1.0))
 {
     if (options.found("format"))
     {

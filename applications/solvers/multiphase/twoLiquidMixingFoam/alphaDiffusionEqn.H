@@ -12,7 +12,8 @@
 
     alpha1Eqn.solve();
 
+    alpha2 = 1.0 - alpha1;
     rhoPhi += alpha1Eqn.flux()*(rho1 - rho2);
 }
 
-rho = alpha1*rho1 + (scalar(1) - alpha1)*rho2;
+rho = alpha1*rho1 + alpha2*rho2;

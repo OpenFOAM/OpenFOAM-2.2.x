@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -27,7 +27,7 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template <class CloudType>
+template<class CloudType>
 Foam::ReitzKHRT<CloudType>::ReitzKHRT
 (
     const dictionary& dict,
@@ -54,7 +54,7 @@ Foam::ReitzKHRT<CloudType>::ReitzKHRT
 }
 
 
-template <class CloudType>
+template<class CloudType>
 Foam::ReitzKHRT<CloudType>::ReitzKHRT(const ReitzKHRT<CloudType>& bum)
 :
     BreakupModel<CloudType>(bum),
@@ -69,7 +69,7 @@ Foam::ReitzKHRT<CloudType>::ReitzKHRT(const ReitzKHRT<CloudType>& bum)
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-template <class CloudType>
+template<class CloudType>
 Foam::ReitzKHRT<CloudType>::~ReitzKHRT()
 {}
 

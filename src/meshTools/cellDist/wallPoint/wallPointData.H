@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -58,7 +58,7 @@ template<class Type> Ostream& operator<<(Ostream&, const wallPointData<Type>&);
                            Class wallPointData Declaration
 \*---------------------------------------------------------------------------*/
 
-template <class Type>
+template<class Type>
 class wallPointData
 :
     public wallPoint
@@ -163,37 +163,37 @@ public:
 //- Data associated with wallPointData type are contiguous. List the usual
 //  ones.
 
-template <>
+template<>
 inline bool contiguous<wallPointData<bool> >()
 {
     return contiguous<wallPoint>();
 }
-template <>
+template<>
 inline bool contiguous<wallPointData<label> >()
 {
     return contiguous<wallPoint>();
 }
-template <>
+template<>
 inline bool contiguous<wallPointData<scalar> >()
 {
     return contiguous<wallPoint>();
 }
-template <>
+template<>
 inline bool contiguous<wallPointData<vector> >()
 {
     return contiguous<wallPoint>();
 }
-template <>
+template<>
 inline bool contiguous<wallPointData<sphericalTensor> >()
 {
     return contiguous<wallPoint>();
 }
-template <>
+template<>
 inline bool contiguous<wallPointData<symmTensor> >()
 {
     return contiguous<wallPoint>();
 }
-template <>
+template<>
 inline bool contiguous<wallPointData<tensor> >()
 {
     return contiguous<wallPoint>();

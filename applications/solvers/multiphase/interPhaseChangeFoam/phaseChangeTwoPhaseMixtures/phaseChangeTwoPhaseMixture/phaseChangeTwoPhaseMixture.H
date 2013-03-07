@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -35,7 +35,7 @@ SourceFiles
 #ifndef phaseChangeTwoPhaseMixture_H
 #define phaseChangeTwoPhaseMixture_H
 
-#include "twoPhaseMixture.H"
+#include "incompressibleTwoPhaseMixture.H"
 #include "typeInfo.H"
 #include "runTimeSelectionTables.H"
 #include "volFields.H"
@@ -54,7 +54,7 @@ namespace Foam
 
 class phaseChangeTwoPhaseMixture
 :
-    public twoPhaseMixture
+    public incompressibleTwoPhaseMixture
 {
 
 protected:

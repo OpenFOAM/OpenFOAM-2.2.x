@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -48,7 +48,12 @@ namespace Foam
 
 class upwindCPCCellToFaceStencilObject
 :
-    public MeshObject<fvMesh, upwindCPCCellToFaceStencilObject>,
+    public MeshObject
+    <
+        fvMesh,
+        TopologicalMeshObject,
+        upwindCPCCellToFaceStencilObject
+    >,
     public extendedUpwindCellToFaceStencil
 {
 
@@ -66,7 +71,12 @@ public:
             const scalar minOpposedness
         )
         :
-            MeshObject<fvMesh, upwindCPCCellToFaceStencilObject>(mesh),
+            MeshObject
+            <
+                fvMesh,
+                Foam::TopologicalMeshObject,
+                upwindCPCCellToFaceStencilObject
+            >(mesh),
             extendedUpwindCellToFaceStencil
             (
                 CPCCellToFaceStencil(mesh),

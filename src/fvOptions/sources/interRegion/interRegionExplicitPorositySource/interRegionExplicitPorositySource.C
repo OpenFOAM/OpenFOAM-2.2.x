@@ -55,7 +55,7 @@ void Foam::fv::interRegionExplicitPorositySource::initialise()
         return;
     }
 
-    const word zoneName(name_ + ".porous");
+    const word zoneName(name_ + ":porous");
 
     const fvMesh& nbrMesh = mesh_.time().lookupObject<fvMesh>(nbrRegionName_);
     const cellZoneMesh& cellZones = nbrMesh.cellZones();
@@ -152,7 +152,7 @@ void Foam::fv::interRegionExplicitPorositySource::addSup
     (
         IOobject
         (
-            name_ + ".UNbr",
+            name_ + ":UNbr",
             nbrMesh.time().timeName(),
             nbrMesh,
             IOobject::NO_READ,

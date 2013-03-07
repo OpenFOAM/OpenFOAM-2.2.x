@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -44,6 +44,17 @@ template<class Form, class Cmpt, int nCmpt>
 inline VectorSpace<Form, Cmpt, nCmpt>::VectorSpace
 (
     const VectorSpace<Form, Cmpt, nCmpt>& vs
+)
+{
+    VectorSpaceOps<nCmpt,0>::eqOp(*this, vs, eqOp<Cmpt>());
+}
+
+
+template<class Form, class Cmpt, int nCmpt>
+template<class Form2, class Cmpt2>
+inline VectorSpace<Form, Cmpt, nCmpt>::VectorSpace
+(
+    const VectorSpace<Form2, Cmpt2, nCmpt>& vs
 )
 {
     VectorSpaceOps<nCmpt,0>::eqOp(*this, vs, eqOp<Cmpt>());

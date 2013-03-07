@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -303,7 +303,7 @@ void RNGkEpsilon::correct()
     volScalarField S2((tgradU() && dev(twoSymm(tgradU()))));
     tgradU.clear();
 
-    volScalarField G(type() + ".G", mut_*S2);
+    volScalarField G(GName(), mut_*S2);
 
     volScalarField eta(sqrt(mag(S2))*k_/epsilon_);
     volScalarField eta3(eta*sqr(eta));

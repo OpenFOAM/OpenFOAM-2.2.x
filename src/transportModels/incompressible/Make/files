@@ -9,6 +9,6 @@ viscosityModels/HerschelBulkley/HerschelBulkley.C
 transportModel/transportModel.C
 singlePhaseTransportModel/singlePhaseTransportModel.C
 
-incompressibleTwoPhaseMixture/twoPhaseMixture.C
+incompressibleTwoPhaseMixture/incompressibleTwoPhaseMixture.C
 
 LIB = $(FOAM_LIBBIN)/libincompressibleTransportModels

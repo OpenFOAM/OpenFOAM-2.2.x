@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -30,7 +30,7 @@ using namespace Foam::constant::mathematical;
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template <class CloudType>
+template<class CloudType>
 Foam::VariableHardSphere<CloudType>::VariableHardSphere
 (
     const dictionary& dict,
@@ -44,7 +44,7 @@ Foam::VariableHardSphere<CloudType>::VariableHardSphere
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-template <class CloudType>
+template<class CloudType>
 Foam::VariableHardSphere<CloudType>::~VariableHardSphere()
 {}
 
@@ -58,7 +58,7 @@ bool Foam::VariableHardSphere<CloudType>::active() const
 }
 
 
-template <class CloudType>
+template<class CloudType>
 Foam::scalar Foam::VariableHardSphere<CloudType>::sigmaTcR
 (
     const typename CloudType::parcelType& pP,
@@ -107,7 +107,7 @@ Foam::scalar Foam::VariableHardSphere<CloudType>::sigmaTcR
 }
 
 
-template <class CloudType>
+template<class CloudType>
 void Foam::VariableHardSphere<CloudType>::collide
 (
     typename CloudType::parcelType& pP,

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -74,6 +74,9 @@ protected:
 
         //- Database this class is registered to
         const objectRegistry& obr_;
+
+        //- Construction dictionary
+        dictionary dict_;
 
         //- Active flag
         bool active_;
@@ -148,6 +151,9 @@ public:
 
             //- Return the reference to the object registry
             inline const objectRegistry& obr() const;
+
+            //- Return the reference to the construction dictionary
+            inline const dictionary& dict() const;
 
             //- Return the active flag
             inline bool active() const;

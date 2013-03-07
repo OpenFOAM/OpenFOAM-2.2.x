@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -163,7 +163,7 @@ inline bool Foam::patchEdgeFaceRegion::updateFace
 }
 
 
-template <class TrackingData>
+template<class TrackingData>
 inline bool Foam::patchEdgeFaceRegion::equal
 (
     const patchEdgeFaceRegion& rhs,

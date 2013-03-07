@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -706,7 +706,7 @@ void Foam::ListAppendEqOp<T>::operator()(List<T>& x, const List<T>& y) const
 }
 
 
-template <class ListType>
+template<class ListType>
 ListType Foam::reverseList(const ListType& list)
 {
     const label listSize = list.size();
@@ -723,7 +723,7 @@ ListType Foam::reverseList(const ListType& list)
 }
 
 
-template <class ListType>
+template<class ListType>
 void Foam::inplaceReverseList(ListType& list)
 {
     const label listSize = list.size();
@@ -740,7 +740,7 @@ void Foam::inplaceReverseList(ListType& list)
 }
 
 
-template <class ListType>
+template<class ListType>
 ListType Foam::rotateList(const ListType& list, const label n)
 {
     const label listSize = list.size();
@@ -763,7 +763,7 @@ ListType Foam::rotateList(const ListType& list, const label n)
 }
 
 
-template <template <typename> class ListType, class DataType>
+template<template<typename> class ListType, class DataType>
 void Foam::inplaceRotateList(ListType<DataType>& list, label n)
 {
     const label listSize = list.size();

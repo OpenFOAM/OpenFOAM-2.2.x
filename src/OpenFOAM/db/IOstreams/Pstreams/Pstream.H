@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -92,7 +92,7 @@ public:
 
             //- Gather data. Apply bop to combine Value
             //  from different processors
-            template <class T, class BinaryOp>
+            template<class T, class BinaryOp>
             static void gather
             (
                 const List<commsStruct>& comms,
@@ -102,7 +102,7 @@ public:
             );
 
             //- Like above but switches between linear/tree communication
-            template <class T, class BinaryOp>
+            template<class T, class BinaryOp>
             static void gather
             (
                 T& Value,
@@ -111,7 +111,7 @@ public:
             );
 
             //- Scatter data. Distribute without modification. Reverse of gather
-            template <class T>
+            template<class T>
             static void scatter
             (
                 const List<commsStruct>& comms,
@@ -120,14 +120,14 @@ public:
             );
 
             //- Like above but switches between linear/tree communication
-            template <class T>
+            template<class T>
             static void scatter(T& Value, const int tag = Pstream::msgType());
 
 
         // Combine variants. Inplace combine values from processors.
         // (Uses construct from Istream instead of <<)
 
-            template <class T, class CombineOp>
+            template<class T, class CombineOp>
             static void combineGather
             (
                 const List<commsStruct>& comms,
@@ -137,7 +137,7 @@ public:
             );
 
             //- Like above but switches between linear/tree communication
-            template <class T, class CombineOp>
+            template<class T, class CombineOp>
             static void combineGather
             (
                 T& Value,
@@ -146,7 +146,7 @@ public:
             );
 
             //- Scatter data. Reverse of combineGather
-            template <class T>
+            template<class T>
             static void combineScatter
             (
                 const List<commsStruct>& comms,
@@ -155,7 +155,7 @@ public:
             );
 
             //- Like above but switches between linear/tree communication
-            template <class T>
+            template<class T>
             static void combineScatter
             (
                 T& Value,
@@ -164,7 +164,7 @@ public:
 
         // Combine variants working on whole List at a time.
 
-            template <class T, class CombineOp>
+            template<class T, class CombineOp>
             static void listCombineGather
             (
                 const List<commsStruct>& comms,
@@ -174,7 +174,7 @@ public:
             );
 
             //- Like above but switches between linear/tree communication
-            template <class T, class CombineOp>
+            template<class T, class CombineOp>
             static void listCombineGather
             (
                 List<T>& Value,
@@ -183,7 +183,7 @@ public:
             );
 
             //- Scatter data. Reverse of combineGather
-            template <class T>
+            template<class T>
             static void listCombineScatter
             (
                 const List<commsStruct>& comms,
@@ -192,7 +192,7 @@ public:
             );
 
             //- Like above but switches between linear/tree communication
-            template <class T>
+            template<class T>
             static void listCombineScatter
             (
                 List<T>& Value,
@@ -202,7 +202,7 @@ public:
         // Combine variants working on whole map at a time. Container needs to
         // have iterators and find() defined.
 
-            template <class Container, class CombineOp>
+            template<class Container, class CombineOp>
             static void mapCombineGather
             (
                 const List<commsStruct>& comms,
@@ -212,7 +212,7 @@ public:
             );
 
             //- Like above but switches between linear/tree communication
-            template <class Container, class CombineOp>
+            template<class Container, class CombineOp>
             static void mapCombineGather
             (
                 Container& Values,
@@ -221,7 +221,7 @@ public:
             );
 
             //- Scatter data. Reverse of combineGather
-            template <class Container>
+            template<class Container>
             static void mapCombineScatter
             (
                 const List<commsStruct>& comms,
@@ -230,7 +230,7 @@ public:
             );
 
             //- Like above but switches between linear/tree communication
-            template <class Container>
+            template<class Container>
             static void mapCombineScatter
             (
                 Container& Values,
@@ -244,7 +244,7 @@ public:
         // Values[UPstream::myProcNo()] is the data for the current processor.
 
             //- Gather data but keep individual values separate
-            template <class T>
+            template<class T>
             static void gatherList
             (
                 const List<commsStruct>& comms,
@@ -253,7 +253,7 @@ public:
             );
 
             //- Like above but switches between linear/tree communication
-            template <class T>
+            template<class T>
             static void gatherList
             (
                 List<T>& Values,
@@ -261,7 +261,7 @@ public:
             );
 
             //- Scatter data. Reverse of gatherList
-            template <class T>
+            template<class T>
             static void scatterList
             (
                 const List<commsStruct>& comms,
@@ -270,7 +270,7 @@ public:
             );
 
             //- Like above but switches between linear/tree communication
-            template <class T>
+            template<class T>
             static void scatterList
             (
                 List<T>& Values,
@@ -284,7 +284,7 @@ public:
             //  sizes (not bytes). sizes[p0][p1] is what processor p0 has
             //  sent to p1. Continuous data only.
             //  If block=true will wait for all transfers to finish.
-            template <class Container, class T>
+            template<class Container, class T>
             static void exchange
             (
                 const List<Container >&,

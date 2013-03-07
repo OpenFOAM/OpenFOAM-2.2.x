@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -77,6 +77,9 @@ protected:
         //- Should the dpdt term be included in the enthalpy equation
         Switch dpdt_;
 
+
+    // Protected Member Functions
+
         //- Construct as copy (not implemented)
         basicThermo(const basicThermo&);
 
@@ -85,6 +88,14 @@ protected:
             const fvMesh& mesh,
             const char* name
         ) const;
+
+        //- Return the enthalpy/internal energy field boundary types
+        //  by interrogating the temperature field boundary types
+        wordList heBoundaryTypes();
+
+        //- Return the enthalpy/internal energy field boundary base types
+        //  by interrogating the temperature field boundary types
+        wordList heBoundaryBaseTypes();
 
 
 public:
@@ -313,6 +324,10 @@ public:
 
             //- Temperature [K]
             virtual const volScalarField& T() const;
+
+            //- Temperature [K]
+            //  Non-const access allowed for transport equations
+            virtual volScalarField& T();
 
             //- Heat capacity at constant pressure [J/kg/K]
             virtual tmp<volScalarField> Cp() const = 0;

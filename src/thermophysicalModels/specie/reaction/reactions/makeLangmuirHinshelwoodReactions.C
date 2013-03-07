@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2013-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -31,8 +31,11 @@ License
 
 namespace Foam
 {
-    makeIRReactions(gasThermoPhysics, LangmuirHinshelwoodReactionRate)
-    makeIRReactions(icoPoly8ThermoPhysics, LangmuirHinshelwoodReactionRate)
+    makeIRReactions(gasHThermoPhysics, LangmuirHinshelwoodReactionRate)
+    makeIRReactions(icoPoly8HThermoPhysics, LangmuirHinshelwoodReactionRate)
+
+    makeIRReactions(gasEThermoPhysics, LangmuirHinshelwoodReactionRate)
+    makeIRReactions(icoPoly8EThermoPhysics, LangmuirHinshelwoodReactionRate)
 }
 
 // ************************************************************************* //

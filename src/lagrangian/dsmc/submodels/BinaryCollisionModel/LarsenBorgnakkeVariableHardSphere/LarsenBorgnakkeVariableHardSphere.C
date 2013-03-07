@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -30,7 +30,7 @@ using namespace Foam::constant::mathematical;
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
-template <class CloudType>
+template<class CloudType>
 Foam::scalar Foam::LarsenBorgnakkeVariableHardSphere<CloudType>::energyRatio
 (
     scalar ChiA,
@@ -91,7 +91,7 @@ Foam::scalar Foam::LarsenBorgnakkeVariableHardSphere<CloudType>::energyRatio
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template <class CloudType>
+template<class CloudType>
 Foam::LarsenBorgnakkeVariableHardSphere<CloudType>::
 LarsenBorgnakkeVariableHardSphere
 (
@@ -110,7 +110,7 @@ LarsenBorgnakkeVariableHardSphere
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-template <class CloudType>
+template<class CloudType>
 Foam::LarsenBorgnakkeVariableHardSphere<CloudType>::
 ~LarsenBorgnakkeVariableHardSphere()
 {}
@@ -125,7 +125,7 @@ bool Foam::LarsenBorgnakkeVariableHardSphere<CloudType>::active() const
 }
 
 
-template <class CloudType>
+template<class CloudType>
 Foam::scalar Foam::LarsenBorgnakkeVariableHardSphere<CloudType>::sigmaTcR
 (
     const typename CloudType::parcelType& pP,
@@ -174,7 +174,7 @@ Foam::scalar Foam::LarsenBorgnakkeVariableHardSphere<CloudType>::sigmaTcR
 }
 
 
-template <class CloudType>
+template<class CloudType>
 void Foam::LarsenBorgnakkeVariableHardSphere<CloudType>::collide
 (
     typename CloudType::parcelType& pP,

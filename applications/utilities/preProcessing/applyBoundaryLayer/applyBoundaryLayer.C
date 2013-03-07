@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
         }
 
         // Create G field - used by RAS wall functions
-        volScalarField G(turbulence().type() + ".G", nut*2*sqr(S));
+        volScalarField G(turbulence().GName(), nut*2*sqr(S));
 
 
         //--- Read and modify turbulence fields

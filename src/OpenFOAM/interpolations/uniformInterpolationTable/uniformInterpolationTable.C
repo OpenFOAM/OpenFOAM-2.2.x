@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -28,7 +28,7 @@ License
 
 // * * * * * * * * * * * *  Private Member Functions * * * * * * * * * * * * //
 
-template <class Type>
+template<class Type>
 void Foam::uniformInterpolationTable<Type>::checkTable() const
 {
     if (size() < 2)
@@ -44,7 +44,7 @@ void Foam::uniformInterpolationTable<Type>::checkTable() const
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template <class Type>
+template<class Type>
 Foam::uniformInterpolationTable<Type>::uniformInterpolationTable
 (
     const IOobject& io,
@@ -73,7 +73,7 @@ Foam::uniformInterpolationTable<Type>::uniformInterpolationTable
 }
 
 
-template <class Type>
+template<class Type>
 Foam::uniformInterpolationTable<Type>::uniformInterpolationTable
 (
     const word& tableName,
@@ -112,7 +112,7 @@ Foam::uniformInterpolationTable<Type>::uniformInterpolationTable
 }
 
 
-template <class Type>
+template<class Type>
 Foam::uniformInterpolationTable<Type>::uniformInterpolationTable
 (
     const uniformInterpolationTable& uit
@@ -131,14 +131,14 @@ Foam::uniformInterpolationTable<Type>::uniformInterpolationTable
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-template <class Type>
+template<class Type>
 Foam::uniformInterpolationTable<Type>::~uniformInterpolationTable()
 {}
 
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
 
-template <class Type>
+template<class Type>
 Type Foam::uniformInterpolationTable<Type>::interpolate(scalar x) const
 {
     if (bound_)
@@ -186,7 +186,7 @@ Type Foam::uniformInterpolationTable<Type>::interpolate(scalar x) const
 }
 
 
-template <class Type>
+template<class Type>
 Type Foam::uniformInterpolationTable<Type>::interpolateLog10
 (
     scalar x
@@ -217,7 +217,7 @@ Type Foam::uniformInterpolationTable<Type>::interpolateLog10
 }
 
 
-template <class Type>
+template<class Type>
 void Foam::uniformInterpolationTable<Type>::write() const
 {
     IOdictionary dict(*this);

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -103,14 +103,14 @@ class fvMeshDistribute
             label findNonEmptyPatch() const;
 
             //- Save boundary fields
-            template <class T, class Mesh>
+            template<class T, class Mesh>
             void saveBoundaryFields
             (
                 PtrList<FieldField<fvsPatchField, T> >& bflds
             ) const;
 
             //- Map boundary fields
-            template <class T, class Mesh>
+            template<class T, class Mesh>
             void mapBoundaryFields
             (
                 const mapPolyMesh& map,

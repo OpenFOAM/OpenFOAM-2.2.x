@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -27,6 +27,10 @@ Class
 Description
     Scalar matrices
 
+    LUDecompose for scalarSymmetricSquareMatrix implements the Cholesky
+    decomposition method from JAMA, a public-domain library developed at NIST,
+    available at http://math.nist.gov/tnt/index.html
+
 SourceFiles
     scalarMatrices.C
     scalarMatricesTemplates.C
@@ -38,6 +42,7 @@ SourceFiles
 
 #include "RectangularMatrix.H"
 #include "SquareMatrix.H"
+#include "SymmetricSquareMatrix.H"
 #include "DiagonalMatrix.H"
 #include "scalarField.H"
 #include "labelList.H"
@@ -49,21 +54,22 @@ namespace Foam
 
 typedef RectangularMatrix<scalar> scalarRectangularMatrix;
 typedef SquareMatrix<scalar> scalarSquareMatrix;
+typedef SymmetricSquareMatrix<scalar> scalarSymmetricSquareMatrix;
 typedef DiagonalMatrix<scalar> scalarDiagonalMatrix;
 
 //- Solve the matrix using Gaussian elimination with pivoting,
 //  returning the solution in the source
 template<class Type>
-void solve(scalarSquareMatrix& matrix, Field<Type>& source);
+void solve(scalarSquareMatrix& matrix, List<Type>& source);
 
 //- Solve the matrix using Gaussian elimination with pivoting
 //  and return the solution
 template<class Type>
 void solve
 (
-    Field<Type>& psi,
+    List<Type>& psi,
     const scalarSquareMatrix& matrix,
-    const Field<Type>& source
+    const List<Type>& source
 );
 
 //- LU decompose the matrix with pivoting
@@ -73,6 +79,9 @@ void LUDecompose
     labelList& pivotIndices
 );
 
+//- LU decompose the matrix into a lower (L) and upper (U) part. U = L.T()
+void LUDecompose(scalarSymmetricSquareMatrix& matrix);
+
 //- LU back-substitution with given source, returning the solution
 //  in the source
 template<class Type>
@@ -80,13 +89,28 @@ void LUBacksubstitute
 (
     const scalarSquareMatrix& luMmatrix,
     const labelList& pivotIndices,
-    Field<Type>& source
+    List<Type>& source
+);
+
+//- LU back-substitution with given source, returning the solution
+//  in the source. Specialised for symmetric square matrices that have been
+//  decomposed into LU where U = L.T() as pivoting is not required
+template<class Type>
+void LUBacksubstitute
+(
+    const scalarSymmetricSquareMatrix& luMmatrix,
+    List<Type>& source
 );
 
 //- Solve the matrix using LU decomposition with pivoting
 //  returning the LU form of the matrix and the solution in the source
 template<class Type>
-void LUsolve(scalarSquareMatrix& matrix, Field<Type>& source);
+void LUsolve(scalarSquareMatrix& matrix, List<Type>& source);
+
+//- Solve the matrix using LU decomposition returning the LU form of the matrix
+//  and the solution in the source, where U = L.T()
+template<class Type>
+void LUsolve(scalarSymmetricSquareMatrix& matrix, List<Type>& source);
 
 template<class Form, class Type>
 void multiply

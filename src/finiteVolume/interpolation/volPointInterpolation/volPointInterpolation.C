@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -612,9 +612,10 @@ void volPointInterpolation::makePatchPatchAddressing()
 
 volPointInterpolation::volPointInterpolation(const fvMesh& vm)
 :
-    MeshObject<fvMesh, volPointInterpolation>(vm)
+    MeshObject<fvMesh, Foam::UpdateableMeshObject, volPointInterpolation>(vm)
 {
-    updateMesh();
+    makeWeights();
+    makePatchPatchAddressing();
 }
 
 
@@ -626,7 +627,7 @@ volPointInterpolation::~volPointInterpolation()
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void volPointInterpolation::updateMesh()
+void volPointInterpolation::updateMesh(const mapPolyMesh&)
 {
     makeWeights();
     makePatchPatchAddressing();

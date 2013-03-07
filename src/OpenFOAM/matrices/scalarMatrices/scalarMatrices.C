@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -130,6 +130,56 @@ void Foam::LUDecompose
                 matrix[i][j] *= rDiag;
             }
         }
+    }
+}
+
+
+void Foam::LUDecompose(scalarSymmetricSquareMatrix& matrix)
+{
+    // Store result in upper triangular part of matrix
+    label size = matrix.n();
+
+    // Set upper triangular parts to zero.
+    for (label j = 0; j < size; j++)
+    {
+        for (label k = j + 1; k < size; k++)
+        {
+            matrix[j][k] = 0.0;
+        }
+    }
+
+    for (label j = 0; j < size; j++)
+    {
+        scalar d = 0.0;
+
+        for (label k = 0; k < j; k++)
+        {
+            scalar s = 0.0;
+
+            for (label i = 0; i < k; i++)
+            {
+                s += matrix[i][k]*matrix[i][j];
+            }
+
+            s = (matrix[j][k] - s)/matrix[k][k];
+
+            matrix[k][j] = s;
+            matrix[j][k] = s;
+
+            d += sqr(s);
+        }
+
+        d = matrix[j][j] - d;
+
+        if (d < 0.0)
+        {
+            FatalErrorIn("Foam::LUDecompose(scalarSymmetricSquareMatrix&)")
+                << "Matrix is not symmetric positive-definite. Unable to "
+                << "decompose."
+                << abort(FatalError);
+        }
+
+        matrix[j][j] = sqrt(d);
     }
 }
 

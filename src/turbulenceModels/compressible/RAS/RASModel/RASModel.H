@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -233,8 +233,7 @@ public:
         //- Return the effective turbulent temperature diffusivity for a patch
         virtual tmp<scalarField> kappaEff(const label patchI) const
         {
-            return
-                thermo().kappaEff(alphat()().boundaryField()[patchI], patchI);
+            return thermo().kappaEff(alphat(patchI), patchI);
         }
 
         //- Return the effective turbulent thermal diffusivity
@@ -246,8 +245,7 @@ public:
         //- Return the effective turbulent thermal diffusivity for a patch
         virtual tmp<scalarField> alphaEff(const label patchI) const
         {
-            return
-                thermo().alphaEff(alphat()().boundaryField()[patchI], patchI);
+            return thermo().alphaEff(alphat(patchI), patchI);
         }
 
         //- Solve the turbulence equations and correct the turbulence viscosity

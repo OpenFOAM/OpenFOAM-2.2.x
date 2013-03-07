@@ -25,51 +25,45 @@ Class
     Foam::fv::codedSource
 
 Description
-    Constructs on-the-fly a new fvOption.
+    Constructs on-the-fly source
 
-    E.g. in system/fvOptions
+    \heading Source usage
 
-    momentumSource
+    Example usage:
+    \verbatim
+    vectorCodedSourceCoeffs
     {
-        type            vectorCodedSource;
-        active          on;            //on/off switch
-        timeStart       0.0;           //start time
-        duration        1000000.0;     //duration
-        selectionMode   all;       //cellSet // points //cellZone
+        fieldNames  (U);
+        redirectType    ramp;
 
-        vectorCodedSourceCoeffs
-        {
-            fieldNames  (U);
-            redirectType    ramp;
+        codeCorrect
+        #{
+            Pout<< "**codeCorrect**" << endl;
+        #};
 
-            codeCorrect
-            #{
-                Pout<< "**codeCorrect**" << endl;
-            #};
+        codeAddSup
+        #{
+            Pout<< "**codeAddSup**" << endl;
+        #};
 
-            codeAddSup
-            #{
-                Pout<< "**codeAddSup**" << endl;
-            #};
+        codeSetValue
+        #{
+            Pout<< "**codeSetValue**" << endl;
+        #};
 
-            codeSetValue
-            #{
-                Pout<< "**codeSetValue**" << endl;
-            #};
-
-            // Dummy entry. Make dependent on above to trigger recompilation
-            code
-            #{
-                $codeCorrect
-                $codeAddSup
-                $codeSetValue
-            #};
-        }
-
-        // Dummy entry
-        rampCoeffs
-        {}
+        // Dummy entry. Make dependent on above to trigger recompilation
+        code
+        #{
+            $codeCorrect
+            $codeAddSup
+            $codeSetValue
+        #};
     }
+
+    // Dummy entry
+    rampCoeffs
+    {}
+    \endverbatim
 
 
 SourceFiles

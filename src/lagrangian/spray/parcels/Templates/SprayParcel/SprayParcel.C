@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -441,7 +441,7 @@ void Foam::SprayParcel<ParcelType>::solveTABEq
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template <class ParcelType>
+template<class ParcelType>
 Foam::SprayParcel<ParcelType>::SprayParcel(const SprayParcel<ParcelType>& p)
 :
     ParcelType(p),
@@ -459,7 +459,7 @@ Foam::SprayParcel<ParcelType>::SprayParcel(const SprayParcel<ParcelType>& p)
 {}
 
 
-template <class ParcelType>
+template<class ParcelType>
 Foam::SprayParcel<ParcelType>::SprayParcel
 (
     const SprayParcel<ParcelType>& p,

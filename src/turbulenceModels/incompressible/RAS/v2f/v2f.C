@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -364,7 +364,7 @@ void v2f::correct()
     const volTensorField gradU(fvc::grad(U_));
     const volScalarField S2(2*magSqr(dev(symm(gradU))));
 
-    const volScalarField G(type() + ".G", nut_*S2);
+    const volScalarField G(GName(), nut_*S2);
     const volScalarField T(Ts());
     const volScalarField L2(type() + ".L2", sqr(Ls()));
     const volScalarField alpha

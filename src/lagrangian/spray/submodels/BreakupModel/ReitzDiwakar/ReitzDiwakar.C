@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -27,7 +27,7 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template <class CloudType>
+template<class CloudType>
 Foam::ReitzDiwakar<CloudType>::ReitzDiwakar
 (
     const dictionary& dict,
@@ -50,7 +50,7 @@ Foam::ReitzDiwakar<CloudType>::ReitzDiwakar
 }
 
 
-template <class CloudType>
+template<class CloudType>
 Foam::ReitzDiwakar<CloudType>::ReitzDiwakar(const ReitzDiwakar<CloudType>& bum)
 :
     BreakupModel<CloudType>(bum),
@@ -63,7 +63,7 @@ Foam::ReitzDiwakar<CloudType>::ReitzDiwakar(const ReitzDiwakar<CloudType>& bum)
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-template <class CloudType>
+template<class CloudType>
 Foam::ReitzDiwakar<CloudType>::~ReitzDiwakar()
 {}
 

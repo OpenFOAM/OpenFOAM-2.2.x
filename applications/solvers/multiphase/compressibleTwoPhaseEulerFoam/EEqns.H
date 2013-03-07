@@ -27,7 +27,7 @@
       - (fvc::ddt(alpha1) + fvc::div(alphaPhi1))*K1
 
       + (
-            he1.name() == "e"
+            he1.name() == thermo1.phasePropertyName("e")
           ? fvc::div(alphaPhi1, p)
           : -dalpha1pdt
         )/rho1
@@ -49,7 +49,7 @@
       - (fvc::ddt(alpha2) + fvc::div(alphaPhi2))*K2
 
       + (
-            he2.name() == "e"
+            he2.name() == thermo2.phasePropertyName("e")
           ? fvc::div(alphaPhi2, p)
           : -dalpha2pdt
         )/rho2

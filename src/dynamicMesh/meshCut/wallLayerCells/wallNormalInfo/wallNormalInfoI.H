@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -194,7 +194,7 @@ inline bool Foam::wallNormalInfo::updateFace
 }
 
 
-template <class TrackingData>
+template<class TrackingData>
 inline bool Foam::wallNormalInfo::equal
 (
     const wallNormalInfo& rhs,

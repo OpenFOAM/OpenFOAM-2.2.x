@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -47,13 +47,18 @@ SourceFiles
 #include "runTimeSelectionTables.H"
 #include "addToRunTimeSelectionTable.H"
 #include "volFieldsFwd.H"
-#include "fluidThermo.H"
+#include "DimensionedField.H"
 #include "fvMatricesFwd.H"
+#include "Switch.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
+
+class fluidThermo;
+class fvMesh;
+
 namespace radiation
 {
 
@@ -82,7 +87,7 @@ protected:
         //- Reference to the temperature field
         const volScalarField& T_;
 
-        //- Model specific dictionary input parameters
+        //- Radiation model on/off flag
         Switch radiation_;
 
         //- Radiation model dictionary
@@ -204,6 +209,12 @@ public:
 
         // Access
 
+            //- Radiation model on/off flag
+            const Switch radiation() const
+            {
+                return radiation_;
+            }
+
             //- Source term component (for power of T^4)
             virtual tmp<volScalarField> Rp() const = 0;
 
@@ -212,6 +223,13 @@ public:
 
             //- Energy source term
             virtual tmp<fvScalarMatrix> Sh(fluidThermo& thermo) const;
+
+            //- Temperature source term
+            virtual tmp<fvScalarMatrix> ST
+            (
+                const dimensionedScalar& rhoCp,
+                volScalarField& T
+            ) const;
 
             //- Access to absorptionEmissionModel
             const absorptionEmissionModel& absorptionEmission() const;

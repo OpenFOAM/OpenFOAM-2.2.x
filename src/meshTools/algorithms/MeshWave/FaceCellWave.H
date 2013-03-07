@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -166,7 +166,7 @@ class FaceCellWave
             void checkCyclic(const polyPatch& pPatch) const;
 
             //- Has cyclic patch?
-            template <class PatchType>
+            template<class PatchType>
             bool hasPatch() const;
 
             //- Merge received patch data into global data

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -244,7 +244,7 @@ void kOmega::correct()
         return;
     }
 
-    volScalarField G(type() + ".G", nut_*2*magSqr(symm(fvc::grad(U_))));
+    volScalarField G(GName(), nut_*2*magSqr(symm(fvc::grad(U_))));
 
     // Update omega and G at the wall
     omega_.boundaryField().updateCoeffs();

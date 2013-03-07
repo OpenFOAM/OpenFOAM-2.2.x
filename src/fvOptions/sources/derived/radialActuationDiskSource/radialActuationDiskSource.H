@@ -8,10 +8,10 @@
 License
     This file is part of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 3 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,42 +19,52 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     Foam::fv::radialActuationDiskSource
 
 Description
-    Actuation disk zone definition.
-    Constant values for momentum source for actuation disk
+    Actuation disk source including radial thrust
 
-        T = 2*rho*A*sqr(Uo)*a*(1-a)
-        U1 = (1 -a)Uo
+    Constant values for momentum source for actuation disk
+    \f[
+        T = 2 \rho A U_{o}^2 a (1-a)
+    \f]
+    and
+    \f[
+        U_1 = (1 - a)U_{o}
+    \f]
 
     where:
-        A: disk area
-        Uo: upstream velocity
-        a: 1 - Cp/Ct
-        U1: velocity at the disk
+    \vartable
+        A   | disk area
+        U_o | upstream velocity
+        a   | 1 - Cp/Ct
+        U_1 | velocity at the disk
+    \endvartable
 
 
     The thrust is distributed by a radial function:
+    \f[
+        thrust(r) = T (C_0 + C_1 r^2 + C_2 r^4)
+    \f]
 
-        thrust(r) = T*(C0 + C1*r^2 + C2*r^4)
+    \heading Source usage
 
-    Sources described by:
-
-        actuationDiskSourceCoeffs
-        {
-            fieldName       U;          // name of field to apply source
-            diskDir         (-1 0 0);   // disk direction
-            Cp              0.1;        // power coefficient
-            Ct              0.5;        // thrust coefficient
-            diskArea        5.0;        // disk area
-            coeffs          (0.1 0.5 0.01); // radial distribution coefficients
-            upstreamPoint   (0 0 0);    // upstream point
-        }
+    Example usage:
+    \verbatim
+    actuationDiskSourceCoeffs
+    {
+        fieldName       U;          // name of field to apply source
+        diskDir         (-1 0 0);   // disk direction
+        Cp              0.1;        // power coefficient
+        Ct              0.5;        // thrust coefficient
+        diskArea        5.0;        // disk area
+        coeffs          (0.1 0.5 0.01); // radial distribution coefficients
+        upstreamPoint   (0 0 0);    // upstream point
+    }
+    \endverbatim
 
 
 SourceFiles

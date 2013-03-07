@@ -115,6 +115,7 @@ BINARY_OPERATOR(scalar, scalar, scalar, /, '|', divide)
 
 BINARY_TYPE_OPERATOR_SF(scalar, scalar, scalar, /, '|', divide)
 
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 template<template<class> class PatchField, class GeoMesh>
@@ -437,6 +438,315 @@ tmp<GeometricField<scalar, PatchField, GeoMesh> > pow
 )
 {
     return pow(dimensionedScalar(s), tgsf);
+}
+
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+template<template<class> class PatchField, class GeoMesh>
+void atan2
+(
+    GeometricField<scalar, PatchField, GeoMesh>& Atan2,
+    const GeometricField<scalar, PatchField, GeoMesh>& gsf1,
+    const GeometricField<scalar, PatchField, GeoMesh>& gsf2
+)
+{
+    atan2(Atan2.internalField(), gsf1.internalField(), gsf2.internalField());
+    atan2(Atan2.boundaryField(), gsf1.boundaryField(), gsf2.boundaryField());
+}
+
+
+template<template<class> class PatchField, class GeoMesh>
+tmp<GeometricField<scalar, PatchField, GeoMesh> > atan2
+(
+    const GeometricField<scalar, PatchField, GeoMesh>& gsf1,
+    const GeometricField<scalar, PatchField, GeoMesh>& gsf2
+)
+{
+    tmp<GeometricField<scalar, PatchField, GeoMesh> > tAtan2
+    (
+        new GeometricField<scalar, PatchField, GeoMesh>
+        (
+            IOobject
+            (
+                "atan2(" + gsf1.name() + ',' + gsf2.name() + ')',
+                gsf1.instance(),
+                gsf1.db(),
+                IOobject::NO_READ,
+                IOobject::NO_WRITE
+            ),
+            gsf1.mesh(),
+            atan2(gsf1.dimensions(), gsf2.dimensions())
+        )
+    );
+
+    atan2(tAtan2(), gsf1, gsf2);
+
+    return tAtan2;
+}
+
+
+template<template<class> class PatchField, class GeoMesh>
+tmp<GeometricField<scalar, PatchField, GeoMesh> > atan2
+(
+    const tmp<GeometricField<scalar, PatchField, GeoMesh> >& tgsf1,
+    const GeometricField<scalar, PatchField, GeoMesh>& gsf2
+)
+{
+    const GeometricField<scalar, PatchField, GeoMesh>& gsf1 = tgsf1();
+
+    tmp<GeometricField<scalar, PatchField, GeoMesh> > tAtan2
+    (
+        reuseTmpGeometricField<scalar, scalar, PatchField, GeoMesh>::New
+        (
+            tgsf1,
+            "atan2(" + gsf1.name() + ',' + gsf2.name() + ')',
+            atan2(gsf1.dimensions(), gsf2.dimensions())
+        )
+    );
+
+    atan2(tAtan2(), gsf1, gsf2);
+
+    reuseTmpGeometricField<scalar, scalar, PatchField, GeoMesh>::clear(tgsf1);
+
+    return tAtan2;
+}
+
+
+template<template<class> class PatchField, class GeoMesh>
+tmp<GeometricField<scalar, PatchField, GeoMesh> > atan2
+(
+    const GeometricField<scalar, PatchField, GeoMesh>& gsf1,
+    const tmp<GeometricField<scalar, PatchField, GeoMesh> >& tgsf2
+)
+{
+    const GeometricField<scalar, PatchField, GeoMesh>& gsf2 = tgsf2();
+
+    tmp<GeometricField<scalar, PatchField, GeoMesh> > tAtan2
+    (
+        reuseTmpGeometricField<scalar, scalar, PatchField, GeoMesh>::New
+        (
+            tgsf2,
+            "atan2(" + gsf1.name() + ',' + gsf2.name() + ')',
+            atan2( gsf1.dimensions(), gsf2.dimensions())
+        )
+    );
+
+    atan2(tAtan2(), gsf1, gsf2);
+
+    reuseTmpGeometricField<scalar, scalar, PatchField, GeoMesh>::clear(tgsf2);
+
+    return tAtan2;
+}
+
+template<template<class> class PatchField, class GeoMesh>
+tmp<GeometricField<scalar, PatchField, GeoMesh> > atan2
+(
+    const tmp<GeometricField<scalar, PatchField, GeoMesh> >& tgsf1,
+    const tmp<GeometricField<scalar, PatchField, GeoMesh> >& tgsf2
+)
+{
+    const GeometricField<scalar, PatchField, GeoMesh>& gsf1 = tgsf1();
+    const GeometricField<scalar, PatchField, GeoMesh>& gsf2 = tgsf2();
+
+    tmp<GeometricField<scalar, PatchField, GeoMesh> > tAtan2
+    (
+        reuseTmpTmpGeometricField
+            <scalar, scalar, scalar, scalar, PatchField, GeoMesh>::New
+        (
+            tgsf1,
+            tgsf2,
+            "atan2(" + gsf1.name() + ',' + gsf2.name() + ')',
+            atan2(gsf1.dimensions(), gsf2.dimensions())
+        )
+    );
+
+    atan2(tAtan2(), gsf1, gsf2);
+
+    reuseTmpTmpGeometricField
+        <scalar, scalar, scalar, scalar, PatchField, GeoMesh>
+        ::clear(tgsf1, tgsf2);
+
+    return tAtan2;
+}
+
+
+template<template<class> class PatchField, class GeoMesh>
+void atan2
+(
+    GeometricField<scalar, PatchField, GeoMesh>& tAtan2,
+    const GeometricField<scalar, PatchField, GeoMesh>& gsf,
+    const dimensioned<scalar>& ds
+)
+{
+    atan2(tAtan2.internalField(), gsf.internalField(), ds.value());
+    atan2(tAtan2.boundaryField(), gsf.boundaryField(), ds.value());
+}
+
+
+template<template<class> class PatchField, class GeoMesh>
+tmp<GeometricField<scalar, PatchField, GeoMesh> > atan2
+(
+    const GeometricField<scalar, PatchField, GeoMesh>& gsf,
+    const dimensionedScalar& ds
+)
+{
+    tmp<GeometricField<scalar, PatchField, GeoMesh> > tAtan2
+    (
+        new GeometricField<scalar, PatchField, GeoMesh>
+        (
+            IOobject
+            (
+                "atan2(" + gsf.name() + ',' + ds.name() + ')',
+                gsf.instance(),
+                gsf.db(),
+                IOobject::NO_READ,
+                IOobject::NO_WRITE
+            ),
+            gsf.mesh(),
+            atan2(gsf.dimensions(), ds)
+        )
+    );
+
+    atan2(tAtan2(), gsf, ds);
+
+    return tAtan2;
+}
+
+template<template<class> class PatchField, class GeoMesh>
+tmp<GeometricField<scalar, PatchField, GeoMesh> > atan2
+(
+    const tmp<GeometricField<scalar, PatchField, GeoMesh> >& tgsf,
+    const dimensionedScalar& ds
+)
+{
+    const GeometricField<scalar, PatchField, GeoMesh>& gsf = tgsf();
+
+    tmp<GeometricField<scalar, PatchField, GeoMesh> > tAtan2
+    (
+        reuseTmpGeometricField<scalar, scalar, PatchField, GeoMesh>::New
+        (
+            tgsf,
+            "atan2(" + gsf.name() + ',' + ds.name() + ')',
+            atan2(gsf.dimensions(), ds)
+        )
+    );
+
+    atan2(tAtan2(), gsf, ds);
+
+    reuseTmpGeometricField<scalar, scalar, PatchField, GeoMesh>::clear(tgsf);
+
+    return tAtan2;
+}
+
+template<template<class> class PatchField, class GeoMesh>
+tmp<GeometricField<scalar, PatchField, GeoMesh> > atan2
+(
+    const GeometricField<scalar, PatchField, GeoMesh>& gsf,
+    const scalar& s
+)
+{
+    return atan2(gsf, dimensionedScalar(s));
+}
+
+template<template<class> class PatchField, class GeoMesh>
+tmp<GeometricField<scalar, PatchField, GeoMesh> > atan2
+(
+    const tmp<GeometricField<scalar, PatchField, GeoMesh> >& tgsf,
+    const scalar& s
+)
+{
+    return atan2(tgsf, dimensionedScalar(s));
+}
+
+
+template<template<class> class PatchField, class GeoMesh>
+void atan2
+(
+    GeometricField<scalar, PatchField, GeoMesh>& tAtan2,
+    const dimensioned<scalar>& ds,
+    const GeometricField<scalar, PatchField, GeoMesh>& gsf
+)
+{
+    atan2(tAtan2.internalField(), ds.value(), gsf.internalField());
+    atan2(tAtan2.boundaryField(), ds.value(), gsf.boundaryField());
+}
+
+
+template<template<class> class PatchField, class GeoMesh>
+tmp<GeometricField<scalar, PatchField, GeoMesh> > atan2
+(
+    const dimensionedScalar& ds,
+    const GeometricField<scalar, PatchField, GeoMesh>& gsf
+)
+{
+    tmp<GeometricField<scalar, PatchField, GeoMesh> > tAtan2
+    (
+        new GeometricField<scalar, PatchField, GeoMesh>
+        (
+            IOobject
+            (
+                "atan2(" + ds.name() + ',' + gsf.name() + ')',
+                gsf.instance(),
+                gsf.db(),
+                IOobject::NO_READ,
+                IOobject::NO_WRITE
+            ),
+            gsf.mesh(),
+            atan2(ds, gsf.dimensions())
+        )
+    );
+
+    atan2(tAtan2(), ds, gsf);
+
+    return tAtan2;
+}
+
+
+template<template<class> class PatchField, class GeoMesh>
+tmp<GeometricField<scalar, PatchField, GeoMesh> > atan2
+(
+    const dimensionedScalar& ds,
+    const tmp<GeometricField<scalar, PatchField, GeoMesh> >& tgsf
+)
+{
+    const GeometricField<scalar, PatchField, GeoMesh>& gsf = tgsf();
+
+    tmp<GeometricField<scalar, PatchField, GeoMesh> > tAtan2
+    (
+        reuseTmpGeometricField<scalar, scalar, PatchField, GeoMesh>::New
+        (
+            tgsf,
+            "atan2(" + ds.name() + ',' + gsf.name() + ')',
+            atan2(ds, gsf.dimensions())
+        )
+    );
+
+    atan2(tAtan2(), ds, gsf);
+
+    reuseTmpGeometricField<scalar, scalar, PatchField, GeoMesh>::clear(tgsf);
+
+    return tAtan2;
+}
+
+template<template<class> class PatchField, class GeoMesh>
+tmp<GeometricField<scalar, PatchField, GeoMesh> > atan2
+(
+    const scalar& s,
+    const GeometricField<scalar, PatchField, GeoMesh>& gsf
+)
+{
+    return atan2(dimensionedScalar(s), gsf);
+}
+
+template<template<class> class PatchField, class GeoMesh>
+tmp<GeometricField<scalar, PatchField, GeoMesh> > atan2
+(
+    const scalar& s,
+    const tmp<GeometricField<scalar, PatchField, GeoMesh> >& tgsf
+)
+{
+    return atan2(dimensionedScalar(s), tgsf);
 }
 
 

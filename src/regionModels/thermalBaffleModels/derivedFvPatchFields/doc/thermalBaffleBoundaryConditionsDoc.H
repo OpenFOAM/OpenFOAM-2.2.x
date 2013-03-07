@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -23,9 +23,9 @@ License
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-\defgroup grpThermoBoundaryConditions Thermo baffle boundary conditions
+\defgroup grpThermoBaffleBoundaryConditions Thermo baffle boundary conditions
 @{
-    \ingroup grpRegionBoundaryConditions
+    \ingroup grpThermoBoundaryConditions
     This group contains thermo baffle model boundary conditions
 @}
 

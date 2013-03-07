@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -56,7 +56,7 @@ class pointMesh;
 
 class volPointInterpolation
 :
-    public MeshObject<fvMesh, volPointInterpolation>
+    public MeshObject<fvMesh, UpdateableMeshObject, volPointInterpolation>
 {
     // Private data
 
@@ -174,7 +174,7 @@ public:
         // Edit
 
             //- Update mesh topology using the morph engine
-            void updateMesh();
+            void updateMesh(const mapPolyMesh&);
 
             //- Correct weighting factors for moving mesh.
             bool movePoints();

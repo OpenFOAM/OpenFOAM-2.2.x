@@ -430,6 +430,20 @@ Foam::dimensionSet Foam::trans(const dimensionSet& ds)
 }
 
 
+Foam::dimensionSet Foam::atan2(const dimensionSet& ds1, const dimensionSet& ds2)
+{
+    if (dimensionSet::debug && ds1 != ds2)
+    {
+        FatalErrorIn("atan2(const dimensionSet&, const dimensionSet&)")
+            << "Arguments of atan2 have different dimensions" << endl
+            << "     dimensions : " << ds1 << " and " << ds2 << endl
+            << abort(FatalError);
+    }
+
+    return dimless;
+}
+
+
 Foam::dimensionSet Foam::transform(const dimensionSet& ds)
 {
     return ds;

@@ -296,7 +296,7 @@ inline bool Foam::pointEdgePoint::updateEdge
 }
 
 
-template <class TrackingData>
+template<class TrackingData>
 inline bool Foam::pointEdgePoint::equal
 (
     const pointEdgePoint& rhs,

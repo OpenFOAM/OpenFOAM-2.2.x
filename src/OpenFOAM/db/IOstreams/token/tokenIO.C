@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -75,8 +75,8 @@ Foam::Ostream& Foam::operator<<(Ostream& os, const token& t)
         break;
 
         case token::VARIABLE:
-            // Write variable as word so without ""
-            os.writeQuoted(*t.stringTokenPtr_, false);
+            // Behaviour differs according to stream type
+            os.write(t);
         break;
 
         case token::LABEL:

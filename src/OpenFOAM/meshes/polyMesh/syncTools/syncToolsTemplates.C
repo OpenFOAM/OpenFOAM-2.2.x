@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -36,7 +36,7 @@ License
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
 // Combine val with existing value at index
-template <class T, class CombineOp>
+template<class T, class CombineOp>
 void Foam::syncTools::combine
 (
     Map<T>& pointValues,
@@ -59,7 +59,7 @@ void Foam::syncTools::combine
 
 
 // Combine val with existing value at (implicit index) e.
-template <class T, class CombineOp>
+template<class T, class CombineOp>
 void Foam::syncTools::combine
 (
     EdgeMap<T>& edgeValues,
@@ -81,7 +81,7 @@ void Foam::syncTools::combine
 }
 
 
-template <class T, class CombineOp, class TransformOp>
+template<class T, class CombineOp, class TransformOp>
 void Foam::syncTools::syncPointMap
 (
     const polyMesh& mesh,
@@ -386,7 +386,7 @@ void Foam::syncTools::syncPointMap
 }
 
 
-template <class T, class CombineOp, class TransformOp>
+template<class T, class CombineOp, class TransformOp>
 void Foam::syncTools::syncEdgeMap
 (
     const polyMesh& mesh,
@@ -761,7 +761,7 @@ void Foam::syncTools::syncEdgeMap
 }
 
 
-//template <class T, class CombineOp, class TransformOp>
+//template<class T, class CombineOp, class TransformOp>
 //void Foam::syncTools::syncPointList
 //(
 //    const polyMesh& mesh,
@@ -937,7 +937,7 @@ void Foam::syncTools::syncEdgeMap
 //}
 
 
-//template <class T, class CombineOp, class TransformOp>
+//template<class T, class CombineOp, class TransformOp>
 //void Foam::syncTools::syncPointList
 //(
 //    const polyMesh& mesh,
@@ -987,7 +987,7 @@ void Foam::syncTools::syncEdgeMap
 //    }
 //}
 
-template <class T, class CombineOp, class TransformOp>
+template<class T, class CombineOp, class TransformOp>
 void Foam::syncTools::syncPointList
 (
     const polyMesh& mesh,
@@ -1013,7 +1013,7 @@ void Foam::syncTools::syncPointList
 }
 
 
-//template <class CombineOp>
+//template<class CombineOp>
 //void Foam::syncTools::syncPointPositions
 //(
 //    const polyMesh& mesh,
@@ -1037,7 +1037,7 @@ void Foam::syncTools::syncPointList
 //}
 
 
-template <class T, class CombineOp, class TransformOp>
+template<class T, class CombineOp, class TransformOp>
 void Foam::syncTools::syncPointList
 (
     const polyMesh& mesh,
@@ -1097,7 +1097,7 @@ void Foam::syncTools::syncPointList
 }
 
 
-//template <class CombineOp>
+//template<class CombineOp>
 //void Foam::syncTools::syncPointPositions
 //(
 //    const polyMesh& mesh,
@@ -1157,7 +1157,7 @@ void Foam::syncTools::syncPointList
 //}
 
 
-template <class T, class CombineOp, class TransformOp>
+template<class T, class CombineOp, class TransformOp>
 void Foam::syncTools::syncEdgeList
 (
     const polyMesh& mesh,
@@ -1204,7 +1204,7 @@ void Foam::syncTools::syncEdgeList
 }
 
 
-//template <class CombineOp>
+//template<class CombineOp>
 //void Foam::syncTools::syncEdgePositions
 //(
 //    const polyMesh& mesh,
@@ -1251,7 +1251,7 @@ void Foam::syncTools::syncEdgeList
 //}
 
 
-template <class T, class CombineOp, class TransformOp>
+template<class T, class CombineOp, class TransformOp>
 void Foam::syncTools::syncEdgeList
 (
     const polyMesh& mesh,
@@ -1310,7 +1310,7 @@ void Foam::syncTools::syncEdgeList
     }
 }
 
-template <class T, class CombineOp, class TransformOp>
+template<class T, class CombineOp, class TransformOp>
 void Foam::syncTools::syncBoundaryFaceList
 (
     const polyMesh& mesh,
@@ -1436,7 +1436,7 @@ void Foam::syncTools::syncBoundaryFaceList
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-template <unsigned nBits, class CombineOp>
+template<unsigned nBits, class CombineOp>
 void Foam::syncTools::syncFaceList
 (
     const polyMesh& mesh,
@@ -1553,7 +1553,7 @@ void Foam::syncTools::syncFaceList
 }
 
 
-template <class T>
+template<class T>
 void Foam::syncTools::swapBoundaryCellList
 (
     const polyMesh& mesh,
@@ -1592,7 +1592,7 @@ void Foam::syncTools::swapBoundaryCellList
 }
 
 
-template <unsigned nBits>
+template<unsigned nBits>
 void Foam::syncTools::swapFaceList
 (
     const polyMesh& mesh,
@@ -1603,7 +1603,7 @@ void Foam::syncTools::swapFaceList
 }
 
 
-template <unsigned nBits, class CombineOp>
+template<unsigned nBits, class CombineOp>
 void Foam::syncTools::syncPointList
 (
     const polyMesh& mesh,
@@ -1650,7 +1650,7 @@ void Foam::syncTools::syncPointList
 }
 
 
-template <unsigned nBits, class CombineOp>
+template<unsigned nBits, class CombineOp>
 void Foam::syncTools::syncEdgeList
 (
     const polyMesh& mesh,

@@ -23,7 +23,7 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "SquareMatrix.H"
+#include "scalarMatrices.H"
 #include "vector.H"
 
 using namespace Foam;
@@ -49,15 +49,15 @@ int main(int argc, char *argv[])
     Info<< max(hmm) << endl;
     Info<< min(hmm) << endl;
 
-    SquareMatrix<scalar> hmm2(3, 1.0);
+    SquareMatrix<scalar> hmm2(3, 3, 1.0);
 
     hmm = hmm2;
 
     Info<< hmm << endl;
 
-    SquareMatrix<scalar> hmm3(Sin);
+    //SquareMatrix<scalar> hmm3(Sin);
 
-    Info<< hmm3 << endl;
+    //Info<< hmm3 << endl;
 
     SquareMatrix<scalar> hmm4;
 
@@ -70,7 +70,65 @@ int main(int argc, char *argv[])
     hmm4 = hmm5;
     Info<< hmm5 << endl;
 
-    Info<< "End\n" << endl;
+    {
+        scalarSymmetricSquareMatrix symmMatrix(3, 3, 0);
+
+        symmMatrix(0, 0) = 4;
+        symmMatrix(1, 0) = 12;
+        symmMatrix(1, 1) = 37;
+        symmMatrix(2, 0) = -16;
+        symmMatrix(2, 1) = -43;
+        symmMatrix(2, 2) = 98;
+
+        Info<< "Symmetric Square Matrix = " << symmMatrix << endl;
+
+        Info<< "Inverse = " << inv(symmMatrix) << endl;
+        Info<< "Determinant = " << det(symmMatrix) << endl;
+
+        scalarSymmetricSquareMatrix symmMatrix2(symmMatrix);
+        LUDecompose(symmMatrix2);
+
+        Info<< "Inverse = " << invDecomposed(symmMatrix2) << endl;
+        Info<< "Determinant = " << detDecomposed(symmMatrix2) << endl;
+
+        scalarDiagonalMatrix rhs(3, 0);
+        rhs[0] = 1;
+        rhs[1] = 2;
+        rhs[2] = 3;
+
+        LUsolve(symmMatrix, rhs);
+
+        Info<< "Decomposition = " << symmMatrix << endl;
+        Info<< "Solution = " << rhs << endl;
+    }
+
+    {
+        scalarSquareMatrix squareMatrix(3, 3, 0);
+
+        squareMatrix[0][0] = 4;
+        squareMatrix[0][1] = 12;
+        squareMatrix[0][2] = -16;
+        squareMatrix[1][0] = 12;
+        squareMatrix[1][1] = 37;
+        squareMatrix[1][2] = -43;
+        squareMatrix[2][0] = -16;
+        squareMatrix[2][1] = -43;
+        squareMatrix[2][2] = 98;
+
+        Info<< nl << "Square Matrix = " << squareMatrix << endl;
+
+        scalarDiagonalMatrix rhs(3, 0);
+        rhs[0] = 1;
+        rhs[1] = 2;
+        rhs[2] = 3;
+
+        LUsolve(squareMatrix, rhs);
+
+        Info<< "Decomposition = " << squareMatrix << endl;
+        Info<< "Solution = " << rhs << endl;
+    }
+
+    Info<< "\nEnd\n" << endl;
 
     return 0;
 }

@@ -118,7 +118,7 @@ Foam::fv::interRegionHeatTransferModel::interRegionHeatTransferModel
     (
         IOobject
         (
-            type() + ".htc",
+            type() + ":htc",
             mesh.time().timeName(),
             mesh,
             IOobject::NO_READ,
@@ -177,7 +177,7 @@ void Foam::fv::interRegionHeatTransferModel::addSup
         (
             IOobject
             (
-                type() + ".Tmapped",
+                type() + ":Tmapped",
                 mesh_.time().timeName(),
                 mesh_,
                 IOobject::NO_READ,

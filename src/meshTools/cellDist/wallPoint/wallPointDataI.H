@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -31,8 +31,8 @@ namespace Foam
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
 // Update this with w2 if w2 nearer to pt.
-template <class Type>
-template <class TrackingData>
+template<class Type>
+template<class TrackingData>
 inline bool wallPointData<Type>::update
 (
     const point& pt,
@@ -75,7 +75,7 @@ inline bool wallPointData<Type>::update
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 // Null constructor
-template <class Type>
+template<class Type>
 inline wallPointData<Type>::wallPointData()
 :
     wallPoint(),
@@ -84,7 +84,7 @@ inline wallPointData<Type>::wallPointData()
 
 
 // Construct from components
-template <class Type>
+template<class Type>
 inline wallPointData<Type>::wallPointData
 (
     const point& origin,
@@ -99,14 +99,14 @@ inline wallPointData<Type>::wallPointData
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-template <class Type>
+template<class Type>
 inline const Type& wallPointData<Type>::data() const
 {
     return data_;
 }
 
 
-template <class Type>
+template<class Type>
 inline Type& wallPointData<Type>::data()
 {
     return data_;
@@ -114,8 +114,8 @@ inline Type& wallPointData<Type>::data()
 
 
 // Update this with w2 if w2 nearer to pt.
-template <class Type>
-template <class TrackingData>
+template<class Type>
+template<class TrackingData>
 inline bool wallPointData<Type>::updateCell
 (
     const polyMesh& mesh,
@@ -139,8 +139,8 @@ inline bool wallPointData<Type>::updateCell
 
 
 // Update this with w2 if w2 nearer to pt.
-template <class Type>
-template <class TrackingData>
+template<class Type>
+template<class TrackingData>
 inline bool wallPointData<Type>::updateFace
 (
     const polyMesh& mesh,
@@ -164,8 +164,8 @@ inline bool wallPointData<Type>::updateFace
 
 
 // Update this with w2 if w2 nearer to pt.
-template <class Type>
-template <class TrackingData>
+template<class Type>
+template<class TrackingData>
 inline bool wallPointData<Type>::updateFace
 (
     const polyMesh& mesh,

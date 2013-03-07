@@ -26,6 +26,7 @@ License
 #include "phaseModel.H"
 #include "diameterModel.H"
 #include "fixedValueFvPatchFields.H"
+#include "slipFvPatchFields.H"
 #include "surfaceInterpolate.H"
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
@@ -118,7 +119,11 @@ Foam::phaseModel::phaseModel
 
         forAll(U_.boundaryField(), i)
         {
-            if (isA<fixedValueFvPatchVectorField>(U_.boundaryField()[i]))
+            if
+            (
+                isA<fixedValueFvPatchVectorField>(U_.boundaryField()[i])
+             || isA<slipFvPatchVectorField>(U_.boundaryField()[i])
+            )
             {
                 phiTypes[i] = fixedValueFvPatchScalarField::typeName;
             }

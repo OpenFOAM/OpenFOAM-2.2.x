@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -692,7 +692,7 @@ Foam::autoPtr<Foam::globalIndex> Foam::regionSplit::calcRegionSplit
 
 Foam::regionSplit::regionSplit(const polyMesh& mesh)
 :
-    MeshObject<polyMesh, regionSplit>(mesh),
+    MeshObject<polyMesh, Foam::TopologicalMeshObject, regionSplit>(mesh),
     labelList(mesh.nCells(), -1)
 {
     globalNumberingPtr_ = calcRegionSplit
@@ -710,7 +710,7 @@ Foam::regionSplit::regionSplit
     const boolList& blockedFace
 )
 :
-    MeshObject<polyMesh, regionSplit>(mesh),
+    MeshObject<polyMesh, Foam::TopologicalMeshObject, regionSplit>(mesh),
     labelList(mesh.nCells(), -1)
 {
     globalNumberingPtr_ = calcRegionSplit
@@ -729,7 +729,7 @@ Foam::regionSplit::regionSplit
     const List<labelPair>& explicitConnections
 )
 :
-    MeshObject<polyMesh, regionSplit>(mesh),
+    MeshObject<polyMesh, Foam::TopologicalMeshObject, regionSplit>(mesh),
     labelList(mesh.nCells(), -1)
 {
     globalNumberingPtr_ = calcRegionSplit

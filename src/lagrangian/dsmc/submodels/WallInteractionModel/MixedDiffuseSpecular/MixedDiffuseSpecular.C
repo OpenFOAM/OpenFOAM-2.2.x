@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -27,7 +27,7 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template <class CloudType>
+template<class CloudType>
 Foam::MixedDiffuseSpecular<CloudType>::MixedDiffuseSpecular
 (
     const dictionary& dict,
@@ -41,14 +41,14 @@ Foam::MixedDiffuseSpecular<CloudType>::MixedDiffuseSpecular
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-template <class CloudType>
+template<class CloudType>
 Foam::MixedDiffuseSpecular<CloudType>::~MixedDiffuseSpecular()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-template <class CloudType>
+template<class CloudType>
 void Foam::MixedDiffuseSpecular<CloudType>::correct
 (
     typename CloudType::parcelType& p,

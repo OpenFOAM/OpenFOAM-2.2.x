@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -68,6 +68,34 @@ Foam::HashTable<const Type*> Foam::objectRegistry::lookupClass
             (
                 iter()->name(),
                 dynamic_cast<const Type*>(iter())
+            );
+        }
+    }
+
+    return objectsOfClass;
+}
+
+
+template<class Type>
+Foam::HashTable<Type*> Foam::objectRegistry::lookupClass
+(
+    const bool strict
+)
+{
+    HashTable<Type*> objectsOfClass(size());
+
+    forAllIter(HashTable<regIOobject*>, *this, iter)
+    {
+        if
+        (
+            (strict && isType<Type>(*iter()))
+         || (!strict && isA<Type>(*iter()))
+        )
+        {
+            objectsOfClass.insert
+            (
+                iter()->name(),
+                dynamic_cast<Type*>(iter())
             );
         }
     }

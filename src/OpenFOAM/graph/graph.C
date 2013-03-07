@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -41,6 +41,17 @@ namespace Foam
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
+Foam::word Foam::graph::wordify(const Foam::string& sname)
+{
+    string wname = sname;
+    wname.replace(' ', '_');
+    wname.replace('(', '_');
+    wname.replace(')', "");
+
+    return word(wname);
+}
+
+
 void Foam::graph::readCurves(Istream& is)
 {
     List<xy> xyData(is);
@@ -54,7 +65,11 @@ void Foam::graph::readCurves(Istream& is)
         y[i] = xyData[i].y_;
     }
 
-    insert(yName_, new curve(yName_, curve::curveStyle::CONTINUOUS, y));
+    insert
+    (
+        wordify(yName_),
+        new curve(wordify(yName_), curve::curveStyle::CONTINUOUS, y)
+    );
 }
 
 
@@ -89,7 +104,7 @@ Foam::graph::graph
     yName_(yName),
     x_(x)
 {
-    insert(yName, new curve(yName, curve::curveStyle::CONTINUOUS, y));
+    insert(wordify(yName), new curve(yName, curve::curveStyle::CONTINUOUS, y));
 }
 
 

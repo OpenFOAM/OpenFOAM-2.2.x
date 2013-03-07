@@ -53,17 +53,22 @@ $(fvMeshMapper)/fvSurfaceMapper.C
 extendedStencil = fvMesh/extendedStencil
 
 cellToCell = $(extendedStencil)/cellToCell
-$(cellToCell)/fullStencils/cellToCellStencil.C
-$(cellToCell)/fullStencils/CFCCellToCellStencil.C
-$(cellToCell)/fullStencils/CPCCellToCellStencil.C
-$(cellToCell)/fullStencils/CECCellToCellStencil.C
+$(cellToCell)/extendedCellToCellStencil.C
+$(cellToCell)/extendedCentredCellToCellStencil.C
+$(cellToCell)/globalIndexStencils/cellToCellStencil.C
+$(cellToCell)/globalIndexStencils/CFCCellToCellStencil.C
+$(cellToCell)/globalIndexStencils/CPCCellToCellStencil.C
+$(cellToCell)/globalIndexStencils/CECCellToCellStencil.C
+$(cellToCell)/MeshObjects/centredCECCellToCellStencilObject.C
+$(cellToCell)/MeshObjects/centredCFCCellToCellStencilObject.C
+$(cellToCell)/MeshObjects/centredCPCCellToCellStencilObject.C
 
 cellToFace = $(extendedStencil)/cellToFace
-$(cellToFace)/fullStencils/cellToFaceStencil.C
-$(cellToFace)/fullStencils/CFCCellToFaceStencil.C
-$(cellToFace)/fullStencils/CECCellToFaceStencil.C
-$(cellToFace)/fullStencils/CPCCellToFaceStencil.C
-$(cellToFace)/fullStencils/FECCellToFaceStencil.C
+$(cellToFace)/globalIndexStencils/cellToFaceStencil.C
+$(cellToFace)/globalIndexStencils/CFCCellToFaceStencil.C
+$(cellToFace)/globalIndexStencils/CECCellToFaceStencil.C
+$(cellToFace)/globalIndexStencils/CPCCellToFaceStencil.C
+$(cellToFace)/globalIndexStencils/FECCellToFaceStencil.C
 $(cellToFace)/extendedCellToFaceStencil.C
 $(cellToFace)/extendedCentredCellToFaceStencil.C
 $(cellToFace)/extendedUpwindCellToFaceStencil.C
@@ -78,8 +83,8 @@ $(cellToFace)/MeshObjects/upwindFECCellToFaceStencilObject.C
 $(cellToFace)/MeshObjects/pureUpwindCFCCellToFaceStencilObject.C
 
 faceToCell = $(extendedStencil)/faceToCell
-$(faceToCell)/fullStencils/faceToCellStencil.C
-$(faceToCell)/fullStencils/CFCFaceToCellStencil.C
+$(faceToCell)/globalIndexStencils/faceToCellStencil.C
+$(faceToCell)/globalIndexStencils/CFCFaceToCellStencil.C
 $(faceToCell)/extendedFaceToCellStencil.C
 $(faceToCell)/extendedCentredFaceToCellStencil.C
 $(faceToCell)/MeshObjects/centredCFCFaceToCellStencilObject.C
@@ -334,8 +339,7 @@ $(gradSchemes)/gaussGrad/gaussGrads.C
 
 $(gradSchemes)/leastSquaresGrad/leastSquaresVectors.C
 $(gradSchemes)/leastSquaresGrad/leastSquaresGrads.C
-$(gradSchemes)/extendedLeastSquaresGrad/extendedLeastSquaresVectors.C
-$(gradSchemes)/extendedLeastSquaresGrad/extendedLeastSquaresGrads.C
+$(gradSchemes)/LeastSquaresGrad/LeastSquaresGrads.C
 $(gradSchemes)/fourthGrad/fourthGrads.C
 
 limitedGradSchemes = $(gradSchemes)/limitedGradSchemes
@@ -381,8 +385,8 @@ $(porosity)/porosityModel/porosityModelNew.C
 $(porosity)/porosityModel/porosityModelList.C
 $(porosity)/porosityModel/IOporosityModelList.C
 $(porosity)/DarcyForchheimer/DarcyForchheimer.C
-$(porosity)/powerLaw/powerLaw.C
 $(porosity)/fixedCoeff/fixedCoeff.C
+$(porosity)/powerLaw/powerLaw.C
 
 MRF = $(general)/MRF
 $(MRF)/MRFZone.C

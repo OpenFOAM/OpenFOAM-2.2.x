@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -30,7 +30,7 @@ License
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
-template <class Type>
+template<class Type>
 Foam::tmp<Foam::Field<Type> >
 Foam::sampledIsoSurface::sampleField
 (
@@ -44,7 +44,7 @@ Foam::sampledIsoSurface::sampleField
 }
 
 
-template <class Type>
+template<class Type>
 Foam::tmp<Foam::Field<Type> >
 Foam::sampledIsoSurface::interpolateField
 (

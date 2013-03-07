@@ -1,7 +1,7 @@
 
-solidChemistryModel/solidChemistryModel.C
-solidChemistryModel/solidChemistryModelNew.C
-solidChemistryModel/solidChemistryModels.C
+basicSolidChemistryModel/basicSolidChemistryModel.C
+basicSolidChemistryModel/basicSolidChemistryModelNew.C
+basicSolidChemistryModel/basicSolidChemistryModels.C
 
 solidChemistrySolver/makeSolidChemistrySolvers.C
 

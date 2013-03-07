@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -255,7 +255,7 @@ void LaunderSharmaKE::correct()
 
     tmp<volScalarField> S2 = 2*magSqr(symm(fvc::grad(U_)));
 
-    volScalarField G(type() + ".G", nut_*S2);
+    volScalarField G(GName(), nut_*S2);
 
     const volScalarField E(2.0*nu()*nut_*fvc::magSqrGradGrad(U_));
     const volScalarField D(2.0*nu()*magSqr(fvc::grad(sqrt(k_))));

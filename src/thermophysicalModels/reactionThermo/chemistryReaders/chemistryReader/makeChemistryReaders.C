@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -37,23 +37,50 @@ namespace Foam
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-makeChemistryReader(constGasThermoPhysics);
-makeChemistryReader(gasThermoPhysics);
-makeChemistryReader(constIncompressibleGasThermoPhysics);
-makeChemistryReader(incompressibleGasThermoPhysics);
-makeChemistryReader(icoPoly8ThermoPhysics);
-makeChemistryReader(hConstSolidThermoPhysics);
-makeChemistryReader(hExponentialSolidThermoPhysics);
+// Solid chemistry readers based on sensibleEnthalpy
 
-makeChemistryReaderType(foamChemistryReader, constGasThermoPhysics);
-makeChemistryReaderType(foamChemistryReader, gasThermoPhysics);
+makeChemistryReader(constGasHThermoPhysics);
+makeChemistryReader(gasHThermoPhysics);
+makeChemistryReader(constIncompressibleGasHThermoPhysics);
+makeChemistryReader(incompressibleGasHThermoPhysics);
+makeChemistryReader(icoPoly8HThermoPhysics);
+
+makeChemistryReaderType(foamChemistryReader, constGasHThermoPhysics);
+makeChemistryReaderType(foamChemistryReader, gasHThermoPhysics);
 makeChemistryReaderType
 (
     foamChemistryReader,
-    constIncompressibleGasThermoPhysics
+    constIncompressibleGasHThermoPhysics
 );
-makeChemistryReaderType(foamChemistryReader, incompressibleGasThermoPhysics);
-makeChemistryReaderType(foamChemistryReader, icoPoly8ThermoPhysics);
+makeChemistryReaderType(foamChemistryReader, incompressibleGasHThermoPhysics);
+makeChemistryReaderType(foamChemistryReader, icoPoly8HThermoPhysics);
+
+
+
+// Solid chemistry readers based on sensibleInternalEnergy
+
+makeChemistryReader(constGasEThermoPhysics);
+makeChemistryReader(gasEThermoPhysics);
+makeChemistryReader(constIncompressibleGasEThermoPhysics);
+makeChemistryReader(incompressibleGasEThermoPhysics);
+makeChemistryReader(icoPoly8EThermoPhysics);
+
+makeChemistryReaderType(foamChemistryReader, constGasEThermoPhysics);
+makeChemistryReaderType(foamChemistryReader, gasEThermoPhysics);
+makeChemistryReaderType
+(
+    foamChemistryReader,
+    constIncompressibleGasEThermoPhysics
+);
+makeChemistryReaderType(foamChemistryReader, incompressibleGasEThermoPhysics);
+makeChemistryReaderType(foamChemistryReader, icoPoly8EThermoPhysics);
+
+
+// Solid chemistry readers for solids based on sensibleInternalEnergy
+
+makeChemistryReader(hConstSolidThermoPhysics);
+makeChemistryReader(hExponentialSolidThermoPhysics);
+
 makeChemistryReaderType(foamChemistryReader, hConstSolidThermoPhysics);
 makeChemistryReaderType(foamChemistryReader, hExponentialSolidThermoPhysics);
 

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -30,7 +30,7 @@ License
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
-template <class Type>
+template<class Type>
 Foam::scalar Foam::dynamicIndexedOctree<Type>::perturbTol_ = 10*SMALL;
 
 
@@ -38,7 +38,7 @@ Foam::scalar Foam::dynamicIndexedOctree<Type>::perturbTol_ = 10*SMALL;
 
 // Does bb intersect a sphere around sample? Or is any corner point of bb
 // closer than nearestDistSqr to sample.
-template <class Type>
+template<class Type>
 bool Foam::dynamicIndexedOctree<Type>::overlaps
 (
     const point& p0,
@@ -82,7 +82,7 @@ bool Foam::dynamicIndexedOctree<Type>::overlaps
 
 // Does bb intersect a sphere around sample? Or is any corner point of bb
 // closer than nearestDistSqr to sample.
-template <class Type>
+template<class Type>
 bool Foam::dynamicIndexedOctree<Type>::overlaps
 (
     const treeBoundBox& parentBb,
@@ -145,7 +145,7 @@ bool Foam::dynamicIndexedOctree<Type>::overlaps
 //
 
 // Split list of indices into 8 bins
-template <class Type>
+template<class Type>
 void Foam::dynamicIndexedOctree<Type>::divide
 (
     const autoPtr<DynamicList<label> >& indices,
@@ -187,7 +187,7 @@ void Foam::dynamicIndexedOctree<Type>::divide
 
 
 // Subdivide the (content) node.
-template <class Type>
+template<class Type>
 typename Foam::dynamicIndexedOctree<Type>::node
 Foam::dynamicIndexedOctree<Type>::divide
 (
@@ -280,7 +280,7 @@ Foam::dynamicIndexedOctree<Type>::divide
 }
 
 
-template <class Type>
+template<class Type>
 void Foam::dynamicIndexedOctree<Type>::recursiveSubDivision
 (
     const treeBoundBox& subBb,
@@ -333,7 +333,7 @@ void Foam::dynamicIndexedOctree<Type>::recursiveSubDivision
 // Pre-calculates wherever possible the volume status per node/subnode.
 // Recurses to determine status of lowest level boxes. Level above is
 // combination of octants below.
-template <class Type>
+template<class Type>
 typename Foam::dynamicIndexedOctree<Type>::volumeType
 Foam::dynamicIndexedOctree<Type>::calcVolumeType
 (
@@ -391,7 +391,7 @@ Foam::dynamicIndexedOctree<Type>::calcVolumeType
 }
 
 
-template <class Type>
+template<class Type>
 typename Foam::dynamicIndexedOctree<Type>::volumeType
 Foam::dynamicIndexedOctree<Type>::getVolumeType
 (
@@ -467,7 +467,7 @@ Foam::dynamicIndexedOctree<Type>::getVolumeType
 }
 
 
-template <class Type>
+template<class Type>
 typename Foam::dynamicIndexedOctree<Type>::volumeType
 Foam::dynamicIndexedOctree<Type>::getSide
 (
@@ -492,7 +492,7 @@ Foam::dynamicIndexedOctree<Type>::getSide
 //
 
 // Find nearest point starting from nodeI
-template <class Type>
+template<class Type>
 void Foam::dynamicIndexedOctree<Type>::findNearest
 (
     const label nodeI,
@@ -564,7 +564,7 @@ void Foam::dynamicIndexedOctree<Type>::findNearest
 
 
 // Find nearest point to line.
-template <class Type>
+template<class Type>
 void Foam::dynamicIndexedOctree<Type>::findNearest
 (
     const label nodeI,
@@ -630,7 +630,7 @@ void Foam::dynamicIndexedOctree<Type>::findNearest
 }
 
 
-template <class Type>
+template<class Type>
 Foam::treeBoundBox Foam::dynamicIndexedOctree<Type>::subBbox
 (
     const label parentNodeI,
@@ -656,7 +656,7 @@ Foam::treeBoundBox Foam::dynamicIndexedOctree<Type>::subBbox
 
 // Takes a bb and a point on/close to the edge of the bb and pushes the point
 // inside by a small fraction.
-template <class Type>
+template<class Type>
 Foam::point Foam::dynamicIndexedOctree<Type>::pushPoint
 (
     const treeBoundBox& bb,
@@ -727,7 +727,7 @@ Foam::point Foam::dynamicIndexedOctree<Type>::pushPoint
 
 // Takes a bb and a point on the edge of the bb and pushes the point
 // outside by a small fraction.
-template <class Type>
+template<class Type>
 Foam::point Foam::dynamicIndexedOctree<Type>::pushPoint
 (
     const treeBoundBox& bb,
@@ -840,7 +840,7 @@ Foam::point Foam::dynamicIndexedOctree<Type>::pushPoint
 // Guarantees that if pt is on a face it gets perturbed so it is away
 // from the face edges.
 // If pt is not on a face does nothing.
-template <class Type>
+template<class Type>
 Foam::point Foam::dynamicIndexedOctree<Type>::pushPointIntoFace
 (
     const treeBoundBox& bb,
@@ -1000,7 +1000,7 @@ Foam::point Foam::dynamicIndexedOctree<Type>::pushPointIntoFace
 //// Takes a bb and a point on the outside of the bb. Checks if on multiple
 // faces
 //// and if so perturbs point so it is only on one face.
-//template <class Type>
+//template<class Type>
 //void Foam::dynamicIndexedOctree<Type>::checkMultipleFaces
 //(
 //    const treeBoundBox& bb,
@@ -1196,7 +1196,7 @@ Foam::point Foam::dynamicIndexedOctree<Type>::pushPointIntoFace
 
 
 // Get parent node and octant. Return false if top of tree reached.
-template <class Type>
+template<class Type>
 bool Foam::dynamicIndexedOctree<Type>::walkToParent
 (
     const label nodeI,
@@ -1246,7 +1246,7 @@ bool Foam::dynamicIndexedOctree<Type>::walkToParent
 // node and octant in this node and walks in the direction given by
 // the facePointBits (combination of treeBoundBox::LEFTBIT, TOPBIT etc.)
 // Returns false if edge of tree hit.
-template <class Type>
+template<class Type>
 bool Foam::dynamicIndexedOctree<Type>::walkToNeighbour
 (
     const point& facePoint,
@@ -1484,7 +1484,7 @@ bool Foam::dynamicIndexedOctree<Type>::walkToNeighbour
 }
 
 
-template <class Type>
+template<class Type>
 Foam::word Foam::dynamicIndexedOctree<Type>::faceString
 (
     const direction faceID
@@ -1536,7 +1536,7 @@ Foam::word Foam::dynamicIndexedOctree<Type>::faceString
 // Else return a miss and the bounding box face hit:
 //  hitInfo.point = coordinate of intersection of ray with bounding box
 //  hitBits  = posbits of point on bounding box
-template <class Type>
+template<class Type>
 void Foam::dynamicIndexedOctree<Type>::traverseNode
 (
     const bool findAny,
@@ -1699,7 +1699,7 @@ void Foam::dynamicIndexedOctree<Type>::traverseNode
 
 
 // Find first intersection
-template <class Type>
+template<class Type>
 Foam::pointIndexHit Foam::dynamicIndexedOctree<Type>::findLine
 (
     const bool findAny,
@@ -1887,7 +1887,7 @@ Foam::pointIndexHit Foam::dynamicIndexedOctree<Type>::findLine
 
 
 // Find first intersection
-template <class Type>
+template<class Type>
 Foam::pointIndexHit Foam::dynamicIndexedOctree<Type>::findLine
 (
     const bool findAny,
@@ -1958,7 +1958,7 @@ Foam::pointIndexHit Foam::dynamicIndexedOctree<Type>::findLine
 }
 
 
-template <class Type>
+template<class Type>
 void Foam::dynamicIndexedOctree<Type>::findBox
 (
     const label nodeI,
@@ -2005,7 +2005,7 @@ void Foam::dynamicIndexedOctree<Type>::findBox
 }
 
 
-template <class Type>
+template<class Type>
 void Foam::dynamicIndexedOctree<Type>::findSphere
 (
     const label nodeI,
@@ -2053,8 +2053,8 @@ void Foam::dynamicIndexedOctree<Type>::findSphere
 }
 
 
-template <class Type>
-template <class CompareOp>
+template<class Type>
+template<class CompareOp>
 void Foam::dynamicIndexedOctree<Type>::findNear
 (
     const scalar nearDist,
@@ -2228,7 +2228,7 @@ void Foam::dynamicIndexedOctree<Type>::findNear
 
 
 // Number of elements in node.
-template <class Type>
+template<class Type>
 Foam::label Foam::dynamicIndexedOctree<Type>::countElements
 (
     const labelBits index
@@ -2261,7 +2261,7 @@ Foam::label Foam::dynamicIndexedOctree<Type>::countElements
 }
 
 
-template <class Type>
+template<class Type>
 void Foam::dynamicIndexedOctree<Type>::writeOBJ
 (
     const label nodeI,
@@ -2310,7 +2310,7 @@ void Foam::dynamicIndexedOctree<Type>::writeOBJ
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template <class Type>
+template<class Type>
 Foam::dynamicIndexedOctree<Type>::dynamicIndexedOctree
 (
     const Type& shapes,
@@ -2347,14 +2347,14 @@ Foam::dynamicIndexedOctree<Type>::dynamicIndexedOctree
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-template <class Type>
+template<class Type>
 Foam::scalar& Foam::dynamicIndexedOctree<Type>::perturbTol()
 {
     return perturbTol_;
 }
 
 
-template <class Type>
+template<class Type>
 Foam::pointIndexHit Foam::dynamicIndexedOctree<Type>::findNearest
 (
     const point& sample,
@@ -2382,7 +2382,7 @@ Foam::pointIndexHit Foam::dynamicIndexedOctree<Type>::findNearest
 }
 
 
-template <class Type>
+template<class Type>
 Foam::pointIndexHit Foam::dynamicIndexedOctree<Type>::findNearest
 (
     const linePointRef& ln,
@@ -2416,7 +2416,7 @@ Foam::pointIndexHit Foam::dynamicIndexedOctree<Type>::findNearest
 
 
 // Find nearest intersection
-template <class Type>
+template<class Type>
 Foam::pointIndexHit Foam::dynamicIndexedOctree<Type>::findLine
 (
     const point& start,
@@ -2428,7 +2428,7 @@ Foam::pointIndexHit Foam::dynamicIndexedOctree<Type>::findLine
 
 
 // Find nearest intersection
-template <class Type>
+template<class Type>
 Foam::pointIndexHit Foam::dynamicIndexedOctree<Type>::findLineAny
 (
     const point& start,
@@ -2439,7 +2439,7 @@ Foam::pointIndexHit Foam::dynamicIndexedOctree<Type>::findLineAny
 }
 
 
-template <class Type>
+template<class Type>
 Foam::labelList Foam::dynamicIndexedOctree<Type>::findBox
 (
     const treeBoundBox& searchBox
@@ -2457,7 +2457,7 @@ Foam::labelList Foam::dynamicIndexedOctree<Type>::findBox
 }
 
 
-template <class Type>
+template<class Type>
 Foam::labelList Foam::dynamicIndexedOctree<Type>::findSphere
 (
     const point& centre,
@@ -2477,7 +2477,7 @@ Foam::labelList Foam::dynamicIndexedOctree<Type>::findSphere
 
 
 // Find node (as parent+octant) containing point
-template <class Type>
+template<class Type>
 Foam::labelBits Foam::dynamicIndexedOctree<Type>::findNode
 (
     const label nodeI,
@@ -2524,7 +2524,7 @@ Foam::labelBits Foam::dynamicIndexedOctree<Type>::findNode
 }
 
 
-template <class Type>
+template<class Type>
 Foam::label Foam::dynamicIndexedOctree<Type>::findInside
 (
     const point& sample
@@ -2556,7 +2556,7 @@ Foam::label Foam::dynamicIndexedOctree<Type>::findInside
 }
 
 
-template <class Type>
+template<class Type>
 const Foam::labelList& Foam::dynamicIndexedOctree<Type>::findIndices
 (
     const point& sample
@@ -2581,7 +2581,7 @@ const Foam::labelList& Foam::dynamicIndexedOctree<Type>::findIndices
 
 
 // Determine type (inside/outside/mixed) per node.
-template <class Type>
+template<class Type>
 typename Foam::dynamicIndexedOctree<Type>::volumeType
 Foam::dynamicIndexedOctree<Type>::getVolumeType
 (
@@ -2651,8 +2651,8 @@ Foam::dynamicIndexedOctree<Type>::getVolumeType
 }
 
 
-template <class Type>
-template <class CompareOp>
+template<class Type>
+template<class CompareOp>
 void Foam::dynamicIndexedOctree<Type>::findNear
 (
     const scalar nearDist,
@@ -2675,7 +2675,7 @@ void Foam::dynamicIndexedOctree<Type>::findNear
 }
 
 
-template <class Type>
+template<class Type>
 bool Foam::dynamicIndexedOctree<Type>::insert(label startIndex, label endIndex)
 {
     if (startIndex == endIndex)
@@ -2721,7 +2721,7 @@ bool Foam::dynamicIndexedOctree<Type>::insert(label startIndex, label endIndex)
 }
 
 
-template <class Type>
+template<class Type>
 bool Foam::dynamicIndexedOctree<Type>::insertIndex
 (
     const label nodIndex,
@@ -2798,7 +2798,7 @@ bool Foam::dynamicIndexedOctree<Type>::insertIndex
 }
 
 
-template <class Type>
+template<class Type>
 bool Foam::dynamicIndexedOctree<Type>::remove(const label index)
 {
     if (nodes_.empty())
@@ -2812,7 +2812,7 @@ bool Foam::dynamicIndexedOctree<Type>::remove(const label index)
 }
 
 
-template <class Type>
+template<class Type>
 Foam::label Foam::dynamicIndexedOctree<Type>::removeIndex
 (
     const label nodIndex,
@@ -2896,7 +2896,7 @@ Foam::label Foam::dynamicIndexedOctree<Type>::removeIndex
 
 
 // Print contents of nodeI
-template <class Type>
+template<class Type>
 void Foam::dynamicIndexedOctree<Type>::print
 (
     prefixOSstream& os,
@@ -2969,7 +2969,7 @@ void Foam::dynamicIndexedOctree<Type>::print
 }
 
 
-template <class Type>
+template<class Type>
 void Foam::dynamicIndexedOctree<Type>::writeTreeInfo() const
 {
     label nEntries = 0;
@@ -2996,7 +2996,7 @@ void Foam::dynamicIndexedOctree<Type>::writeTreeInfo() const
 
 
 // Print contents of nodeI
-template <class Type>
+template<class Type>
 bool Foam::dynamicIndexedOctree<Type>::write(Ostream& os) const
 {
     os << *this;
@@ -3005,7 +3005,7 @@ bool Foam::dynamicIndexedOctree<Type>::write(Ostream& os) const
 }
 
 
-template <class Type>
+template<class Type>
 Foam::Ostream&
 Foam::operator<<(Ostream& os, const dynamicIndexedOctree<Type>& t)
 {

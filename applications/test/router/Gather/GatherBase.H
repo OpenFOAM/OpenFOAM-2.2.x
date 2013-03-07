@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -53,12 +53,12 @@ public:
 
         //- Flatten: appends all elements of list into one single list.
         //  Used to collapse 'Gathered' data.
-        template <class T>
+        template<class T>
         static T flatten(const List<T>);
 
         //- Flatten and offset 'Gathered' indices (into value) so they
         //  remain valid with respect to values (after they have been flattened)
-        template <class DataType, class IndexType, class AddOp>
+        template<class DataType, class IndexType, class AddOp>
         static IndexType offset
         (
             const List<DataType>& values,
@@ -68,7 +68,7 @@ public:
 };
 
 
-template <class T>
+template<class T>
 class AddOp
 {
 

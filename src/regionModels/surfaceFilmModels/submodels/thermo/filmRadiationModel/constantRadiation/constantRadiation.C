@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -61,7 +61,7 @@ constantRadiation::constantRadiation
     (
         IOobject
         (
-            typeName + "::QrConst",
+            typeName + ":QrConst",
             owner.time().timeName(),
             owner.regionMesh(),
             IOobject::MUST_READ,
@@ -73,7 +73,7 @@ constantRadiation::constantRadiation
     (
         IOobject
         (
-            typeName + "::mask",
+            typeName + ":mask",
             owner.time().timeName(),
             owner.regionMesh(),
             IOobject::READ_IF_PRESENT,
@@ -110,7 +110,7 @@ tmp<volScalarField> constantRadiation::Shs()
         (
             IOobject
             (
-                typeName + "::Shs",
+                typeName + ":Shs",
                 owner().time().timeName(),
                 owner().regionMesh(),
                 IOobject::NO_READ,

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -48,7 +48,12 @@ namespace Foam
 
 class centredCFCFaceToCellStencilObject
 :
-    public MeshObject<fvMesh, centredCFCFaceToCellStencilObject>,
+    public MeshObject
+    <
+        fvMesh,
+        TopologicalMeshObject,
+        centredCFCFaceToCellStencilObject
+    >,
     public extendedCentredFaceToCellStencil
 {
 
@@ -64,7 +69,12 @@ public:
             const fvMesh& mesh
         )
         :
-            MeshObject<fvMesh, centredCFCFaceToCellStencilObject>(mesh),
+            MeshObject
+            <
+                fvMesh,
+                Foam::TopologicalMeshObject,
+                centredCFCFaceToCellStencilObject
+            >(mesh),
             extendedCentredFaceToCellStencil(CFCFaceToCellStencil(mesh))
         {}
 

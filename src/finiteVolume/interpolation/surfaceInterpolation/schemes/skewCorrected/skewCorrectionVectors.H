@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -37,7 +37,7 @@ SourceFiles
 
 #include "MeshObject.H"
 #include "fvMesh.H"
-#include "surfaceFieldsFwd.H"
+#include "surfaceFields.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -52,18 +52,18 @@ class fvMesh;
 
 class skewCorrectionVectors
 :
-    public MeshObject<fvMesh, skewCorrectionVectors>
+    public MeshObject<fvMesh, MoveableMeshObject, skewCorrectionVectors>
 {
     // Private data
 
         //- Is mesh skew
-        mutable bool skew_;
+        bool skew_;
 
         //- Skew correction vectors
-        mutable surfaceVectorField* skewCorrectionVectors_;
+        surfaceVectorField skewCorrectionVectors_;
 
-        //- Construct skewness correction vectors
-        void makeSkewCorrectionVectors() const;
+        //- Calculate skewness correction vectors
+        void calcSkewCorrectionVectors();
 
 
 public:
@@ -83,12 +83,18 @@ public:
     // Member functions
 
         //- Return whether mesh is skew or not
-        bool skew() const;
+        bool skew() const
+        {
+            return skew_;
+        }
 
         //- Return reference to skew vectors array
-        const surfaceVectorField& operator()() const;
+        const surfaceVectorField& operator()() const
+        {
+            return skewCorrectionVectors_;
+        }
 
-        //- Delete the correction vectors when the mesh moves
+        //- Update the correction vectors when the mesh moves
         virtual bool movePoints();
 };
 

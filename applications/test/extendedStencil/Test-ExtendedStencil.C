@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -53,7 +53,9 @@ Description
 //#include "upwindCECCellToFaceStencilObject.H"
 
 //#include "upwindCFCCellToFaceStencilObject.H"
-#include "centredCFCFaceToCellStencilObject.H"
+//#include "centredCFCFaceToCellStencilObject.H"
+
+#include "centredCECCellToCellStencilObject.H"
 
 using namespace Foam;
 
@@ -437,20 +439,20 @@ int main(int argc, char *argv[])
     // ~~~~~~~~~~~~~~~~~~~~~
 
     {
-        const extendedCentredFaceToCellStencil& addressing =
-        centredCFCFaceToCellStencilObject::New
+        const extendedCentredCellToCellStencil& addressing =
+        centredCECCellToCellStencilObject::New
         (
             mesh
         );
 
-        Info<< "cellFaceCell:" << endl;
+        Info<< "cellCellCell:" << endl;
         writeStencilStats(addressing.stencil());
 
-        // Collect stencil face centres
+        // Collect stencil cell centres
         List<List<point> > stencilPoints(mesh.nCells());
         addressing.collectData
         (
-            mesh.Cf(),
+            mesh.C(),
             stencilPoints
         );
 

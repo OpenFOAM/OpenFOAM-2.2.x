@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -171,19 +171,17 @@ void Foam::sampledSurfaces::write()
             writeGeometry();
         }
 
-        const IOobjectList objects(mesh_, mesh_.time().timeName());
+        sampleAndWrite<volScalarField>();
+        sampleAndWrite<volVectorField>();
+        sampleAndWrite<volSphericalTensorField>();
+        sampleAndWrite<volSymmTensorField>();
+        sampleAndWrite<volTensorField>();
 
-        sampleAndWrite<volScalarField>(objects);
-        sampleAndWrite<volVectorField>(objects);
-        sampleAndWrite<volSphericalTensorField>(objects);
-        sampleAndWrite<volSymmTensorField>(objects);
-        sampleAndWrite<volTensorField>(objects);
-
-        sampleAndWrite<surfaceScalarField>(objects);
-        sampleAndWrite<surfaceVectorField>(objects);
-        sampleAndWrite<surfaceSphericalTensorField>(objects);
-        sampleAndWrite<surfaceSymmTensorField>(objects);
-        sampleAndWrite<surfaceTensorField>(objects);
+        sampleAndWrite<surfaceScalarField>();
+        sampleAndWrite<surfaceVectorField>();
+        sampleAndWrite<surfaceSphericalTensorField>();
+        sampleAndWrite<surfaceSymmTensorField>();
+        sampleAndWrite<surfaceTensorField>();
     }
 }
 

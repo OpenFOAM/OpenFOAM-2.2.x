@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -24,7 +24,8 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "P1.H"
-#include "fvm.H"
+#include "fvmLaplacian.H"
+#include "fvmSup.H"
 
 #include "absorptionEmissionModel.H"
 #include "scatterModel.H"
@@ -279,7 +280,7 @@ Foam::radiation::P1::Ru() const
     const DimensionedField<scalar, volMesh> a =
         absorptionEmission_->aCont()().dimensionedInternalField();
 
-    return  a*G - 4.0*E;
+    return a*G - 4.0*E;
 }
 
 

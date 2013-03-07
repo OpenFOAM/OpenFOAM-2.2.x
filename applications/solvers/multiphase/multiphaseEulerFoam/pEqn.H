@@ -67,8 +67,29 @@
         const volScalarField& alpha = phase;
 
         alphafs.set(phasei, fvc::interpolate(alpha).ptr());
-        rAUs.set(phasei, (1.0/UEqns[phasei].A()).ptr());
-        rAlphaAUfs.set(phasei, fvc::interpolate(alpha*rAUs[phasei]).ptr());
+
+        volScalarField dragCoeffi
+        (
+            IOobject
+            (
+                "dragCoeffi",
+                runTime.timeName(),
+                mesh
+            ),
+            fluid.dragCoeff(phase, dragCoeffs())/phase.rho(),
+            zeroGradientFvPatchScalarField::typeName
+        );
+        dragCoeffi.correctBoundaryConditions();
+
+        rAUs.set(phasei, (1.0/(UEqns[phasei].A() + dragCoeffi)).ptr());
+        rAlphaAUfs.set
+        (
+            phasei,
+            (
+                alphafs[phasei]
+               /fvc::interpolate(UEqns[phasei].A() + dragCoeffi)
+            ).ptr()
+        );
 
         HbyAs[phasei] = rAUs[phasei]*UEqns[phasei].H();
 
@@ -115,10 +136,9 @@
             }
 
             phiHbyAs[phasei] +=
-                fvc::interpolate
-                (
-                    (1.0/phase.rho())*rAUs[phasei]*(*dcIter())
-                )*phase2Ptr->phi();
+                fvc::interpolate((*dcIter())/phase.rho())
+               /fvc::interpolate(UEqns[phasei].A() + dragCoeffi)
+               *phase2Ptr->phi();
 
             HbyAs[phasei] +=
                 (1.0/phase.rho())*rAUs[phasei]*(*dcIter())
@@ -240,7 +260,7 @@
                       + rAlphaAUfs[phasei]*mSfGradp/phase.rho()
                     );
 
-                // phase.U() = fvc::reconstruct(phase.phi());
+                //phase.U() = fvc::reconstruct(phase.phi());
                 phase.U().correctBoundaryConditions();
 
                 U += alpha*phase.U();

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -48,7 +48,7 @@ namespace Foam
 
 class meshSearchMeshObject
 :
-    public MeshObject<polyMesh, meshSearchMeshObject>,
+    public MeshObject<polyMesh, GeometricMeshObject, meshSearchMeshObject>,
     public meshSearch
 {
 
@@ -66,18 +66,6 @@ public:
     //- Destructor
     virtual ~meshSearchMeshObject()
     {}
-
-//
-//    // Member functions
-//
-//        // Edit
-//
-//            //- Update mesh topology using the morph engine
-//            void updateMesh();
-//
-//            //- Correct weighting factors for moving mesh.
-//            bool movePoints();
-//
 };
 
 

@@ -30,9 +30,10 @@
 
 
     Info<< "Reading transportProperties\n" << endl;
-    twoPhaseMixture twoPhaseProperties(U, phi);
+    incompressibleTwoPhaseMixture twoPhaseProperties(U, phi);
 
     volScalarField& alpha1(twoPhaseProperties.alpha1());
+    volScalarField& alpha2(twoPhaseProperties.alpha2());
 
     const dimensionedScalar& rho1 = twoPhaseProperties.rho1();
     const dimensionedScalar& rho2 = twoPhaseProperties.rho2();
@@ -48,7 +49,7 @@
             mesh,
             IOobject::READ_IF_PRESENT
         ),
-        alpha1*rho1 + (scalar(1) - alpha1)*rho2,
+        alpha1*rho1 + alpha2*rho2,
         alpha1.boundaryField().types()
     );
     rho.oldTime();

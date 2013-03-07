@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -25,8 +25,35 @@ Class
     Foam::MeshObject
 
 Description
-    Templated abstract base-class for dynamic mesh objects used to automate
+    Templated abstract base-class for optional mesh objects used to automate
     their allocation to the mesh database and the mesh-modifier event-loop.
+
+    MeshObject is templated on the type of mesh it is allocated to, the type of
+    the mesh object (TopologicalMeshObject, GeometricMeshObject,
+    MoveableMeshObject, UpdateableMeshObject) and the type of the actual object
+    it is created for example:
+
+    class leastSquaresVectors
+    :
+        public MeshObject<fvMesh, MoveableMeshObject, leastSquaresVectors>
+    {
+    .
+    .
+    .
+        //- Delete the least square vectors when the mesh moves
+        virtual bool movePoints();
+    };
+
+    MeshObject types:
+
+    TopologicalMeshObject: mesh object to be deleted on topology change
+    GeometricMeshObject: mesh object to be deleted on geometry change
+    MoveableMeshObject: mesh object to be updated in movePoints
+    UpdateableMeshObject: mesh object to be updated in updateMesh or movePoints
+
+    Note that movePoints must be provided for MeshObjects of type
+    MoveableMeshObject and both movePoints and updateMesh functions must exist
+    provided for MeshObjects of type UpdateableMeshObject.
 
 SourceFiles
     MeshObject.C
@@ -37,21 +64,24 @@ SourceFiles
 #define MeshObject_H
 
 #include "regIOobject.H"
+#include "objectRegistry.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
 
+// Forward declarations
+class mapPolyMesh;
+
 /*---------------------------------------------------------------------------*\
-                           Class MeshObject Declaration
+                         Class MeshObject Declaration
 \*---------------------------------------------------------------------------*/
 
-
-template<class Mesh, class Type>
+template<class Mesh, template<class> class MeshObjectType, class Type>
 class MeshObject
 :
-    public regIOobject
+    public MeshObjectType<Mesh>
 {
 
 protected:
@@ -121,6 +151,121 @@ public:
         {
             return true;
         }
+};
+
+
+/*---------------------------------------------------------------------------*\
+                           Class meshObject Declaration
+\*---------------------------------------------------------------------------*/
+
+class meshObject
+:
+    public regIOobject
+{
+public:
+
+    // Constructors
+
+        meshObject(const word& typeName, const objectRegistry& obr)
+        :
+            regIOobject
+            (
+                IOobject
+                (
+                    typeName,
+                    obr.instance(),
+                    obr
+                )
+            )
+        {}
+
+
+    // Static member functions
+
+        template<class Mesh>
+        static void movePoints(objectRegistry&);
+
+        template<class Mesh>
+        static void updateMesh(objectRegistry&, const mapPolyMesh&);
+
+        template<class Mesh, template<class> class MeshObjectType>
+        static void clear(objectRegistry&);
+};
+
+
+/*---------------------------------------------------------------------------*\
+                    Class TopologicalMeshObject Declaration
+\*---------------------------------------------------------------------------*/
+
+template<class Mesh>
+class TopologicalMeshObject
+:
+    public meshObject
+{
+public:
+
+    TopologicalMeshObject(const word& typeName, const objectRegistry& obr)
+    :
+        meshObject(typeName, obr)
+    {}
+};
+
+
+/*---------------------------------------------------------------------------*\
+                    Class GeometricMeshObject Declaration
+\*---------------------------------------------------------------------------*/
+
+template<class Mesh>
+class GeometricMeshObject
+:
+    public TopologicalMeshObject<Mesh>
+{
+public:
+
+    GeometricMeshObject(const word& typeName, const objectRegistry& obr)
+    :
+        TopologicalMeshObject<Mesh>(typeName, obr)
+    {}
+};
+
+
+/*---------------------------------------------------------------------------*\
+                    Class MoveableMeshObject Declaration
+\*---------------------------------------------------------------------------*/
+
+template<class Mesh>
+class MoveableMeshObject
+:
+    public GeometricMeshObject<Mesh>
+{
+public:
+
+    MoveableMeshObject(const word& typeName, const objectRegistry& obr)
+    :
+        GeometricMeshObject<Mesh>(typeName, obr)
+    {}
+
+    virtual bool movePoints() = 0;
+};
+
+
+/*---------------------------------------------------------------------------*\
+                    Class UpdateableMeshObject Declaration
+\*---------------------------------------------------------------------------*/
+
+template<class Mesh>
+class UpdateableMeshObject
+:
+    public MoveableMeshObject<Mesh>
+{
+public:
+
+    UpdateableMeshObject(const word& typeName, const objectRegistry& obr)
+    :
+        MoveableMeshObject<Mesh>(typeName, obr)
+    {}
+
+    virtual void updateMesh(const mapPolyMesh& mpm) = 0;
 };
 
 

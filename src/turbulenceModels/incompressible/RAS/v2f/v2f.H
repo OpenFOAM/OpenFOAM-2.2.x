@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -39,7 +39,7 @@ Description
 
         k       = kLowReWallFunction
         epsilon = epsilonLowReWallFunction
-        v2      = v2WalLFunction
+        v2      = v2WallFunction
         f       = fWallFunction
 
     These are applicable to both low- and high-Reynolds number flows.

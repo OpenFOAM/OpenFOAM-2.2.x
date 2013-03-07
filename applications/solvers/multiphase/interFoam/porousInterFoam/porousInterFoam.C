@@ -42,7 +42,7 @@ Description
 #include "MULES.H"
 #include "subCycle.H"
 #include "interfaceProperties.H"
-#include "twoPhaseMixture.H"
+#include "incompressibleTwoPhaseMixture.H"
 #include "turbulenceModel.H"
 #include "IOporosityModelList.H"
 #include "pimpleControl.H"

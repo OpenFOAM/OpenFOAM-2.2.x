@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2013-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -39,39 +39,76 @@ Description
 
 namespace Foam
 {
+    // Chemistry moldels based on sensibleEnthalpy
     makeChemistryModel
     (
         chemistryModel,
         psiChemistryModel,
-        constGasThermoPhysics
+        constGasHThermoPhysics
     );
 
     makeChemistryModel
     (
         chemistryModel,
         psiChemistryModel,
-        gasThermoPhysics
+        gasHThermoPhysics
     );
 
     makeChemistryModel
     (
         chemistryModel,
         psiChemistryModel,
-        constIncompressibleGasThermoPhysics
+        constIncompressibleGasHThermoPhysics
     );
 
     makeChemistryModel
     (
         chemistryModel,
         psiChemistryModel,
-        incompressibleGasThermoPhysics
+        incompressibleGasHThermoPhysics
     );
 
     makeChemistryModel
     (
         chemistryModel,
         psiChemistryModel,
-        icoPoly8ThermoPhysics
+        icoPoly8HThermoPhysics
+    );
+
+    // Chemistry moldels based on sensibleInternalEnergy
+    makeChemistryModel
+    (
+        chemistryModel,
+        psiChemistryModel,
+        constGasEThermoPhysics
+    );
+
+    makeChemistryModel
+    (
+        chemistryModel,
+        psiChemistryModel,
+        gasEThermoPhysics
+    );
+
+    makeChemistryModel
+    (
+        chemistryModel,
+        psiChemistryModel,
+        constIncompressibleGasEThermoPhysics
+    );
+
+    makeChemistryModel
+    (
+        chemistryModel,
+        psiChemistryModel,
+        incompressibleGasEThermoPhysics
+    );
+
+    makeChemistryModel
+    (
+        chemistryModel,
+        psiChemistryModel,
+        icoPoly8EThermoPhysics
     );
 }
 

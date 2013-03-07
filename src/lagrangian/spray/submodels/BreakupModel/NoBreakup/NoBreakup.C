@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -27,7 +27,7 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template <class CloudType>
+template<class CloudType>
 Foam::NoBreakup<CloudType>::NoBreakup
 (
     const dictionary&,
@@ -39,7 +39,7 @@ Foam::NoBreakup<CloudType>::NoBreakup
 
 
 
-template <class CloudType>
+template<class CloudType>
 Foam::NoBreakup<CloudType>::NoBreakup(const NoBreakup<CloudType>& bum)
 :
     BreakupModel<CloudType>(bum)
@@ -48,7 +48,7 @@ Foam::NoBreakup<CloudType>::NoBreakup(const NoBreakup<CloudType>& bum)
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-template <class CloudType>
+template<class CloudType>
 Foam::NoBreakup<CloudType>::~NoBreakup()
 {}
 

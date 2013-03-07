@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -60,8 +60,13 @@ Foam::TimeDataEntry<Type>::TimeDataEntry
 :
     time_(tde.time_),
     name_(tde.name_),
-    entry_(tde.entry_->clone().ptr())
-{}
+    entry_()
+{
+    if (tde.entry_.valid())
+    {
+        entry_.reset(tde.entry_->clone().ptr());
+    }
+}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -37,7 +37,7 @@ License
 
 namespace Foam
 {
-defineTypeNameAndDebug(motionSmoother, 0);
+    defineTypeNameAndDebug(motionSmoother, 0);
 }
 
 
@@ -65,7 +65,11 @@ void Foam::motionSmoother::testSyncPositions
         {
             FatalErrorIn
             (
-                "motionSmoother::testSyncPositions(const pointField&)"
+                "motionSmoother::testSyncPositions"
+                "("
+                    "const pointField&, "
+                    "const scalar"
+                ")"
             )   << "On point " << i << " point:" << fld[i]
                 << " synchronised point:" << syncedFld[i]
                 << abort(FatalError);
@@ -245,7 +249,7 @@ void Foam::motionSmoother::checkFld(const pointScalarField& fld)
         {}
         else
         {
-            FatalErrorIn("motionSmoother::checkFld")
+            FatalErrorIn("motionSmoother::checkFld(const pointScalarField&)")
                 << "Problem : point:" << pointI << " value:" << val
                 << abort(FatalError);
         }
@@ -870,7 +874,7 @@ Foam::tmp<Foam::scalarField> Foam::motionSmoother::movePoints
 
         if (mesh_.globalData().parallel())
         {
-            WarningIn("motionSmoother::movePoints(pointField& newPoints)")
+            WarningIn("motionSmoother::movePoints(pointField&)")
                 << "2D mesh-motion probably not correct in parallel" << endl;
         }
 
@@ -981,7 +985,18 @@ bool Foam::motionSmoother::scaleMesh
 {
     if (!smoothMesh && adaptPatchIDs_.empty())
     {
-        FatalErrorIn("motionSmoother::scaleMesh(const bool")
+        FatalErrorIn
+        (
+            "motionSmoother::scaleMesh"
+            "("
+                "labelList&, "
+                "const List<labelPair>&, "
+                "const dictionary&, "
+                "const dictionary&, "
+                "const bool, "
+                "const label"
+            ")"
+        )
             << "You specified both no movement on the internal mesh points"
             << " (smoothMesh = false)" << nl
             << "and no movement on the patch (adaptPatchIDs is empty)" << nl
@@ -1062,7 +1077,7 @@ bool Foam::motionSmoother::scaleMesh
         newPoints = oldPoints_ + totalDisplacement.internalField();
     }
 
-    Info<< "Moving mesh using diplacement scaling :"
+    Info<< "Moving mesh using displacement scaling :"
         << " min:" << gMin(scale_.internalField())
         << "  max:" << gMax(scale_.internalField())
         << endl;
@@ -1225,7 +1240,7 @@ void Foam::motionSmoother::updateMesh()
         {
             FatalErrorIn
             (
-                "motionSmoother::motionSmoother"
+                "motionSmoother::updateMesh"
             )   << "Patch " << patches[patchI].name()
                 << " has wrong boundary condition "
                 << displacement_.boundaryField()[patchI].type()

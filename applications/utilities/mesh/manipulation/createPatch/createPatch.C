@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -291,7 +291,7 @@ void separateList
 
 
 // Synchronise points on both sides of coupled boundaries.
-template <class CombineOp>
+template<class CombineOp>
 void syncPoints
 (
     const polyMesh& mesh,

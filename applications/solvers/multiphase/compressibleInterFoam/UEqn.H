@@ -2,7 +2,7 @@
     (
         fvm::ddt(rho, U)
       + fvm::div(rhoPhi, U)
-      + turbulence->divDevRhoReff(rho, U)
+      + turbulence->divDevRhoReff(U)
     );
 
     UEqn.relax();
@@ -22,4 +22,6 @@
                 ) * mesh.magSf()
             )
         );
+
+        K = 0.5*magSqr(U);
     }

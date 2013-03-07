@@ -49,6 +49,7 @@ Description
 #include "singlePhaseTransportModel.H"
 #include "RASModel.H"
 #include "pimpleControl.H"
+#include "radiationModel.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -59,6 +60,7 @@ int main(int argc, char *argv[])
     #include "createMesh.H"
     #include "readGravitationalAcceleration.H"
     #include "createFields.H"
+    #include "createIncompressibleRadiationModel.H"
     #include "initContinuityErrs.H"
     #include "readTimeControls.H"
     #include "CourantNo.H"

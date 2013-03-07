@@ -90,6 +90,9 @@ class scalarTransport
         //- Name of velocity field (optional)
         word UName_;
 
+        //- Name of density field (optional)
+        word rhoName_;
+
         //- Diffusion coefficient (optional)
         scalar DT_;
 

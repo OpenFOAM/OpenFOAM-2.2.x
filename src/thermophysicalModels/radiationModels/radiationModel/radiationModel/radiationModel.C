@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -27,6 +27,7 @@ License
 #include "absorptionEmissionModel.H"
 #include "scatterModel.H"
 #include "fvmSup.H"
+#include "fluidThermo.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -228,6 +229,20 @@ Foam::tmp<Foam::fvScalarMatrix> Foam::radiation::radiationModel::Sh
         Ru()
       - fvm::Sp(4.0*Rp()*T3/Cpv, he)
       - Rp()*T3*(T_ - 4.0*he/Cpv)
+    );
+}
+
+
+Foam::tmp<Foam::fvScalarMatrix> Foam::radiation::radiationModel::ST
+(
+    const dimensionedScalar& rhoCp,
+    volScalarField& T
+) const
+{
+    return
+    (
+        Ru()/rhoCp
+      - fvm::Sp(Rp()*pow3(T)/rhoCp, T)
     );
 }
 

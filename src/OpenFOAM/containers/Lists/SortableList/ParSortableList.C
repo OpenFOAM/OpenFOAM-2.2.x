@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -31,7 +31,7 @@ License
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
-template <class Type>
+template<class Type>
 void Foam::ParSortableList<Type>::write
 (
     const List<Type>& elems,
@@ -49,7 +49,7 @@ void Foam::ParSortableList<Type>::write
 
 
 // Copy src, starting at destI into dest.
-template <class Type>
+template<class Type>
 void Foam::ParSortableList<Type>::copyInto
 (
     const List<Type>& values,
@@ -72,7 +72,7 @@ void Foam::ParSortableList<Type>::copyInto
 }
 
 
-template <class Type>
+template<class Type>
 void Foam::ParSortableList<Type>::getPivots
 (
     const List<Type>& elems,
@@ -92,7 +92,7 @@ void Foam::ParSortableList<Type>::getPivots
 }
 
 
-template <class Type>
+template<class Type>
 void Foam::ParSortableList<Type>::checkAndSend
 (
     List<Type>& values,
@@ -123,7 +123,7 @@ void Foam::ParSortableList<Type>::checkAndSend
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 // Construct from List, sorting the elements
-template <class Type>
+template<class Type>
 Foam::ParSortableList<Type>::ParSortableList(const UList<Type>& values)
 :
     List<Type>(values),
@@ -135,7 +135,7 @@ Foam::ParSortableList<Type>::ParSortableList(const UList<Type>& values)
 
 
 // Construct given size. Sort later on.
-template <class Type>
+template<class Type>
 Foam::ParSortableList<Type>::ParSortableList(const label size)
 :
     List<Type>(size),
@@ -147,7 +147,7 @@ Foam::ParSortableList<Type>::ParSortableList(const label size)
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 // Sort
-template <class Type>
+template<class Type>
 void Foam::ParSortableList<Type>::sort()
 {
     //

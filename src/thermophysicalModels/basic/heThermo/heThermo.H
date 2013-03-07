@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -63,14 +63,6 @@ protected:
     // Protected Member Functions
 
         // Enthalpy/Internal energy
-
-            //- Return the enthalpy/internal energy field boundary types
-            //  by interrogating the temperature field boundary types
-            wordList heBoundaryTypes();
-
-            //- Return the enthalpy/internal energy field boundary base types
-            //  by interrogating the temperature field boundary types
-            wordList heBoundaryBaseTypes();
 
             //- Correct the enthalpy/internal energy field boundaries
             void heBoundaryCorrection(volScalarField& he);

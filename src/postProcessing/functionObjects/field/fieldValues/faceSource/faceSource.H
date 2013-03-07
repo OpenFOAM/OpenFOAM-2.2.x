@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -87,6 +87,7 @@ Description
     \plaintable
        none          | no operation
        sum           | sum
+       sumDirection  | sum values which are positive in given direction
        average       | ensemble average
        weightedAverage | weighted average
        areaAverage   | area weighted average
@@ -176,6 +177,7 @@ public:
         {
             opNone,
             opSum,
+            opSumDirection,
             opAverage,
             opWeightedAverage,
             opAreaAverage,
@@ -188,7 +190,7 @@ public:
         };
 
         //- Operation type names
-        static const NamedEnum<operationType, 11> operationTypeNames_;
+        static const NamedEnum<operationType, 12> operationTypeNames_;
 
 
 private:
@@ -366,8 +368,17 @@ public:
 };
 
 
-//- Specialisation of processing vectors for opAreaNormalAverage,
-//  opAreaNormalIntegrate (use inproduct - dimension reducing operation)
+//- Specialisation of processing scalars
+template<>
+scalar faceSource::processValues
+(
+    const Field<scalar>& values,
+    const vectorField& Sf,
+    const scalarField& weightField
+) const;
+
+
+//- Specialisation of processing vectors
 template<>
 vector faceSource::processValues
 (

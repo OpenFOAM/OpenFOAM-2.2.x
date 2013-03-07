@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -38,9 +38,10 @@ Description
 #include "fvCFD.H"
 #include "MULES.H"
 #include "subCycle.H"
+#include "rhoThermo.H"
 #include "interfaceProperties.H"
 #include "twoPhaseMixture.H"
-#include "phaseEquationOfState.H"
+#include "twoPhaseMixtureThermo.H"
 #include "turbulenceModel.H"
 #include "pimpleControl.H"
 

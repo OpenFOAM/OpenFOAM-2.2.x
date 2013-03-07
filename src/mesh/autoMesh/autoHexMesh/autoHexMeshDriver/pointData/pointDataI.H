@@ -75,7 +75,7 @@ inline const Foam::vector& Foam::pointData::v() const
 }
 
 
-template <class TrackingData>
+template<class TrackingData>
 inline void Foam::pointData::transform
 (
     const tensor& rotTensor,
@@ -88,7 +88,7 @@ inline void Foam::pointData::transform
 
 
 // Update this with information from connected edge
-template <class TrackingData>
+template<class TrackingData>
 inline bool Foam::pointData::updatePoint
 (
     const polyMesh& mesh,
@@ -123,7 +123,7 @@ inline bool Foam::pointData::updatePoint
 }
 
 // Update this with new information on same point
-template <class TrackingData>
+template<class TrackingData>
 inline bool Foam::pointData::updatePoint
 (
     const polyMesh& mesh,
@@ -157,7 +157,7 @@ inline bool Foam::pointData::updatePoint
 
 
 // Update this with new information on same point. No extra information.
-template <class TrackingData>
+template<class TrackingData>
 inline bool Foam::pointData::updatePoint
 (
     const pointData& newPointInfo,
@@ -179,7 +179,7 @@ inline bool Foam::pointData::updatePoint
 
 
 // Update this with information from connected point
-template <class TrackingData>
+template<class TrackingData>
 inline bool Foam::pointData::updateEdge
 (
     const polyMesh& mesh,

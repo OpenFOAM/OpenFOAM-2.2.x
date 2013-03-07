@@ -18,7 +18,7 @@
             )
           + fvc::flux
             (
-                -fvc::flux(-phir, scalar(1) - alpha1, alpharScheme),
+                -fvc::flux(-phir, alpha2, alpharScheme),
                 alpha1,
                 alpharScheme
             )
@@ -27,6 +27,7 @@
         MULES::explicitLTSSolve(alpha1, phi, phiAlpha, 1, 0);
         //MULES::explicitSolve(alpha1, phi, phiAlpha, 1, 0);
 
+        alpha2 = 1.0 - alpha1;
         rhoPhi = phiAlpha*(rho1 - rho2) + phi*rho2;
     }
 

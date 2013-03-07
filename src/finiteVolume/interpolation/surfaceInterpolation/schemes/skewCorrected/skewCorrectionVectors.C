@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -24,7 +24,6 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "skewCorrectionVectors.H"
-#include "surfaceFields.H"
 #include "volFields.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
@@ -39,28 +38,9 @@ namespace Foam
 
 Foam::skewCorrectionVectors::skewCorrectionVectors(const fvMesh& mesh)
 :
-    MeshObject<fvMesh, skewCorrectionVectors>(mesh),
-    skew_(true),
-    skewCorrectionVectors_(NULL)
-{}
-
-
-Foam::skewCorrectionVectors::~skewCorrectionVectors()
-{
-    deleteDemandDrivenData(skewCorrectionVectors_);
-}
-
-
-void Foam::skewCorrectionVectors::makeSkewCorrectionVectors() const
-{
-    if (debug)
-    {
-        Info<< "surfaceInterpolation::makeSkewCorrectionVectors() : "
-            << "Constructing skew correction vectors"
-            << endl;
-    }
-
-    skewCorrectionVectors_ = new surfaceVectorField
+    MeshObject<fvMesh, Foam::MoveableMeshObject, skewCorrectionVectors>(mesh),
+    skew_(false),
+    skewCorrectionVectors_
     (
         IOobject
         (
@@ -73,8 +53,24 @@ void Foam::skewCorrectionVectors::makeSkewCorrectionVectors() const
         ),
         mesh_,
         dimless
-    );
-    surfaceVectorField& SkewCorrVecs = *skewCorrectionVectors_;
+    )
+{
+    calcSkewCorrectionVectors();
+}
+
+
+Foam::skewCorrectionVectors::~skewCorrectionVectors()
+{}
+
+
+void Foam::skewCorrectionVectors::calcSkewCorrectionVectors()
+{
+    if (debug)
+    {
+        Info<< "surfaceInterpolation::calcSkewCorrectionVectors() : "
+            << "Calculating skew correction vectors"
+            << endl;
+    }
 
     // Set local references to mesh data
     const volVectorField& C = mesh_.C();
@@ -92,14 +88,15 @@ void Foam::skewCorrectionVectors::makeSkewCorrectionVectors() const
         vector d = C[nei] - C[own];
         vector Cpf = Cf[facei] - C[own];
 
-        SkewCorrVecs[facei] = Cpf - ((Sf[facei] & Cpf)/(Sf[facei] & d))*d;
+        skewCorrectionVectors_[facei] =
+            Cpf - ((Sf[facei] & Cpf)/(Sf[facei] & d))*d;
     }
 
 
-    forAll(SkewCorrVecs.boundaryField(), patchI)
+    forAll(skewCorrectionVectors_.boundaryField(), patchI)
     {
         fvsPatchVectorField& patchSkewCorrVecs =
-            SkewCorrVecs.boundaryField()[patchI];
+            skewCorrectionVectors_.boundaryField()[patchI];
 
         if (!patchSkewCorrVecs.coupled())
         {
@@ -132,21 +129,19 @@ void Foam::skewCorrectionVectors::makeSkewCorrectionVectors() const
 
     if (Sf.internalField().size())
     {
-        skewCoeff = max(mag(SkewCorrVecs)*mesh_.deltaCoeffs()).value();
+        skewCoeff =
+            max(mag(skewCorrectionVectors_)*mesh_.deltaCoeffs()).value();
     }
 
     if (debug)
     {
-        Info<< "surfaceInterpolation::makeSkewCorrectionVectors() : "
+        Info<< "surfaceInterpolation::calcSkewCorrectionVectors() : "
             << "skew coefficient = " << skewCoeff << endl;
     }
-
-    //skewCoeff = 0.0;
 
     if (skewCoeff < 1e-5)
     {
         skew_ = false;
-        deleteDemandDrivenData(skewCorrectionVectors_);
     }
     else
     {
@@ -155,43 +150,16 @@ void Foam::skewCorrectionVectors::makeSkewCorrectionVectors() const
 
     if (debug)
     {
-        Info<< "surfaceInterpolation::makeSkewCorrectionVectors() : "
+        Info<< "surfaceInterpolation::calcSkewCorrectionVectors() : "
             << "Finished constructing skew correction vectors"
             << endl;
     }
 }
 
 
-bool Foam::skewCorrectionVectors::skew() const
-{
-    if (skew_ == true && !skewCorrectionVectors_)
-    {
-        makeSkewCorrectionVectors();
-    }
-
-    return skew_;
-}
-
-
-const Foam::surfaceVectorField& Foam::skewCorrectionVectors::operator()() const
-{
-    if (!skew())
-    {
-        FatalErrorIn("skewCorrectionVectors::operator()()")
-            << "Cannot return skewCorrectionVectors; mesh is not skewed"
-            << abort(FatalError);
-    }
-
-    return *skewCorrectionVectors_;
-}
-
-
-// Do what is neccessary if the mesh has moved
 bool Foam::skewCorrectionVectors::movePoints()
 {
-    skew_ = true;
-    deleteDemandDrivenData(skewCorrectionVectors_);
-
+    calcSkewCorrectionVectors();
     return true;
 }
 

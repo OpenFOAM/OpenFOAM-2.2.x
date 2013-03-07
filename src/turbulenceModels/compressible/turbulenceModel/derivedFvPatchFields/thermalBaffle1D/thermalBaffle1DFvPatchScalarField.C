@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -200,23 +200,23 @@ void thermalBaffle1DFvPatchScalarField<solidType>::updateCoeffs()
     const mappedPatchBase& mpp =
         refCast<const mappedPatchBase>(patch().patch());
 
-    const label patchI = patch().index();
+    const label patchi = patch().index();
 
-    const label nbrPatchI = mpp.samplePolyPatch().index();
+    const label nbrPatchi = mpp.samplePolyPatch().index();
 
     if (baffleActivated_)
     {
-        const fvPatch& nbrPatch = patch().boundaryMesh()[nbrPatchI];
+        const fvPatch& nbrPatch = patch().boundaryMesh()[nbrPatchi];
 
-        const compressible::turbulenceModel& model =
+        const compressible::turbulenceModel& turbModel =
             db().template lookupObject<compressible::turbulenceModel>
             (
                 "turbulenceModel"
             );
 
-
         // local properties
-        const scalarField kappaw = model.kappaEff()().boundaryField()[patchI];
+
+        const scalarField kappaw(turbModel.kappaEff(patchi));
 
         const fvPatchScalarField& Tp =
             patch().template lookupPatchField<volScalarField, scalar>(TName_);
@@ -229,17 +229,12 @@ void thermalBaffle1DFvPatchScalarField<solidType>::updateCoeffs()
 
         // nbr properties
 
-        scalarField nbrKappaw =
-            model.kappaEff()().boundaryField()[nbrPatchI];
-        mpp.map().distribute(nbrKappaw);
+        const scalarField nbrKappaw(turbModel.kappaEff(nbrPatchi));
 
         const fvPatchScalarField& nbrTw =
-            model.thermo().T().boundaryField()[nbrPatchI];
+            turbModel.thermo().T().boundaryField()[nbrPatchi];
 
-        scalarField nbrQDot
-        (
-            model.kappaEff()().boundaryField()[nbrPatchI]*nbrTw.snGrad()
-        );
+        scalarField nbrQDot(nbrKappaw*nbrTw.snGrad());
         mpp.map().distribute(nbrQDot);
 
         const thermalBaffle1DFvPatchScalarField& nbrField =
@@ -255,11 +250,7 @@ void thermalBaffle1DFvPatchScalarField<solidType>::updateCoeffs()
            nbrPatch.template lookupPatchField<volScalarField, scalar>(TName_);
         mpp.map().distribute(nbrTp);
 
-        scalarField nbrh
-        (
-            nbrPatch.deltaCoeffs()
-           *model.kappaEff()().boundaryField()[nbrPatchI]
-        );
+        scalarField nbrh(nbrPatch.deltaCoeffs()*nbrKappaw);
         mpp.map().distribute(nbrh);
 
 
@@ -346,7 +337,7 @@ void thermalBaffle1DFvPatchScalarField<solidType>::updateCoeffs()
     mixedFvPatchScalarField::updateCoeffs();
 }
 
-template <class solidType>
+template<class solidType>
 void thermalBaffle1DFvPatchScalarField<solidType>::
 write(Ostream& os) const
 {

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -111,6 +111,9 @@ public:
         {
             return "constIso<" + Thermo::typeName() + '>';
         }
+
+        //- Is the thermal conductivity isotropic
+        static const bool isotropic = true;
 
         //- Isotropic thermal conductivity [W/mK]
         inline scalar kappa(const scalar p, const scalar T) const;

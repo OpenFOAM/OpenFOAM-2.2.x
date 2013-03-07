@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -26,30 +26,24 @@ License
 #include "polyMesh.H"
 #include "Time.H"
 #include "cellIOList.H"
-#include "SubList.H"
 #include "wedgePolyPatch.H"
 #include "emptyPolyPatch.H"
 #include "globalMeshData.H"
 #include "processorPolyPatch.H"
-#include "OSspecific.H"
 #include "polyMeshTetDecomposition.H"
 #include "indexedOctree.H"
 #include "treeDataCell.H"
-#include "SubField.H"
+#include "MeshObject.H"
 
-#include "pointMesh.H"
-#include "Istream.H"
-#include "Ostream.H"
-#include "simpleRegIOobject.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
 namespace Foam
 {
-defineTypeNameAndDebug(polyMesh, 0);
+    defineTypeNameAndDebug(polyMesh, 0);
 
-word polyMesh::defaultRegion = "region0";
-word polyMesh::meshSubDir = "polyMesh";
+    word polyMesh::defaultRegion = "region0";
+    word polyMesh::meshSubDir = "polyMesh";
 }
 
 
@@ -1162,21 +1156,7 @@ Foam::tmp<Foam::scalarField> Foam::polyMesh::movePoints
     geometricD_ = Vector<label>::zero;
     solutionD_ = Vector<label>::zero;
 
-
-    // Hack until proper callbacks. Below are all the polyMeh MeshObjects with a
-    // movePoints function.
-
-    // pointMesh
-    if (thisDb().foundObject<pointMesh>(pointMesh::typeName))
-    {
-        const_cast<pointMesh&>
-        (
-            thisDb().lookupObject<pointMesh>
-            (
-                pointMesh::typeName
-            )
-        ).movePoints(points_);
-    }
+    meshObject::movePoints<polyMesh>(*this);
 
     const_cast<Time&>(time()).functionObjects().movePoints(*this);
 

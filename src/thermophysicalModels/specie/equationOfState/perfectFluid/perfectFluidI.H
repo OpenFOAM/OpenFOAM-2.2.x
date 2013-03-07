@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -31,10 +31,12 @@ template<class Specie>
 inline Foam::perfectFluid<Specie>::perfectFluid
 (
     const Specie& sp,
+    const scalar R,
     const scalar rho0
 )
 :
     Specie(sp),
+    R_(R),
     rho0_(rho0)
 {}
 
@@ -49,6 +51,7 @@ inline Foam::perfectFluid<Specie>::perfectFluid
 )
 :
     Specie(name, pf),
+    R_(pf.R_),
     rho0_(pf.rho0_)
 {}
 
@@ -83,6 +86,13 @@ Foam::perfectFluid<Specie>::New
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 template<class Specie>
+inline Foam::scalar Foam::perfectFluid<Specie>::R() const
+{
+    return R_;
+}
+
+
+template<class Specie>
 inline Foam::scalar Foam::perfectFluid<Specie>::rho(scalar p, scalar T) const
 {
     return rho0_ + p/(this->R()*T);
@@ -106,7 +116,7 @@ inline Foam::scalar Foam::perfectFluid<Specie>::Z(scalar, scalar) const
 template<class Specie>
 inline Foam::scalar Foam::perfectFluid<Specie>::cpMcv(scalar, scalar) const
 {
-    return this->RR;
+    return 0;
 }
 
 
@@ -125,6 +135,7 @@ inline void Foam::perfectFluid<Specie>::operator+=
     molr1 /= this->nMoles();
     scalar molr2 = pf.nMoles()/this->nMoles();
 
+    R_ = 1.0/(molr1/R_ + molr2/pf.R_);
     rho0_ = molr1*rho0_ + molr2*pf.rho0_;
 }
 
@@ -142,6 +153,7 @@ inline void Foam::perfectFluid<Specie>::operator-=
     molr1 /= this->nMoles();
     scalar molr2 = pf.nMoles()/this->nMoles();
 
+    R_ = 1.0/(molr1/R_ - molr2/pf.R_);
     rho0_ = molr1*rho0_ - molr2*pf.rho0_;
 }
 
@@ -170,6 +182,7 @@ inline Foam::perfectFluid<Specie> Foam::operator+
     (
         static_cast<const Specie&>(pf1)
       + static_cast<const Specie&>(pf2),
+        1.0/(molr1/pf1.R_ + molr2/pf2.R_),
         molr1*pf1.rho0_ + molr2*pf2.rho0_
     );
 }
@@ -190,6 +203,7 @@ inline Foam::perfectFluid<Specie> Foam::operator-
     (
         static_cast<const Specie&>(pf1)
       - static_cast<const Specie&>(pf2),
+        1.0/(molr1/pf1.R_ - molr2/pf2.R_),
         molr1*pf1.rho0_ - molr2*pf2.rho0_
     );
 }
@@ -202,7 +216,12 @@ inline Foam::perfectFluid<Specie> Foam::operator*
     const perfectFluid<Specie>& pf
 )
 {
-    return perfectFluid<Specie>(s*static_cast<const Specie&>(pf), pf.rho0_);
+    return perfectFluid<Specie>
+    (
+        s*static_cast<const Specie&>(pf),
+        pf.R_,
+        pf.rho0_
+    );
 }
 
 

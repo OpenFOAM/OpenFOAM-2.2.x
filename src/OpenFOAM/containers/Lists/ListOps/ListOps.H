@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -255,23 +255,23 @@ public:
 
 
 //- Reverse a list. First element becomes last element etc.
-template <class ListType>
+template<class ListType>
 ListType reverseList(const ListType& list);
 
 
 //- Inplace reversal of a list using Swap.
-template <class ListType>
+template<class ListType>
 void inplaceReverseList(ListType& list);
 
 
 //- Rotate a list by n places. If n is positive rotate clockwise/right/down.
 //  If n is negative rotate anti-clockwise/left/up.
-template <class ListType>
+template<class ListType>
 ListType rotateList(const ListType& list, const label n);
 
 
 //- Inplace reversal of a list using the Reversal Block Swapping algorithm.
-template <template <typename> class ListType, class DataType>
+template<template<typename> class ListType, class DataType>
 void inplaceRotateList(ListType<DataType>& list, label n);
 
 

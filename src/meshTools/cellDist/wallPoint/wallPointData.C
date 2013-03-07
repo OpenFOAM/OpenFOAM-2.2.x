@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -32,7 +32,7 @@ namespace Foam
 
 // * * * * * * * * * * * * * * * Friend Operators  * * * * * * * * * * * * * //
 
-template <class Type>
+template<class Type>
 Ostream& operator<<
 (
     Ostream& os,
@@ -45,7 +45,7 @@ Ostream& operator<<
 }
 
 
-template <class Type>
+template<class Type>
 Istream& operator>>
 (
     Istream& is,

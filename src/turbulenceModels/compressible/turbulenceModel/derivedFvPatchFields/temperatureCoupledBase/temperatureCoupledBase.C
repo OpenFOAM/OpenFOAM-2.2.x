@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -92,13 +92,13 @@ Foam::tmp<Foam::scalarField> Foam::temperatureCoupledBase::kappa
     {
         case BASICTHERMO:
         {
-            const compressible::turbulenceModel& model =
+            const compressible::turbulenceModel& turbModel =
                 mesh.lookupObject<compressible::turbulenceModel>
                 (
                     "turbulenceModel"
                 );
 
-            return model.kappaEff(patch_.index());
+            return turbModel.kappaEff(patch_.index());
             break;
         }
 

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -348,7 +348,7 @@ void NonlinearKEShih::correct()
 
     volScalarField G
     (
-        type() + ".G",
+        GName(),
         Cmu_*sqr(k_)/epsilon_*S2 - (nonlinearStress_ && gradU)
     );
 

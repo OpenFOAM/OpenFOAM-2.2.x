@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -91,9 +91,10 @@ public:
         inline SphericalTensor();
 
         //- Construct given VectorSpace
+        template<class Cmpt2>
         inline SphericalTensor
         (
-            const VectorSpace<SphericalTensor<Cmpt>, Cmpt, 1>&
+            const VectorSpace<SphericalTensor<Cmpt2>, Cmpt2, 1>&
         );
 
         //- Construct given the component

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -53,16 +53,14 @@ Foam::noiseFFT::noiseFFT(const fileName& pFileName, const label skip)
     scalarField(),
     deltat_(0.0)
 {
-    // Construct control dictionary
+    // Construct pressure data file
     IFstream pFile(pFileName);
 
     // Check pFile stream is OK
     if (!pFile.good())
     {
-        FatalErrorIn
-        (
-            "noiseFFT::noiseFFT(const fileName&, const label)"
-        )   << "Cannot read file " << pFileName
+        FatalErrorIn("noiseFFT::noiseFFT(const scalar, const scalarField&)")
+            << "Cannot read file " << pFileName
             << exit(FatalError);
     }
 
@@ -76,7 +74,10 @@ Foam::noiseFFT::noiseFFT(const fileName& pFileName, const label skip)
 
             if (!pFile.good() || pFile.eof())
             {
-                FatalErrorIn("noiseFFT::noiseFFT(const fileName&, const label)")
+                FatalErrorIn
+                (
+                    "noiseFFT::noiseFFT(const scalar, const scalarField&)"
+                )
                     << "Number of points in file " << pFileName
                     << " is less than the number to be skipped = " << skip
                     << exit(FatalError);

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -227,7 +227,11 @@ thermalBaffleModel::thermalBaffleModel
 }
 
 
-thermalBaffleModel::thermalBaffleModel(const word& modelType, const fvMesh& mesh)
+thermalBaffleModel::thermalBaffleModel
+(
+    const word& modelType,
+    const fvMesh& mesh
+)
 :
     regionModel1D(mesh, "thermalBaffle", modelType),
     thickness_(),

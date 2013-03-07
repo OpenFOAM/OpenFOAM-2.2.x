@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2013-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -23,18 +23,87 @@ License
 
 \*---------------------------------------------------------------------------*/
 
+#include "volFields.H"
+
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-inline Foam::solidReactionThermo& Foam::solidChemistryModel::solidThermo()
+template<class CompType, class SolidThermo>
+inline Foam::PtrList<Foam::DimensionedField<Foam::scalar, Foam::volMesh> >&
+Foam::solidChemistryModel<CompType, SolidThermo>::RRs()
 {
-    return solidThermo_();
+    return RRs_;
+}
+
+template<class CompType, class SolidThermo>
+inline const Foam::PtrList<Foam::Reaction<SolidThermo> >&
+Foam::solidChemistryModel<CompType, SolidThermo>::reactions() const
+{
+    return reactions_;
 }
 
 
-inline const Foam::solidReactionThermo&
-Foam::solidChemistryModel::solidThermo() const
+template<class CompType, class SolidThermo>
+inline Foam::label
+Foam::solidChemistryModel<CompType, SolidThermo>::
+nReaction() const
 {
-    return solidThermo_();
+    return nReaction_;
+}
+
+
+template<class CompType, class SolidThermo>
+inline const Foam::DimensionedField<Foam::scalar, Foam::volMesh>&
+Foam::solidChemistryModel<CompType, SolidThermo>::RRs
+(
+    const label i
+) const
+{
+    return RRs_[i];
+}
+
+
+template<class CompType, class SolidThermo>
+inline Foam::tmp<Foam::DimensionedField<Foam::scalar, Foam::volMesh> >
+Foam::solidChemistryModel<CompType, SolidThermo>::RRs() const
+{
+    tmp<DimensionedField<scalar, volMesh> > tRRs
+    (
+        new DimensionedField<scalar, volMesh>
+        (
+            IOobject
+            (
+                "RRs",
+                this->time().timeName(),
+                this->mesh(),
+                IOobject::NO_READ,
+                IOobject::NO_WRITE
+            ),
+            this->mesh(),
+            dimensionedScalar("zero", dimMass/dimVolume/dimTime, 0.0)
+        )
+    );
+
+    if (this->chemistry_)
+    {
+        DimensionedField<scalar, volMesh>& RRs = tRRs();
+        for (label i=0; i < nSolids_; i++)
+        {
+            RRs += RRs_[i];
+        }
+    }
+    return tRRs;
+}
+
+
+template<class CompType, class SolidThermo>
+inline const Foam::DimensionedField<Foam::scalar, Foam::volMesh>&
+Foam::solidChemistryModel<CompType, SolidThermo>::RR
+(
+    const label i
+) const
+{
+    notImplemented("solidChemistryModel::RR(const label)");
+    return (DimensionedField<scalar, volMesh>::null());
 }
 
 

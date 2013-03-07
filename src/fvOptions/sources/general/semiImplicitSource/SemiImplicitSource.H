@@ -51,7 +51,7 @@ Description
             epsilon     (1.5  0);
         }
     }
-    \verbatim
+    \endverbatim
 
     Valid options for the \c volumeMode entry include:
     - absolute: values are given as \<quantity\>

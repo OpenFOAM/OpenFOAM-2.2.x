@@ -369,6 +369,263 @@ tmp<DimensionedField<scalar, GeoMesh> > pow
     return pow(dimensionedScalar(s), tdsf);
 }
 
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+template<class GeoMesh>
+tmp<DimensionedField<scalar, GeoMesh> > atan2
+(
+    const DimensionedField<scalar, GeoMesh>& dsf1,
+    const DimensionedField<scalar, GeoMesh>& dsf2
+)
+{
+    tmp<DimensionedField<scalar, GeoMesh> > tAtan2
+    (
+        new DimensionedField<scalar, GeoMesh>
+        (
+            IOobject
+            (
+                "atan2(" + dsf1.name() + ',' + dsf2.name() + ')',
+                dsf1.instance(),
+                dsf1.db()
+            ),
+            dsf1.mesh(),
+            atan2(dsf1.dimensions(), dsf2.dimensions())
+        )
+    );
+
+    atan2(tAtan2().field(), dsf1.field(), dsf2.field());
+
+    return tAtan2;
+}
+
+
+template<class GeoMesh>
+tmp<DimensionedField<scalar, GeoMesh> > atan2
+(
+    const tmp<DimensionedField<scalar, GeoMesh> >& tdsf1,
+    const DimensionedField<scalar, GeoMesh>& dsf2
+)
+{
+    const DimensionedField<scalar, GeoMesh>& dsf1 = tdsf1();
+
+    tmp<DimensionedField<scalar, GeoMesh> > tAtan2 =
+        reuseTmpDimensionedField<scalar, scalar, GeoMesh>::New
+        (
+            tdsf1,
+            "atan2(" + dsf1.name() + ',' + dsf2.name() + ')',
+            atan2(dsf1.dimensions(), dsf2.dimensions())
+        );
+
+    atan2(tAtan2().field(), dsf1.field(), dsf2.field());
+
+    reuseTmpDimensionedField<scalar, scalar, GeoMesh>::clear(tdsf1);
+
+    return tAtan2;
+}
+
+
+template<class GeoMesh>
+tmp<DimensionedField<scalar, GeoMesh> > atan2
+(
+    const DimensionedField<scalar, GeoMesh>& dsf1,
+    const tmp<DimensionedField<scalar, GeoMesh> >& tdsf2
+)
+{
+    const DimensionedField<scalar, GeoMesh>& dsf2 = tdsf2();
+
+    tmp<DimensionedField<scalar, GeoMesh> > tAtan2 =
+        reuseTmpDimensionedField<scalar, scalar, GeoMesh>::New
+        (
+            tdsf2,
+            "atan2(" + dsf1.name() + ',' + dsf2.name() + ')',
+            atan2(dsf1.dimensions(), dsf2.dimensions())
+        );
+
+    atan2(tAtan2().field(), dsf1.field(), dsf2.field());
+
+    reuseTmpDimensionedField<scalar, scalar, GeoMesh>::clear(tdsf2);
+
+    return tAtan2;
+}
+
+template<class GeoMesh>
+tmp<DimensionedField<scalar, GeoMesh> > atan2
+(
+    const tmp<DimensionedField<scalar, GeoMesh> >& tdsf1,
+    const tmp<DimensionedField<scalar, GeoMesh> >& tdsf2
+)
+{
+    const DimensionedField<scalar, GeoMesh>& dsf1 = tdsf1();
+    const DimensionedField<scalar, GeoMesh>& dsf2 = tdsf2();
+
+    tmp<DimensionedField<scalar, GeoMesh> > tAtan2 =
+        reuseTmpTmpDimensionedField<scalar, scalar, scalar, scalar, GeoMesh>::
+        New
+        (
+            tdsf1,
+            tdsf2,
+            "atan2(" + dsf1.name() + ',' + dsf2.name() + ')',
+            atan2(dsf1.dimensions(), dsf2.dimensions())
+        );
+
+    atan2(tAtan2().field(), dsf1.field(), dsf2.field());
+
+    reuseTmpTmpDimensionedField<scalar, scalar, scalar, scalar, GeoMesh>::clear
+    (
+        tdsf1,
+        tdsf2
+    );
+
+    return tAtan2;
+}
+
+
+template<class GeoMesh>
+tmp<DimensionedField<scalar, GeoMesh> > atan2
+(
+    const DimensionedField<scalar, GeoMesh>& dsf,
+    const dimensionedScalar& ds
+)
+{
+    tmp<DimensionedField<scalar, GeoMesh> > tAtan2
+    (
+        new DimensionedField<scalar, GeoMesh>
+        (
+            IOobject
+            (
+                "atan2(" + dsf.name() + ',' + ds.name() + ')',
+                dsf.instance(),
+                dsf.db()
+            ),
+            dsf.mesh(),
+            atan2(dsf.dimensions(), ds)
+        )
+    );
+
+    atan2(tAtan2().field(), dsf.field(), ds.value());
+
+    return tAtan2;
+}
+
+template<class GeoMesh>
+tmp<DimensionedField<scalar, GeoMesh> > atan2
+(
+    const tmp<DimensionedField<scalar, GeoMesh> >& tdsf,
+    const dimensionedScalar& ds
+)
+{
+    const DimensionedField<scalar, GeoMesh>& dsf = tdsf();
+
+    tmp<DimensionedField<scalar, GeoMesh> > tAtan2 =
+        reuseTmpDimensionedField<scalar, scalar, GeoMesh>::New
+        (
+            tdsf,
+            "atan2(" + dsf.name() + ',' + ds.name() + ')',
+            atan2(dsf.dimensions(), ds)
+        );
+
+    atan2(tAtan2().field(), dsf.field(), ds.value());
+
+    reuseTmpDimensionedField<scalar, scalar, GeoMesh>::clear(tdsf);
+
+    return tAtan2;
+}
+
+template<class GeoMesh>
+tmp<DimensionedField<scalar, GeoMesh> > atan2
+(
+    const DimensionedField<scalar, GeoMesh>& dsf,
+    const scalar& s
+)
+{
+    return atan2(dsf, dimensionedScalar(s));
+}
+
+template<class GeoMesh>
+tmp<DimensionedField<scalar, GeoMesh> > atan2
+(
+    const tmp<DimensionedField<scalar, GeoMesh> >& tdsf,
+    const scalar& s
+)
+{
+    return atan2(tdsf, dimensionedScalar(s));
+}
+
+
+template<class GeoMesh>
+tmp<DimensionedField<scalar, GeoMesh> > atan2
+(
+    const dimensionedScalar& ds,
+    const DimensionedField<scalar, GeoMesh>& dsf
+)
+{
+    tmp<DimensionedField<scalar, GeoMesh> > tAtan2
+    (
+        new DimensionedField<scalar, GeoMesh>
+        (
+            IOobject
+            (
+                "atan2(" + ds.name() + ',' + dsf.name() + ')',
+                dsf.instance(),
+                dsf.db()
+            ),
+            dsf.mesh(),
+            atan2(ds, dsf.dimensions())
+        )
+    );
+
+    atan2(tAtan2().field(), ds.value(), dsf.field());
+
+    return tAtan2;
+}
+
+
+template<class GeoMesh>
+tmp<DimensionedField<scalar, GeoMesh> > atan2
+(
+    const dimensionedScalar& ds,
+    const tmp<DimensionedField<scalar, GeoMesh> >& tdsf
+)
+{
+    const DimensionedField<scalar, GeoMesh>& dsf = tdsf();
+
+    tmp<DimensionedField<scalar, GeoMesh> > tAtan2 =
+        reuseTmpDimensionedField<scalar, scalar, GeoMesh>::New
+        (
+            tdsf,
+            "atan2(" + ds.name() + ',' + dsf.name() + ')',
+            atan2(ds, dsf.dimensions())
+        );
+
+    atan2(tAtan2().field(), ds.value(), dsf.field());
+
+    reuseTmpDimensionedField<scalar, scalar, GeoMesh>::clear(tdsf);
+
+    return tAtan2;
+}
+
+template<class GeoMesh>
+tmp<DimensionedField<scalar, GeoMesh> > atan2
+(
+    const scalar& s,
+    const DimensionedField<scalar, GeoMesh>& dsf
+)
+{
+    return atan2(dimensionedScalar(s), dsf);
+}
+
+template<class GeoMesh>
+tmp<DimensionedField<scalar, GeoMesh> > atan2
+(
+    const scalar& s,
+    const tmp<DimensionedField<scalar, GeoMesh> >& tdsf
+)
+{
+    return atan2(dimensionedScalar(s), tdsf);
+}
+
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 UNARY_FUNCTION(scalar, scalar, pow3, pow3)

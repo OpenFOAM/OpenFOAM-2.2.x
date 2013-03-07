@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -116,24 +116,19 @@ void meshRefinement::testSyncBoundaryFaceList
 }
 
 
-//template <class T, class Mesh>
+//template<class T, class Mesh>
 template<class GeoField>
 void meshRefinement::addPatchFields(fvMesh& mesh, const word& patchFieldType)
 {
-    HashTable<const GeoField*> flds
+    HashTable<GeoField*> flds
     (
         mesh.objectRegistry::lookupClass<GeoField>()
     );
 
-    forAllConstIter(typename HashTable<const GeoField*>, flds, iter)
+    forAllIter(typename HashTable<GeoField*>, flds, iter)
     {
-        const GeoField& fld = *iter();
-
-        typename GeoField::GeometricBoundaryField& bfld =
-            const_cast<typename GeoField::GeometricBoundaryField&>
-            (
-                fld.boundaryField()
-            );
+        GeoField& fld = *iter();
+        typename GeoField::GeometricBoundaryField& bfld = fld.boundaryField();
 
         label sz = bfld.size();
         bfld.setSize(sz+1);
@@ -155,26 +150,19 @@ void meshRefinement::addPatchFields(fvMesh& mesh, const word& patchFieldType)
 template<class GeoField>
 void meshRefinement::reorderPatchFields(fvMesh& mesh, const labelList& oldToNew)
 {
-    HashTable<const GeoField*> flds
+    HashTable<GeoField*> flds
     (
         mesh.objectRegistry::lookupClass<GeoField>()
     );
 
-    forAllConstIter(typename HashTable<const GeoField*>, flds, iter)
+    forAllIter(typename HashTable<GeoField*>, flds, iter)
     {
-        const GeoField& fld = *iter();
-
-        typename GeoField::GeometricBoundaryField& bfld =
-            const_cast<typename GeoField::GeometricBoundaryField&>
-            (
-                fld.boundaryField()
-            );
+        GeoField& fld = *iter();
+        typename GeoField::GeometricBoundaryField& bfld = fld.boundaryField();
 
         bfld.reorder(oldToNew);
     }
 }
-
-
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

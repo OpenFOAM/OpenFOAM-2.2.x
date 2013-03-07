@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -104,7 +104,11 @@ oscillatingFixedValueFvPatchField<Type>::oscillatingFixedValueFvPatchField
     }
     else
     {
-        fixedValueFvPatchField<Type>::operator==(refValue_*currentScale());
+        fixedValueFvPatchField<Type>::operator==
+        (
+            refValue_*currentScale()
+          + offset_
+        );
     }
 }
 
@@ -179,9 +183,11 @@ void oscillatingFixedValueFvPatchField<Type>::updateCoeffs()
 
     if (curTimeIndex_ != this->db().time().timeIndex())
     {
-        Field<Type>& patchField = *this;
-
-        patchField = refValue_*currentScale() + offset_;
+        fixedValueFvPatchField<Type>::operator==
+        (
+            refValue_*currentScale()
+          + offset_
+        );
 
         curTimeIndex_ = this->db().time().timeIndex();
     }

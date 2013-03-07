@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -27,7 +27,7 @@ License
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-template <class T>
+template<class T>
 void Foam::polyTopoChange::reorder
 (
     const labelList& oldToNew,
@@ -49,7 +49,7 @@ void Foam::polyTopoChange::reorder
 }
 
 
-template <class T>
+template<class T>
 void Foam::polyTopoChange::reorder
 (
     const labelList& oldToNew,
@@ -71,7 +71,7 @@ void Foam::polyTopoChange::reorder
 }
 
 
-template <class T>
+template<class T>
 void Foam::polyTopoChange::renumberKey
 (
     const labelList& oldToNew,

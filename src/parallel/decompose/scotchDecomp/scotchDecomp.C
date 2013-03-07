@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -485,6 +485,40 @@ Foam::label Foam::scotchDecomp::decomposeOneProc
             SCOTCH_archCmplt(&archdat, nProcessors_),
             "SCOTCH_archCmplt"
         );
+
+
+        //- Hack to test clustering. Note that finalDecomp is non-compact
+        //  numbers!
+        //
+        ////- Set up variable sizes architecture
+        //check
+        //(
+        //    SCOTCH_archVcmplt(&archdat),
+        //    "SCOTCH_archVcmplt"
+        //);
+        //
+        ////- stategy flags: go for quality or load balance (or leave default)
+        //SCOTCH_Num straval = 0;
+        ////straval |= SCOTCH_STRATQUALITY;
+        ////straval |= SCOTCH_STRATQUALITY;
+        //
+        ////- Number of cells per agglomeration
+        ////SCOTCH_Num agglomSize = SCOTCH_archSize(&archdat);
+        //SCOTCH_Num agglomSize = 3;
+        //
+        ////- Build strategy for agglomeration
+        //check
+        //(
+        //    SCOTCH_stratGraphClusterBuild
+        //    (
+        //        &stradat,   // strategy to build
+        //        straval,    // strategy flags
+        //        agglomSize, // cells per cluster
+        //        1.0,        // weight?
+        //        0.01        // max load imbalance
+        //    ),
+        //    "SCOTCH_stratGraphClusterBuild"
+        //);
     }
 
 

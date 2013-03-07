@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -30,6 +30,7 @@ Description
 #define makeSolidChemistryModel_H
 
 #include "addToRunTimeSelectionTable.H"
+#include "solidChemistryModel.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -38,9 +39,18 @@ namespace Foam
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#define makeSolidChemistryModel(SS, Comp, SThermo, GThermo)                   \
+#define makeSolidChemistryModel(sChemistry, SS, Comp, SThermo, GThermo)       \
                                                                               \
     typedef SS<Comp, SThermo, GThermo> SS##Comp##SThermo##GThermo;            \
+                                                                              \
+    typedef sChemistry<Comp, SThermo> sChemistryl##Comp##SThermo;             \
+                                                                              \
+    defineTemplateTypeNameAndDebugWithName                                    \
+    (                                                                         \
+        sChemistryl##Comp##SThermo,                                           \
+        (#sChemistry"<"#Comp"," + SThermo::typeName() + ">").c_str(),         \
+        0                                                                     \
+    );                                                                        \
                                                                               \
     defineTemplateTypeNameAndDebugWithName                                    \
     (                                                                         \

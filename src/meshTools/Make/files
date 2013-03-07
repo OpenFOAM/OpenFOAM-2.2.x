@@ -187,6 +187,9 @@ mappedPatches/mappedPolyPatch/mappedVariableThicknessWallPolyPatch.C
 mappedPatches/mappedPointPatch/mappedPointPatch.C
 mappedPatches/mappedPointPatch/mappedWallPointPatch.C
 
+meshStructure/meshStructure.C
+meshStructure/topoDistanceData.C
+meshStructure/pointTopoDistanceData.C
 
 regionCoupled/patches/regionCoupledPolyPatch/regionCoupledBase.C
 regionCoupled/patches/regionCoupledPolyPatch/regionCoupledPolyPatch.C

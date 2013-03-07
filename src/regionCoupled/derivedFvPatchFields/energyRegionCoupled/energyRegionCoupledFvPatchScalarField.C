@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -105,13 +105,13 @@ kappa() const
     {
         case FLUID:
         {
-            const compressible::turbulenceModel& model =
+            const compressible::turbulenceModel& turbModel =
                 this->db().lookupObject<compressible::turbulenceModel>
                 (
                     "turbulenceModel"
                 );
 
-            return model.kappaEff(patch().index());
+            return turbModel.kappaEff(patch().index());
         }
         break;
 

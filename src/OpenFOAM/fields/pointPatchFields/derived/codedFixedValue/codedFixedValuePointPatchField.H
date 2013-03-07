@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -38,7 +38,11 @@ Description
 
             code
             #{
-                operator==(min(10, 0.1*this->db().time().value()));
+                operator==
+                (
+                    vector(0,0,1)
+                   *min(10, 0.1*this->db().time().value())
+                );
             #};
 
             //codeInclude

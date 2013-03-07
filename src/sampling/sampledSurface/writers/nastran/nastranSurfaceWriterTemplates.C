@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -46,6 +46,8 @@ void Foam::nastranSurfaceWriter::writeFaceValue
 
     label SID = 1;
 
+    Type scaledValue = scale_*value;
+
     switch (writeFormat_)
     {
         case wfShort:
@@ -59,7 +61,7 @@ void Foam::nastranSurfaceWriter::writeFaceValue
 
             for (direction dirI = 0; dirI < pTraits<Type>::nComponents; dirI++)
             {
-                os  << setw(8) << component(value, dirI);
+                os  << setw(8) << component(scaledValue, dirI);
             }
 
             os.unsetf(ios_base::right);
@@ -77,7 +79,7 @@ void Foam::nastranSurfaceWriter::writeFaceValue
 
             for (direction dirI = 0; dirI < pTraits<Type>::nComponents; dirI++)
             {
-                os  << setw(16) << component(value, dirI);
+                os  << setw(16) << component(scaledValue, dirI);
             }
 
             os.unsetf(ios_base::right);
@@ -98,7 +100,7 @@ void Foam::nastranSurfaceWriter::writeFaceValue
 
             for (direction dirI = 0; dirI < pTraits<Type>::nComponents; dirI++)
             {
-                os  << ',' << component(value, dirI);
+                os  << ',' << component(scaledValue, dirI);
             }
 
             break;

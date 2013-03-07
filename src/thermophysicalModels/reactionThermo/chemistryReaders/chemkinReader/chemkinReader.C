@@ -46,7 +46,7 @@ License
 
 namespace Foam
 {
-    addChemistryReaderType(chemkinReader, gasThermoPhysics);
+    addChemistryReaderType(chemkinReader, gasHThermoPhysics);
 }
 
 
@@ -168,8 +168,8 @@ template<class ReactionRateType>
 void Foam::chemkinReader::addReactionType
 (
     const reactionType rType,
-    DynamicList<gasReaction::specieCoeffs>& lhs,
-    DynamicList<gasReaction::specieCoeffs>& rhs,
+    DynamicList<gasHReaction::specieCoeffs>& lhs,
+    DynamicList<gasHReaction::specieCoeffs>& rhs,
     const ReactionRateType& rr
 )
 {
@@ -180,9 +180,9 @@ void Foam::chemkinReader::addReactionType
             reactions_.append
             (
                 new IrreversibleReaction
-                <Reaction, gasThermoPhysics, ReactionRateType>
+                <Reaction, gasHThermoPhysics, ReactionRateType>
                 (
-                    Reaction<gasThermoPhysics>
+                    Reaction<gasHThermoPhysics>
                     (
                         speciesTable_,
                         lhs.shrink(),
@@ -200,9 +200,9 @@ void Foam::chemkinReader::addReactionType
             reactions_.append
             (
                 new ReversibleReaction
-                <Reaction, gasThermoPhysics, ReactionRateType>
+                <Reaction, gasHThermoPhysics, ReactionRateType>
                 (
-                    Reaction<gasThermoPhysics>
+                    Reaction<gasHThermoPhysics>
                     (
                         speciesTable_,
                         lhs.shrink(),
@@ -240,8 +240,8 @@ void Foam::chemkinReader::addPressureDependentReaction
 (
     const reactionType rType,
     const fallOffFunctionType fofType,
-    DynamicList<gasReaction::specieCoeffs>& lhs,
-    DynamicList<gasReaction::specieCoeffs>& rhs,
+    DynamicList<gasHReaction::specieCoeffs>& lhs,
+    DynamicList<gasHReaction::specieCoeffs>& rhs,
     const scalarList& efficiencies,
     const scalarList& k0Coeffs,
     const scalarList& kInfCoeffs,
@@ -423,8 +423,8 @@ void Foam::chemkinReader::addPressureDependentReaction
 
 void Foam::chemkinReader::addReaction
 (
-    DynamicList<gasReaction::specieCoeffs>& lhs,
-    DynamicList<gasReaction::specieCoeffs>& rhs,
+    DynamicList<gasHReaction::specieCoeffs>& lhs,
+    DynamicList<gasHReaction::specieCoeffs>& rhs,
     const scalarList& efficiencies,
     const reactionType rType,
     const reactionRateType rrType,
@@ -499,9 +499,9 @@ void Foam::chemkinReader::addReaction
                 reactions_.append
                 (
                     new NonEquilibriumReversibleReaction
-                        <Reaction, gasThermoPhysics, ArrheniusReactionRate>
+                        <Reaction, gasHThermoPhysics, ArrheniusReactionRate>
                     (
-                        Reaction<gasThermoPhysics>
+                        Reaction<gasHThermoPhysics>
                         (
                             speciesTable_,
                             lhs.shrink(),
@@ -554,11 +554,11 @@ void Foam::chemkinReader::addReaction
                     new NonEquilibriumReversibleReaction
                     <
                         Reaction,
-                        gasThermoPhysics,
+                        gasHThermoPhysics,
                         thirdBodyArrheniusReactionRate
                     >
                     (
-                        Reaction<gasThermoPhysics>
+                        Reaction<gasHThermoPhysics>
                         (
                             speciesTable_,
                             lhs.shrink(),
@@ -661,9 +661,9 @@ void Foam::chemkinReader::addReaction
                 reactions_.append
                 (
                     new NonEquilibriumReversibleReaction
-                        <Reaction, gasThermoPhysics, LandauTellerReactionRate>
+                        <Reaction, gasHThermoPhysics, LandauTellerReactionRate>
                     (
-                        Reaction<gasThermoPhysics>
+                        Reaction<gasHThermoPhysics>
                         (
                             speciesTable_,
                             lhs.shrink(),

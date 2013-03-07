@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -394,7 +394,7 @@ public:
         // Other patch operations
 
             //- Project vertices of patch onto another patch
-            template <class ToPatch>
+            template<class ToPatch>
             List<objectHit> projectPoints
             (
                 const ToPatch& targetPatch,
@@ -404,7 +404,7 @@ public:
             ) const;
 
             //- Project vertices of patch onto another patch
-            template <class ToPatch>
+            template<class ToPatch>
             List<objectHit> projectFaceCentres
             (
                 const ToPatch& targetPatch,

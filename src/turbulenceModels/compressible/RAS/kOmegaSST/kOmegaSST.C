@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -437,7 +437,7 @@ void kOmegaSST::correct()
     tmp<volTensorField> tgradU = fvc::grad(U_);
     volScalarField S2(2*magSqr(symm(tgradU())));
     volScalarField GbyMu((tgradU() && dev(twoSymm(tgradU()))));
-    volScalarField G(type() + ".G", mut_*GbyMu);
+    volScalarField G(GName(), mut_*GbyMu);
     tgradU.clear();
 
     // Update omega and G at the wall

@@ -226,7 +226,7 @@ case ThirdParty:
         breaksw
     case Gcc47:
     case Gcc47++0x:
-        set gcc_version=gcc-4.7.0
+        set gcc_version=gcc-4.7.2
         set gmp_version=gmp-5.0.4
         set mpfr_version=mpfr-3.1.0
         set mpc_version=mpc-0.9

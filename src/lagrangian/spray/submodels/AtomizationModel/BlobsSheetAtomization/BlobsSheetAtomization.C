@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -27,7 +27,7 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template <class CloudType>
+template<class CloudType>
 Foam::BlobsSheetAtomization<CloudType>::BlobsSheetAtomization
 (
     const dictionary& dict,
@@ -40,7 +40,7 @@ Foam::BlobsSheetAtomization<CloudType>::BlobsSheetAtomization
 {}
 
 
-template <class CloudType>
+template<class CloudType>
 Foam::BlobsSheetAtomization<CloudType>::BlobsSheetAtomization
 (
     const BlobsSheetAtomization<CloudType>& am
@@ -54,7 +54,7 @@ Foam::BlobsSheetAtomization<CloudType>::BlobsSheetAtomization
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-template <class CloudType>
+template<class CloudType>
 Foam::BlobsSheetAtomization<CloudType>::~BlobsSheetAtomization()
 {}
 

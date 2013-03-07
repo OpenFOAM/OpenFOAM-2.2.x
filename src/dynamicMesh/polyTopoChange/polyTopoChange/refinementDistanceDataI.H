@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -260,7 +260,7 @@ inline bool Foam::refinementDistanceData::updateFace
 }
 
 
-template <class TrackingData>
+template<class TrackingData>
 inline bool Foam::refinementDistanceData::equal
 (
     const refinementDistanceData& rhs,

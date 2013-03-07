@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -94,7 +94,7 @@ namespace Foam
 {
 
 // Dummy access operator for ListListOps::combine()
-template <class T>
+template<class T>
 class accessOp
 {
 public:
@@ -107,7 +107,7 @@ public:
 
 
 // Offset operator for ListListOps::combineOffset()
-template <class T>
+template<class T>
 class offsetOp
 {
 public:
@@ -126,15 +126,15 @@ namespace ListListOps
 {
 
     //- Combines sublists into one big list
-    template <class AccessType, class T, class AccessOp>
+    template<class AccessType, class T, class AccessOp>
     AccessType combine(const List<T>&, AccessOp aop = accessOp<T>());
 
     //- Gets sizes of sublists
-    template <class T, class AccessOp>
+    template<class T, class AccessOp>
     labelList subSizes(const List<T>&, AccessOp aop = accessOp<T>());
 
     //- Like combine but also offsets sublists based on passed sizes
-    template <class AccessType, class T, class AccessOp, class OffsetOp>
+    template<class AccessType, class T, class AccessOp, class OffsetOp>
     AccessType combineOffset
     (
         const List<T>&,

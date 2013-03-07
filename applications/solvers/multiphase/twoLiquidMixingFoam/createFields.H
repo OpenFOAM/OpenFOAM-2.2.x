@@ -29,9 +29,10 @@
     #include "createPhi.H"
 
     Info<< "Reading transportProperties\n" << endl;
-    twoPhaseMixture twoPhaseProperties(U, phi);
+    incompressibleTwoPhaseMixture twoPhaseProperties(U, phi);
 
     volScalarField& alpha1(twoPhaseProperties.alpha1());
+    volScalarField& alpha2(twoPhaseProperties.alpha2());
 
     const dimensionedScalar& rho1 = twoPhaseProperties.rho1();
     const dimensionedScalar& rho2 = twoPhaseProperties.rho2();
@@ -42,7 +43,7 @@
     dimensionedScalar alphatab(twoPhaseProperties.lookup("alphatab"));
 
     // Need to store rho for ddt(rho, U)
-    volScalarField rho("rho", alpha1*rho1 + (scalar(1) - alpha1)*rho2);
+    volScalarField rho("rho", alpha1*rho1 + alpha2*rho2);
     rho.oldTime();
 
 

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2013-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -43,16 +43,31 @@ Description
 
 namespace Foam
 {
-    typedef Reaction<constGasThermoPhysics> constGasReaction;
+    // sensible enthalpy based reactions
+    typedef Reaction<constGasHThermoPhysics> constGasHReaction;
 
-    typedef Reaction<gasThermoPhysics> gasReaction;
+    typedef Reaction<gasHThermoPhysics> gasHReaction;
 
-    typedef Reaction<constIncompressibleGasThermoPhysics>
-        constIncompressibleGasReaction;
+    typedef Reaction<constIncompressibleGasHThermoPhysics>
+        constIncompressibleGasHReaction;
 
-    typedef Reaction<incompressibleGasThermoPhysics> incompressibleGasReaction;
+    typedef Reaction<incompressibleGasHThermoPhysics>
+        incompressibleGasHReaction;
 
-    typedef Reaction<icoPoly8ThermoPhysics> icoPoly8Reaction;
+    typedef Reaction<icoPoly8HThermoPhysics> icoPoly8HReaction;
+
+    // internal ennergy based reactions
+    typedef Reaction<constGasEThermoPhysics> constGasEReaction;
+
+    typedef Reaction<gasEThermoPhysics> gasEReaction;
+
+    typedef Reaction<constIncompressibleGasEThermoPhysics>
+        constIncompressibleGasEReaction;
+
+    typedef Reaction<incompressibleGasEThermoPhysics>
+        incompressibleGasEReaction;
+
+    typedef Reaction<icoPoly8EThermoPhysics> icoPoly8EReaction;
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

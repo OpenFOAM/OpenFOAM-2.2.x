@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2013-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -83,15 +83,26 @@ License
 
 namespace Foam
 {
-    makeReactions(constGasThermoPhysics, constGasReaction)
-    makeReactions(gasThermoPhysics, gasReaction)
+    // sensible enthalpy based reactions
+    makeReactions(constGasHThermoPhysics, constGasHReaction)
+    makeReactions(gasHThermoPhysics, gasHReaction)
     makeReactions
     (
-        constIncompressibleGasThermoPhysics,
-        constIncompressibleGasReaction
+        constIncompressibleGasHThermoPhysics,
+        constIncompressibleGasHReaction
     )
-    makeReactions(incompressibleGasThermoPhysics, incompressibleGasReaction)
-    makeReactions(icoPoly8ThermoPhysics, icoPoly8Reaction)
+    makeReactions(incompressibleGasHThermoPhysics, incompressibleGasHReaction)
+    makeReactions(icoPoly8HThermoPhysics, icoPoly8HReaction)
+
+    makeReactions(constGasEThermoPhysics, constGasEReaction)
+    makeReactions(gasEThermoPhysics, gasEReaction)
+    makeReactions
+    (
+        constIncompressibleGasEThermoPhysics,
+        constIncompressibleGasEReaction
+    )
+    makeReactions(incompressibleGasEThermoPhysics, incompressibleGasEReaction)
+    makeReactions(icoPoly8EThermoPhysics, icoPoly8EReaction)
 }
 
 // ************************************************************************* //

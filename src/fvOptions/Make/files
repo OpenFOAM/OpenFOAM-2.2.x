@@ -27,6 +27,7 @@ $(derivedSources)/rotorDiskSource/trimModel/trimModel/trimModel.C
 $(derivedSources)/rotorDiskSource/trimModel/trimModel/trimModelNew.C
 $(derivedSources)/rotorDiskSource/trimModel/fixed/fixedTrim.C
 $(derivedSources)/rotorDiskSource/trimModel/targetCoeff/targetCoeffTrim.C
+$(derivedSources)/effectivenessHeatExchangerSource/effectivenessHeatExchangerSource.C
 
 interRegion = sources/interRegion
 $(interRegion)/interRegionHeatTransferModel/constantHeatTransfer/constantHeatTransfer.C
@@ -34,6 +35,7 @@ $(interRegion)/interRegionHeatTransferModel/interRegionHeatTransferModel/interRe
 $(interRegion)/interRegionHeatTransferModel/tabulatedHeatTransfer/tabulatedHeatTransfer.C
 $(interRegion)/interRegionHeatTransferModel/variableHeatTransfer/variableHeatTransfer.C
 $(interRegion)/interRegionExplicitPorositySource/interRegionExplicitPorositySource.C
+
 
 
 /* constraints */

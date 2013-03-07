@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -27,7 +27,7 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template <class CloudType>
+template<class CloudType>
 Foam::SHF<CloudType>::SHF
 (
     const dictionary& dict,
@@ -67,7 +67,7 @@ Foam::SHF<CloudType>::SHF
 {}
 
 
-template <class CloudType>
+template<class CloudType>
 Foam::SHF<CloudType>::SHF(const SHF<CloudType>& bum)
 :
     BreakupModel<CloudType>(bum),
@@ -105,7 +105,7 @@ Foam::SHF<CloudType>::SHF(const SHF<CloudType>& bum)
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-template <class CloudType>
+template<class CloudType>
 Foam::SHF<CloudType>::~SHF()
 {}
 

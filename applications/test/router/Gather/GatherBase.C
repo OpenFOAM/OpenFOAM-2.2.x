@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -32,7 +32,7 @@ namespace Foam
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-template <class Type>
+template<class Type>
 Type GatherBase::flatten(const List<Type> lst)
 {
     label sum = 0;
@@ -60,7 +60,7 @@ Type GatherBase::flatten(const List<Type> lst)
 }
 
 
-template <class DataType, class IndexType, class AddOp>
+template<class DataType, class IndexType, class AddOp>
 IndexType GatherBase::offset
 (
     const List<DataType>& values,

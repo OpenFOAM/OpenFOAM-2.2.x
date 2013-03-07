@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -45,7 +45,7 @@ namespace Foam
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-template <class T, class CombineOp>
+template<class T, class CombineOp>
 void Pstream::combineGather
 (
     const List<UPstream::commsStruct>& comms,
@@ -129,7 +129,7 @@ void Pstream::combineGather
 }
 
 
-template <class T, class CombineOp>
+template<class T, class CombineOp>
 void Pstream::combineGather(T& Value, const CombineOp& cop, const int tag)
 {
     if (UPstream::nProcs() < UPstream::nProcsSimpleSum)
@@ -143,7 +143,7 @@ void Pstream::combineGather(T& Value, const CombineOp& cop, const int tag)
 }
 
 
-template <class T>
+template<class T>
 void Pstream::combineScatter
 (
     const List<UPstream::commsStruct>& comms,
@@ -214,7 +214,7 @@ void Pstream::combineScatter
 }
 
 
-template <class T>
+template<class T>
 void Pstream::combineScatter(T& Value, const int tag)
 {
     if (UPstream::nProcs() < UPstream::nProcsSimpleSum)
@@ -232,7 +232,7 @@ void Pstream::combineScatter(T& Value, const int tag)
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-template <class T, class CombineOp>
+template<class T, class CombineOp>
 void Pstream::listCombineGather
 (
     const List<UPstream::commsStruct>& comms,
@@ -323,7 +323,7 @@ void Pstream::listCombineGather
 }
 
 
-template <class T, class CombineOp>
+template<class T, class CombineOp>
 void Pstream::listCombineGather
 (
     List<T>& Values,
@@ -342,7 +342,7 @@ void Pstream::listCombineGather
 }
 
 
-template <class T>
+template<class T>
 void Pstream::listCombineScatter
 (
     const List<UPstream::commsStruct>& comms,
@@ -413,7 +413,7 @@ void Pstream::listCombineScatter
 }
 
 
-template <class T>
+template<class T>
 void Pstream::listCombineScatter(List<T>& Values, const int tag)
 {
     if (UPstream::nProcs() < UPstream::nProcsSimpleSum)
@@ -433,7 +433,7 @@ void Pstream::listCombineScatter(List<T>& Values, const int tag)
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-template <class Container, class CombineOp>
+template<class Container, class CombineOp>
 void Pstream::mapCombineGather
 (
     const List<UPstream::commsStruct>& comms,
@@ -499,7 +499,7 @@ void Pstream::mapCombineGather
 }
 
 
-template <class Container, class CombineOp>
+template<class Container, class CombineOp>
 void Pstream::mapCombineGather
 (
     Container& Values,
@@ -518,7 +518,7 @@ void Pstream::mapCombineGather
 }
 
 
-template <class Container>
+template<class Container>
 void Pstream::mapCombineScatter
 (
     const List<UPstream::commsStruct>& comms,
@@ -561,7 +561,7 @@ void Pstream::mapCombineScatter
 }
 
 
-template <class Container>
+template<class Container>
 void Pstream::mapCombineScatter(Container& Values, const int tag)
 {
     if (UPstream::nProcs() < UPstream::nProcsSimpleSum)

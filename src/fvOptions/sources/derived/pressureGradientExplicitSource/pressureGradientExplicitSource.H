@@ -29,15 +29,17 @@ Description
 
     Note: Currently only handles kinematic pressure
 
-    Sources described by:
-
-        pressureGradientExplicitSourceCoeffs
-        {
-            fieldNames  (U);        // name of velocity field
-            Ubar        (10.0 0 0); // desired average velocity
-            gradPini    gradPini [0 2 -2 0 0] 0; // initial pressure gradient
-            flowDir     (1 0 0);    // flow direction
-        }
+    \heading Source usage
+    Example usage:
+    \verbatim
+    pressureGradientExplicitSourceCoeffs
+    {
+        fieldNames  (U);                        // name of velocity field
+        Ubar        (10.0 0 0);                 // desired average velocity
+        gradPini    gradPini [0 2 -2 0 0] 0;    // initial pressure gradient
+        flowDir     (1 0 0);                    // flow direction
+    }
+    \endverbatim
 
 
 SourceFiles

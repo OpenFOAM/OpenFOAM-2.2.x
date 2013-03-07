@@ -82,7 +82,7 @@ TemplateName(PointEdgeWave);
                            Class PointEdgeWave Declaration
 \*---------------------------------------------------------------------------*/
 
-template <class Type, class TrackingData = int>
+template<class Type, class TrackingData = int>
 class PointEdgeWave
 :
     public PointEdgeWaveName
@@ -196,7 +196,7 @@ class PointEdgeWave
         // Parallel, cyclic
 
             //- Has patches of certain type?
-            template <class PatchType>
+            template<class PatchType>
             label countPatchType() const;
 
             //- Merge data from across processor boundaries
@@ -323,7 +323,7 @@ public:
 \*---------------------------------------------------------------------------*/
 
 //- List update operation
-template <class Type, class TrackingData = int>
+template<class Type, class TrackingData = int>
 class listUpdateOp
 {
     //- Additional data to be passed into container

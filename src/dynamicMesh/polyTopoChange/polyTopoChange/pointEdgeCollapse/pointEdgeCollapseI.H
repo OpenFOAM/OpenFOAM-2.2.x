@@ -266,7 +266,7 @@ inline bool Foam::pointEdgeCollapse::updateEdge
 }
 
 
-template <class TrackingData>
+template<class TrackingData>
 inline bool Foam::pointEdgeCollapse::equal
 (
     const pointEdgeCollapse& rhs,

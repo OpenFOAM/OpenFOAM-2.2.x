@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -55,7 +55,7 @@ int yyFlexLexer::yylex()
 // It is called by yylex but is not used as the mechanism to change file.
 // See <<EOF>>
 //! \cond dummy
-#if YY_FLEX_SUBMINOR_VERSION < 34
+#if YY_FLEX_SUBMINOR_VERSION < 34 || YY_FLEX_SUBMINOR_VERSION > 36
 extern "C" int yywrap()
 #else
 int yyFlexLexer::yywrap()

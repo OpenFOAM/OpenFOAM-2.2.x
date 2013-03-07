@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -353,7 +353,7 @@ void kOmegaSSTSAS::correct(const tmp<volTensorField>& gradU)
     volScalarField L(sqrt(k_)/(pow025(Cmu_)*omega_));
     volScalarField CDkOmega((2.0*alphaOmega2_)*(gradK & gradOmega)/omega_);
     volScalarField F1(this->F1(CDkOmega));
-    volScalarField G(type() + ".G", nuSgs_*S2);
+    volScalarField G(GName(), nuSgs_*S2);
 
     // Turbulent kinetic energy equation
     {

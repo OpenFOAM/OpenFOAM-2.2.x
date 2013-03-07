@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -94,15 +94,24 @@ class perfectFluid
 {
     // Private data
 
+        //- Fluid constant
+        scalar R_;
+
         //- The reference density
         scalar rho0_;
+
 
 public:
 
     // Constructors
 
         //- Construct from components
-        inline perfectFluid(const Specie& sp, const scalar rho0);
+        inline perfectFluid
+        (
+            const Specie& sp,
+            const scalar R,
+            const scalar rho0
+        );
 
         //- Construct from Istream
         perfectFluid(Istream&);
@@ -139,6 +148,9 @@ public:
 
             //- Is the equation of state is isochoric i.e. rho = const
             static const bool isochoric = false;
+
+            //- Return fluid constant [J/(kg K)]
+            inline scalar R() const;
 
             //- Return density [kg/m^3]
             inline scalar rho(scalar p, scalar T) const;

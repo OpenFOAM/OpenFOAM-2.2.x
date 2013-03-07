@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -70,25 +70,25 @@ void Foam::porousBafflePressureFvPatchField<Foam::scalar>::updateCoeffs()
 
     if (phi.dimensions() == dimensionSet(0, 3, -1, 0, 0))
     {
-        const incompressible::turbulenceModel& model =
+        const incompressible::turbulenceModel& turbModel =
             db().lookupObject<incompressible::turbulenceModel>
             (
                 "turbulenceModel"
             );
 
-        const scalarField nuEffw = model.nuEff()().boundaryField()[patchI];
+        const scalarField nuEffw = turbModel.nuEff()().boundaryField()[patchI];
 
         jump_ = -sign(Un)*(I_*nuEffw + D_*0.5*magUn*length_)*magUn;
     }
     else
     {
-        const compressible::turbulenceModel& model =
+        const compressible::turbulenceModel& turbModel =
             db().lookupObject<compressible::turbulenceModel>
             (
                 "turbulenceModel"
             );
 
-        const scalarField muEffw = model.muEff()().boundaryField()[patchI];
+        const scalarField muEffw = turbModel.muEff()().boundaryField()[patchI];
 
         const scalarField rhow =
             patch().lookupPatchField<volScalarField, scalar>("rho");

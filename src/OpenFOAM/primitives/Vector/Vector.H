@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -54,7 +54,7 @@ template<class T> class List;
                            Class Vector Declaration
 \*---------------------------------------------------------------------------*/
 
-template <class Cmpt>
+template<class Cmpt>
 class Vector
 :
     public VectorSpace<Vector<Cmpt>, Cmpt, 3>
@@ -93,8 +93,9 @@ public:
         //- Construct null
         inline Vector();
 
-        //- Construct given VectorSpace
-        inline Vector(const VectorSpace<Vector<Cmpt>, Cmpt, 3>&);
+        //- Construct given VectorSpace of the same rank
+        template<class Cmpt2>
+        inline Vector(const VectorSpace<Vector<Cmpt2>, Cmpt2, 3>&);
 
         //- Construct given three components
         inline Vector(const Cmpt& vx, const Cmpt& vy, const Cmpt& vz);

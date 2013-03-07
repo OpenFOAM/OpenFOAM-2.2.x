@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -24,14 +24,13 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "leastSquaresVectors.H"
-#include "surfaceFields.H"
 #include "volFields.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
 namespace Foam
 {
-defineTypeNameAndDebug(leastSquaresVectors, 0);
+    defineTypeNameAndDebug(leastSquaresVectors, 0);
 }
 
 
@@ -39,35 +38,8 @@ defineTypeNameAndDebug(leastSquaresVectors, 0);
 
 Foam::leastSquaresVectors::leastSquaresVectors(const fvMesh& mesh)
 :
-    MeshObject<fvMesh, leastSquaresVectors>(mesh),
-    pVectorsPtr_(NULL),
-    nVectorsPtr_(NULL)
-{}
-
-
-// * * * * * * * * * * * * * * * * Destructor * * * * * * * * * * * * * * * //
-
-Foam::leastSquaresVectors::~leastSquaresVectors()
-{
-    deleteDemandDrivenData(pVectorsPtr_);
-    deleteDemandDrivenData(nVectorsPtr_);
-}
-
-
-// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
-
-void Foam::leastSquaresVectors::makeLeastSquaresVectors() const
-{
-    if (debug)
-    {
-        Info<< "leastSquaresVectors::makeLeastSquaresVectors() :"
-            << "Constructing least square gradient vectors"
-            << endl;
-    }
-
-    const fvMesh& mesh = mesh_;
-
-    pVectorsPtr_ = new surfaceVectorField
+    MeshObject<fvMesh, Foam::MoveableMeshObject, leastSquaresVectors>(mesh),
+    pVectors_
     (
         IOobject
         (
@@ -80,10 +52,8 @@ void Foam::leastSquaresVectors::makeLeastSquaresVectors() const
         ),
         mesh_,
         dimensionedVector("zero", dimless/dimLength, vector::zero)
-    );
-    surfaceVectorField& lsP = *pVectorsPtr_;
-
-    nVectorsPtr_ = new surfaceVectorField
+    ),
+    nVectors_
     (
         IOobject
         (
@@ -96,8 +66,30 @@ void Foam::leastSquaresVectors::makeLeastSquaresVectors() const
         ),
         mesh_,
         dimensionedVector("zero", dimless/dimLength, vector::zero)
-    );
-    surfaceVectorField& lsN = *nVectorsPtr_;
+    )
+{
+    calcLeastSquaresVectors();
+}
+
+
+// * * * * * * * * * * * * * * * * Destructor * * * * * * * * * * * * * * * //
+
+Foam::leastSquaresVectors::~leastSquaresVectors()
+{}
+
+
+// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
+
+void Foam::leastSquaresVectors::calcLeastSquaresVectors()
+{
+    if (debug)
+    {
+        Info<< "leastSquaresVectors::calcLeastSquaresVectors() :"
+            << "Calculating least square gradient vectors"
+            << endl;
+    }
+
+    const fvMesh& mesh = mesh_;
 
     // Set local references to mesh data
     const labelUList& owner = mesh_.owner();
@@ -124,7 +116,8 @@ void Foam::leastSquaresVectors::makeLeastSquaresVectors() const
     }
 
 
-    surfaceVectorField::GeometricBoundaryField& blsP = lsP.boundaryField();
+    surfaceVectorField::GeometricBoundaryField& blsP =
+        pVectors_.boundaryField();
 
     forAll(blsP, patchi)
     {
@@ -164,7 +157,7 @@ void Foam::leastSquaresVectors::makeLeastSquaresVectors() const
     const symmTensorField invDd(inv(dd));
 
 
-    // Revisit all faces and calculate the lsP and lsN vectors
+    // Revisit all faces and calculate the pVectors_ and nVectors_ vectors
     forAll(owner, facei)
     {
         label own = owner[facei];
@@ -173,8 +166,8 @@ void Foam::leastSquaresVectors::makeLeastSquaresVectors() const
         vector d = C[nei] - C[own];
         scalar magSfByMagSqrd = magSf[facei]/magSqr(d);
 
-        lsP[facei] = (1 - w[facei])*magSfByMagSqrd*(invDd[own] & d);
-        lsN[facei] = -w[facei]*magSfByMagSqrd*(invDd[nei] & d);
+        pVectors_[facei] = (1 - w[facei])*magSfByMagSqrd*(invDd[own] & d);
+        nVectors_[facei] = -w[facei]*magSfByMagSqrd*(invDd[nei] & d);
     }
 
     forAll(blsP, patchi)
@@ -214,127 +207,18 @@ void Foam::leastSquaresVectors::makeLeastSquaresVectors() const
         }
     }
 
-
-    // For 3D meshes check the determinant of the dd tensor and switch to
-    // Gauss if it is less than 3
-    /* Currently the det(dd[celli]) criterion is incorrect: dd is weighted by Sf
-    if (mesh.nGeometricD() == 3)
-    {
-        label nBadCells = 0;
-
-        const cellList& cells = mesh.cells();
-        const scalarField& V = mesh.V();
-        const surfaceVectorField& Sf = mesh.Sf();
-        const surfaceScalarField& w = mesh.weights();
-
-        forAll(dd, celli)
-        {
-            if (det(dd[celli]) < 3)
-            {
-                nBadCells++;
-
-                const cell& c = cells[celli];
-
-                forAll(c, cellFacei)
-                {
-                    label facei = c[cellFacei];
-
-                    if (mesh.isInternalFace(facei))
-                    {
-                        scalar wf = max(min(w[facei], 0.8), 0.2);
-
-                        if (celli == owner[facei])
-                        {
-                            lsP[facei] = (1 - wf)*Sf[facei]/V[celli];
-                        }
-                        else
-                        {
-                            lsN[facei] = -wf*Sf[facei]/V[celli];
-                        }
-                    }
-                    else
-                    {
-                        label patchi = mesh.boundaryMesh().whichPatch(facei);
-
-                        if (mesh.boundary()[patchi].size())
-                        {
-                            label patchFacei =
-                                facei - mesh.boundaryMesh()[patchi].start();
-
-                            if (w.boundaryField()[patchi].coupled())
-                            {
-                                scalar wf = max
-                                (
-                                    min
-                                    (
-                                        w.boundaryField()[patchi][patchFacei],
-                                        0.8
-                                    ),
-                                    0.2
-                                );
-
-                                lsP.boundaryField()[patchi][patchFacei] =
-                                    (1 - wf)
-                                   *Sf.boundaryField()[patchi][patchFacei]
-                                   /V[celli];
-                            }
-                            else
-                            {
-                                lsP.boundaryField()[patchi][patchFacei] =
-                                    Sf.boundaryField()[patchi][patchFacei]
-                                   /V[celli];
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        if (debug)
-        {
-            InfoIn("leastSquaresVectors::makeLeastSquaresVectors()")
-                << "number of bad cells switched to Gauss = " << nBadCells
-                << endl;
-        }
-    }
-    */
-
     if (debug)
     {
-        Info<< "leastSquaresVectors::makeLeastSquaresVectors() :"
-            << "Finished constructing least square gradient vectors"
+        Info<< "leastSquaresVectors::calcLeastSquaresVectors() :"
+            << "Finished calculating least square gradient vectors"
             << endl;
     }
 }
 
 
-const Foam::surfaceVectorField& Foam::leastSquaresVectors::pVectors() const
-{
-    if (!pVectorsPtr_)
-    {
-        makeLeastSquaresVectors();
-    }
-
-    return *pVectorsPtr_;
-}
-
-
-const Foam::surfaceVectorField& Foam::leastSquaresVectors::nVectors() const
-{
-    if (!nVectorsPtr_)
-    {
-        makeLeastSquaresVectors();
-    }
-
-    return *nVectorsPtr_;
-}
-
-
 bool Foam::leastSquaresVectors::movePoints()
 {
-    deleteDemandDrivenData(pVectorsPtr_);
-    deleteDemandDrivenData(nVectorsPtr_);
-
+    calcLeastSquaresVectors();
     return true;
 }
 

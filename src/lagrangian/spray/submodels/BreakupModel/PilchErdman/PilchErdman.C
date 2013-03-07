@@ -27,7 +27,7 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template <class CloudType>
+template<class CloudType>
 Foam::PilchErdman<CloudType>::PilchErdman
 (
     const dictionary& dict,
@@ -46,7 +46,7 @@ Foam::PilchErdman<CloudType>::PilchErdman
 }
 
 
-template <class CloudType>
+template<class CloudType>
 Foam::PilchErdman<CloudType>::PilchErdman(const PilchErdman<CloudType>& bum)
 :
     BreakupModel<CloudType>(bum),
@@ -57,7 +57,7 @@ Foam::PilchErdman<CloudType>::PilchErdman(const PilchErdman<CloudType>& bum)
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-template <class CloudType>
+template<class CloudType>
 Foam::PilchErdman<CloudType>::~PilchErdman()
 {}
 

@@ -1,0 +1,8 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # run from this directory
+
+foamCleanTutorials cases
+rm -rf processor*
+rm -rf 0/p_rgh.gz 0/p.gz 0/alphawater.gz 0/T.gz
+
+# ----------------------------------------------------------------- end-of-file

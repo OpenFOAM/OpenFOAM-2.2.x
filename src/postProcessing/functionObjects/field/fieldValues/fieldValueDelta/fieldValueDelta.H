@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -37,6 +37,8 @@ Description
     {
         type            fieldValueDelta;
         functionObjectLibs ("libfieldFunctionObjects.so");
+        operation       subtract;
+
         fieldValue1
         {
             ...
@@ -54,6 +56,15 @@ Description
         type         | type name: fieldValueDelta   | yes    |
     \endtable
 
+    \linebreak
+    The \c operation is one of:
+    \plaintable
+       add           | add
+       subtract      | subtract
+       min           | minimum
+       max           | maximum
+       average       | average
+    \endplaintable
 SeeAlso
     Foam::fieldValue
 
@@ -92,11 +103,12 @@ public:
             opAdd,
             opSubtract,
             opMin,
-            opMax
+            opMax,
+            opAverage
         };
 
         //- Operation type names
-        static const NamedEnum<operationType, 4> operationTypeNames_;
+        static const NamedEnum<operationType, 5> operationTypeNames_;
 
 
 private:

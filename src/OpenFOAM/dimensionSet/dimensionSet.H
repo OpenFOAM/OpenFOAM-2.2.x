@@ -354,6 +354,8 @@ public:
         //  for transcendental functions
         friend dimensionSet trans(const dimensionSet&);
 
+        friend dimensionSet atan2(const dimensionSet&, const dimensionSet&);
+
         //- Return the argument; transformations do not change the dimensions
         friend dimensionSet transform(const dimensionSet&);
 

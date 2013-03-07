@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -41,7 +41,7 @@ template
     class PointField,
     class PointType
 >
-template <class ToPatch>
+template<class ToPatch>
 Foam::List<Foam::objectHit>
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 projectPoints
@@ -288,7 +288,7 @@ template
     class PointField,
     class PointType
 >
-template <class ToPatch>
+template<class ToPatch>
 Foam::List<Foam::objectHit>
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 projectFaceCentres

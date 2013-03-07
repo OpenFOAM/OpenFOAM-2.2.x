@@ -63,5 +63,5 @@ EXE_LIBS = \
     -lthermophysicalFunctions \
     -ltopoChangerFvMesh \
     -ltriSurface \
-    -ltwoPhaseInterfaceProperties \
+    -ltwoPhaseProperties \
     -lutilityFunctionObjects

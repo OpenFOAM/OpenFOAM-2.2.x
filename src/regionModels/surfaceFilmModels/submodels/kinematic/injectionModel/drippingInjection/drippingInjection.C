@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -66,13 +66,8 @@ drippingInjection::drippingInjection
             rndGen_
         )
     ),
-    diameter_(owner.regionMesh().nCells(), 0.0)
-{
-    forAll(diameter_, faceI)
-    {
-        diameter_[faceI] = parcelDistribution_->sample();
-    }
-}
+    diameter_(owner.regionMesh().nCells(), -1.0)
+{}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
@@ -117,27 +112,41 @@ void drippingInjection::correct
 
 
     // Collect the data to be transferred
-    forAll(massToInject, cellI)
+    forAll(massDrip, cellI)
     {
-        scalar rhoc = rho[cellI];
-        scalar diam = diameter_[cellI];
-        scalar minMass = particlesPerParcel_*rhoc*pi/6*pow3(diam);
-
-        if (massDrip[cellI] > minMass)
+        if (massDrip[cellI] > 0)
         {
-            // All drip mass can be injected
-            massToInject[cellI] += massDrip[cellI];
-            availableMass[cellI] -= massDrip[cellI];
+            // set new particle diameter if not already set
+            if (diameter_[cellI] < 0)
+            {
+                diameter_[cellI] = parcelDistribution_->sample();
+            }
 
-            // Set particle diameter
-            diameterToInject[cellI] = diameter_[cellI];
+            scalar& diam = diameter_[cellI];
+            scalar rhoc = rho[cellI];
+            scalar minMass = particlesPerParcel_*rhoc*pi/6*pow3(diam);
 
-            // Retrieve new particle diameter sample
-            diameter_[cellI] = parcelDistribution_->sample();
+            if (massDrip[cellI] > minMass)
+            {
+                // All drip mass can be injected
+                massToInject[cellI] += massDrip[cellI];
+                availableMass[cellI] -= massDrip[cellI];
+
+                // Set particle diameter
+                diameterToInject[cellI] = diam;
+
+                // Retrieve new particle diameter sample
+                diam = parcelDistribution_->sample();
+            }
+            else
+            {
+                // Particle mass below minimum threshold - cannot be injected
+                massToInject[cellI] = 0.0;
+                diameterToInject[cellI] = 0.0;
+            }
         }
         else
         {
-            // Mass below minimum threshold - cannot be injected
             massToInject[cellI] = 0.0;
             diameterToInject[cellI] = 0.0;
         }

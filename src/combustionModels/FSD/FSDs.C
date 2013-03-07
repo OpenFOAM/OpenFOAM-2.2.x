@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2013-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -38,11 +38,12 @@ namespace Foam
 {
 namespace combustionModels
 {
+    // Combustion models based on sensibleEnthalpy
     makeCombustionTypesThermo
     (
         FSD,
         psiThermoCombustion,
-        gasThermoPhysics,
+        gasHThermoPhysics,
         psiCombustionModel
     );
 
@@ -50,7 +51,7 @@ namespace combustionModels
     (
         FSD,
         psiThermoCombustion,
-        constGasThermoPhysics,
+        constGasHThermoPhysics,
         psiCombustionModel
     );
 
@@ -58,7 +59,7 @@ namespace combustionModels
     (
         FSD,
         rhoThermoCombustion,
-        gasThermoPhysics,
+        gasHThermoPhysics,
         rhoCombustionModel
     );
 
@@ -66,7 +67,40 @@ namespace combustionModels
     (
         FSD,
         rhoThermoCombustion,
-        constGasThermoPhysics,
+        constGasHThermoPhysics,
+        rhoCombustionModel
+    );
+
+    // Combustion models based on sensibleInternalEnergy
+    makeCombustionTypesThermo
+    (
+        FSD,
+        psiThermoCombustion,
+        gasEThermoPhysics,
+        psiCombustionModel
+    );
+
+    makeCombustionTypesThermo
+    (
+        FSD,
+        psiThermoCombustion,
+        constGasEThermoPhysics,
+        psiCombustionModel
+    );
+
+    makeCombustionTypesThermo
+    (
+        FSD,
+        rhoThermoCombustion,
+        gasEThermoPhysics,
+        rhoCombustionModel
+    );
+
+    makeCombustionTypesThermo
+    (
+        FSD,
+        rhoThermoCombustion,
+        constGasEThermoPhysics,
         rhoCombustionModel
     );
 }

@@ -277,6 +277,21 @@ transFunc(yn)
 #undef transFunc
 
 
+dimensionedScalar atan2
+(
+    const dimensionedScalar& x,
+    const dimensionedScalar& y
+)
+{
+    return dimensionedScalar
+    (
+        "atan2(" + x.name() + ',' + y.name() + ')',
+        atan2(x.dimensions(), y.dimensions()),
+        ::atan2(x.value(), y.value())
+    );
+}
+
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // End namespace Foam

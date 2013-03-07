@@ -1,7 +1,4 @@
 {
-    rho1 = eos1->rho(p, T);
-    rho2 = eos2->rho(p, T);
-
     volScalarField rAU("rAU", 1.0/UEqn.A());
     surfaceScalarField rAUf("Dp", fvc::interpolate(rAU));
 
@@ -50,7 +47,7 @@
 
     // Thermodynamic density needs to be updated by psi*d(p) after the
     // pressure solution - done in 2 parts. Part 1:
-    //thermo.rho() -= psi*p_rgh;
+    //twoPhaseProperties.rho() -= psi*p_rgh;
 
     while (pimple.correctNonOrthogonal())
     {
@@ -73,7 +70,7 @@
         if (pimple.finalNonOrthogonalIter())
         {
             // Second part of thermodynamic density update
-            //thermo.rho() += psi*p_rgh;
+            //twoPhaseProperties.rho() += psi*p_rgh;
 
             dgdt =
             (
@@ -91,9 +88,15 @@
 
     p = max(p_rgh + (alpha1*rho1 + alpha2*rho2)*gh, pMin);
 
-    rho1 = eos1->rho(p, T);
-    rho2 = eos2->rho(p, T);
+    // twoPhaseProperties.correct();
 
     Info<< "max(U) " << max(mag(U)).value() << endl;
     Info<< "min(p_rgh) " << min(p_rgh).value() << endl;
+
+    K = 0.5*magSqr(U);
+
+    if (twoPhaseProperties.dpdt())
+    {
+        dpdt = fvc::ddt(p);
+    }
 }

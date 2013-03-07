@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -74,6 +74,9 @@ private:
 
         //- Map of OpenFOAM field name vs nastran field name
         HashTable<word> fieldMap_;
+
+        //- Scale to apply to values (default = 1.0)
+        scalar scale_;
 
 
     // Private Member Functions

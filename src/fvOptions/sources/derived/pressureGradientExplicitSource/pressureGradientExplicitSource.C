@@ -217,7 +217,7 @@ void Foam::fv::pressureGradientExplicitSource::setValue
             (
                 IOobject
                 (
-                    name_ + ".invA",
+                    name_ + ":invA",
                     mesh_.time().timeName(),
                     mesh_,
                     IOobject::NO_READ,

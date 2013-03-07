@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -39,23 +39,23 @@ namespace Foam
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#define makeSolidChemistrySolverType(SS, Comp, SThermo, GThermo)              \
+#define makeSolidChemistrySolverType(SS, Schem, Comp, SThermo, GThermo)       \
                                                                               \
-    typedef SS<ODESolidChemistryModel<Comp, SThermo, GThermo> >               \
-        SS##Comp##SThermo##GThermo;                                           \
+    typedef SS<Schem<Comp, SThermo, GThermo> >                                \
+        SS##Schem##Comp##SThermo##GThermo;                                    \
                                                                               \
     defineTemplateTypeNameAndDebugWithName                                    \
     (                                                                         \
-        SS##Comp##SThermo##GThermo,                                           \
-        (#SS"<" + word(Comp::typeName_())                                     \
-      + "," + SThermo::typeName() + "," + GThermo::typeName() + ">").c_str(), \
+        SS##Schem##Comp##SThermo##GThermo,                                    \
+        (#SS"<"#Schem"<"#Comp"," + SThermo::typeName() + ","                  \
+      + GThermo::typeName() + ">>").c_str(),                                  \
         0                                                                     \
     );                                                                        \
                                                                               \
     addToRunTimeSelectionTable                                                \
     (                                                                         \
         Comp,                                                                 \
-        SS##Comp##SThermo##GThermo,                                           \
+        SS##Schem##Comp##SThermo##GThermo,                                    \
         fvMesh                                                                \
     );
 

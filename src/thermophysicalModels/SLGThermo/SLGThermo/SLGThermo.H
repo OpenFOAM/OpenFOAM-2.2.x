@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -45,7 +45,7 @@ SourceFiles
 #ifndef SLGThermo_H
 #define SLGThermo_H
 
-#include "MeshObject.H"
+#include "regIOobject.H"
 #include "fluidThermo.H"
 #include "basicMultiComponentMixture.H"
 #include "liquidMixtureProperties.H"
@@ -62,7 +62,7 @@ namespace Foam
 
 class SLGThermo
 :
-    public MeshObject<fvMesh, SLGThermo>
+    public regIOobject
 {
     // Private data
 
@@ -145,6 +145,14 @@ public:
 
             //- Thermo database has solid components flag
             bool hasSolids() const;
+
+
+        // IO
+
+            bool writeData(Foam::Ostream&) const
+            {
+                return true;
+            }
 };
 
 

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -50,7 +50,7 @@ namespace Foam
                            Class DiagTensor Declaration
 \*---------------------------------------------------------------------------*/
 
-template <class Cmpt>
+template<class Cmpt>
 class DiagTensor
 :
     public VectorSpace<DiagTensor<Cmpt>, Cmpt, 3>
@@ -86,7 +86,8 @@ public:
         inline DiagTensor();
 
         //- Construct given VectorSpace
-        inline DiagTensor(const VectorSpace<DiagTensor<Cmpt>, Cmpt, 3>&);
+        template<class Cmpt2>
+        inline DiagTensor(const VectorSpace<DiagTensor<Cmpt2>, Cmpt2, 3>&);
 
         //- Construct given three components
         inline DiagTensor(const Cmpt& txx, const Cmpt& tyy, const Cmpt& tzz);

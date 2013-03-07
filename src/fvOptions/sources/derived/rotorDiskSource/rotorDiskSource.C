@@ -203,7 +203,7 @@ void Foam::fv::rotorDiskSource::setFaceArea(vector& axis, const bool correct)
             {
                 const label faceI = pp.start() + j;
                 const label own = cellAddr[mesh_.faceOwner()[faceI]];
-                const bool nbr = nbrFaceCellAddr[faceI - nInternalFaces];
+                const label nbr = nbrFaceCellAddr[faceI - nInternalFaces];
                 const vector nf = Sfp[j]/magSfp[j];
 
                 if ((own != -1) && (nbr == -1) && ((nf & axis) > tol))

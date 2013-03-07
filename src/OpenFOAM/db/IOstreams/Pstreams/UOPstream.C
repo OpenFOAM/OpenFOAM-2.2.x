@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -157,6 +157,11 @@ Foam::Ostream& Foam::UOPstream::write(const token& t)
     if (t.type() == token::VERBATIMSTRING)
     {
         write(char(token::VERBATIMSTRING));
+        write(t.stringToken());
+    }
+    else if (t.type() == token::VARIABLE)
+    {
+        write(char(token::VARIABLE));
         write(t.stringToken());
     }
     else

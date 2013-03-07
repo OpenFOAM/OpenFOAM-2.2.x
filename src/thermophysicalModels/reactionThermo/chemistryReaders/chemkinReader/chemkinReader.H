@@ -62,7 +62,7 @@ namespace Foam
 
 class chemkinReader
 :
-    public chemistryReader<gasThermoPhysics>,
+    public chemistryReader<gasHThermoPhysics>,
     public yyFlexLexer
 {
 
@@ -200,13 +200,13 @@ private:
         HashTable<phase> speciePhase_;
 
         //- Table of the thermodynamic data given in the CHEMKIN file
-        HashPtrTable<gasThermoPhysics> speciesThermo_;
+        HashPtrTable<gasHThermoPhysics> speciesThermo_;
 
         //- Table of species composition
         HashTable<List<specieElement> > specieComposition_;
 
         //- List of the reactions
-        ReactionList<gasThermoPhysics> reactions_;
+        ReactionList<gasHThermoPhysics> reactions_;
 
         //- Flag to indicate that file is in new format
         Switch newFormat_;
@@ -261,8 +261,8 @@ private:
         void addReactionType
         (
             const reactionType rType,
-            DynamicList<gasReaction::specieCoeffs>& lhs,
-            DynamicList<gasReaction::specieCoeffs>& rhs,
+            DynamicList<gasHReaction::specieCoeffs>& lhs,
+            DynamicList<gasHReaction::specieCoeffs>& rhs,
             const ReactionRateType& rr
         );
 
@@ -271,8 +271,8 @@ private:
         (
             const reactionType rType,
             const fallOffFunctionType fofType,
-            DynamicList<gasReaction::specieCoeffs>& lhs,
-            DynamicList<gasReaction::specieCoeffs>& rhs,
+            DynamicList<gasHReaction::specieCoeffs>& lhs,
+            DynamicList<gasHReaction::specieCoeffs>& rhs,
             const scalarList& thirdBodyEfficiencies,
             const scalarList& k0Coeffs,
             const scalarList& kInfCoeffs,
@@ -284,8 +284,8 @@ private:
 
         void addReaction
         (
-            DynamicList<gasReaction::specieCoeffs>& lhs,
-            DynamicList<gasReaction::specieCoeffs>& rhs,
+            DynamicList<gasHReaction::specieCoeffs>& lhs,
+            DynamicList<gasHReaction::specieCoeffs>& rhs,
             const scalarList& thirdBodyEfficiencies,
             const reactionType rType,
             const reactionRateType rrType,
@@ -369,7 +369,7 @@ public:
         }
 
         //- Table of the thermodynamic data given in the CHEMKIN file
-        const HashPtrTable<gasThermoPhysics>& speciesThermo() const
+        const HashPtrTable<gasHThermoPhysics>& speciesThermo() const
         {
             return speciesThermo_;
         }
@@ -381,7 +381,7 @@ public:
         }
 
         //- List of the reactions
-        const ReactionList<gasThermoPhysics>& reactions() const
+        const ReactionList<gasHThermoPhysics>& reactions() const
         {
             return reactions_;
         }

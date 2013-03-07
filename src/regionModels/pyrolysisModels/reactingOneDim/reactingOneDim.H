@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -36,7 +36,7 @@ SourceFiles
 #define reactingOneDim_H
 
 #include "pyrolysisModel.H"
-#include "solidChemistryModel.H"
+#include "basicSolidChemistryModel.H"
 #include "radiationModel.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -76,7 +76,7 @@ protected:
     // Protected data
 
         //- Reference to the solid chemistry model
-        autoPtr<solidChemistryModel> solidChemistry_;
+        autoPtr<basicSolidChemistryModel> solidChemistry_;
 
         //- Reference to solid thermo
         solidReactionThermo& solidThermo_;

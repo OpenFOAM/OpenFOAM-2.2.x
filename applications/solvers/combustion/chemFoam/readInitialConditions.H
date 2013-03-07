@@ -15,15 +15,15 @@
     }
 
     label nSpecie = Y.size();
-    PtrList<gasThermoPhysics> specieData(Y.size());
+    PtrList<gasHThermoPhysics> specieData(Y.size());
     forAll(specieData, i)
     {
         specieData.set
         (
             i,
-            new gasThermoPhysics
+            new gasHThermoPhysics
             (
-                dynamic_cast<const reactingMixture<gasThermoPhysics>&>
+                dynamic_cast<const reactingMixture<gasHThermoPhysics>&>
                     (thermo).speciesData()[i]
             )
         );

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2013-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -36,11 +36,13 @@ namespace Foam
 {
 namespace combustionModels
 {
+    // Combustion models based on sensibleEnthalpy
+
     makeCombustionTypesThermo
     (
         infinitelyFastChemistry,
         psiThermoCombustion,
-        gasThermoPhysics,
+        gasHThermoPhysics,
         psiCombustionModel
     );
 
@@ -48,7 +50,7 @@ namespace combustionModels
     (
         infinitelyFastChemistry,
         psiThermoCombustion,
-        constGasThermoPhysics,
+        constGasHThermoPhysics,
         psiCombustionModel
     );
 
@@ -56,7 +58,7 @@ namespace combustionModels
     (
         infinitelyFastChemistry,
         rhoThermoCombustion,
-        gasThermoPhysics,
+        gasHThermoPhysics,
         rhoCombustionModel
     );
 
@@ -64,7 +66,41 @@ namespace combustionModels
     (
         infinitelyFastChemistry,
         rhoThermoCombustion,
-        constGasThermoPhysics,
+        constGasHThermoPhysics,
+        rhoCombustionModel
+    );
+
+    // Combustion models based on sensibleInternalEnergy
+
+    makeCombustionTypesThermo
+    (
+        infinitelyFastChemistry,
+        psiThermoCombustion,
+        gasEThermoPhysics,
+        psiCombustionModel
+    );
+
+    makeCombustionTypesThermo
+    (
+        infinitelyFastChemistry,
+        psiThermoCombustion,
+        constGasEThermoPhysics,
+        psiCombustionModel
+    );
+
+    makeCombustionTypesThermo
+    (
+        infinitelyFastChemistry,
+        rhoThermoCombustion,
+        gasEThermoPhysics,
+        rhoCombustionModel
+    );
+
+    makeCombustionTypesThermo
+    (
+        infinitelyFastChemistry,
+        rhoThermoCombustion,
+        constGasEThermoPhysics,
         rhoCombustionModel
     );
 }

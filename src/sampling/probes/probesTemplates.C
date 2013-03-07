@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -111,7 +111,7 @@ void Foam::probes::sampleAndWrite
 }
 
 
-template <class Type>
+template<class Type>
 void Foam::probes::sampleAndWrite(const fieldGroup<Type>& fields)
 {
     forAll(fields, fieldI)

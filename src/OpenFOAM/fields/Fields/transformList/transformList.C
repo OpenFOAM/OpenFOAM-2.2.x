@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -27,7 +27,7 @@ License
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-template <class T>
+template<class T>
 Foam::List<T> Foam::transform
 (
     const tensor& rotTensor,
@@ -45,7 +45,7 @@ Foam::List<T> Foam::transform
 }
 
 
-template <class T>
+template<class T>
 void Foam::transformList(const tensor& rotTensor, UList<T>& field)
 {
     forAll(field, i)
@@ -55,7 +55,7 @@ void Foam::transformList(const tensor& rotTensor, UList<T>& field)
 }
 
 
-template <class T>
+template<class T>
 void Foam::transformList(const tensorField& rotTensor, UList<T>& field)
 {
     if (rotTensor.size() == 1)
@@ -84,7 +84,7 @@ void Foam::transformList(const tensorField& rotTensor, UList<T>& field)
 }
 
 
-template <class T>
+template<class T>
 void Foam::transformList(const tensor& rotTensor, Map<T>& field)
 {
     forAllIter(typename Map<T>, field, iter)
@@ -94,7 +94,7 @@ void Foam::transformList(const tensor& rotTensor, Map<T>& field)
 }
 
 
-template <class T>
+template<class T>
 void Foam::transformList(const tensorField& rotTensor, Map<T>& field)
 {
     if (rotTensor.size() == 1)
@@ -116,7 +116,7 @@ void Foam::transformList(const tensorField& rotTensor, Map<T>& field)
 }
 
 
-template <class T>
+template<class T>
 void Foam::transformList(const tensor& rotTensor, EdgeMap<T>& field)
 {
     forAllIter(typename EdgeMap<T>, field, iter)
@@ -126,7 +126,7 @@ void Foam::transformList(const tensor& rotTensor, EdgeMap<T>& field)
 }
 
 
-template <class T>
+template<class T>
 void Foam::transformList(const tensorField& rotTensor, EdgeMap<T>& field)
 {
     if (rotTensor.size() == 1)

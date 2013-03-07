@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -386,7 +386,7 @@ void LaunderGibsonRSTM::correct()
     }
 
     volSymmTensorField P(-twoSymm(R_ & fvc::grad(U_)));
-    volScalarField G(type() + ".G", 0.5*mag(tr(P)));
+    volScalarField G(GName(), 0.5*mag(tr(P)));
 
     // Update epsilon and G at the wall
     epsilon_.boundaryField().updateCoeffs();

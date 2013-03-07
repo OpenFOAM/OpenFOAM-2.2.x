@@ -278,7 +278,7 @@ inline Foam::tmp<Foam::volScalarField> Foam::ThermoCloud<CloudType>::Ep() const
         (
             IOobject
             (
-                this->name() + "::radiation::Ep",
+                this->name() + ":radiation:Ep",
                 this->db().time().timeName(),
                 this->db(),
                 IOobject::NO_READ,
@@ -314,7 +314,7 @@ inline Foam::tmp<Foam::volScalarField> Foam::ThermoCloud<CloudType>::ap() const
         (
             IOobject
             (
-                this->name() + "::radiation::ap",
+                this->name() + ":radiation:ap",
                 this->db().time().timeName(),
                 this->db(),
                 IOobject::NO_READ,
@@ -351,7 +351,7 @@ Foam::ThermoCloud<CloudType>::sigmap() const
         (
             IOobject
             (
-                this->name() + "::radiation::sigmap",
+                this->name() + ":radiation:sigmap",
                 this->db().time().timeName(),
                 this->db(),
                 IOobject::NO_READ,

@@ -92,35 +92,6 @@ reconstruct
 
     return treconField;
 }
-/*
-{
-    typedef typename outerProduct<vector, Type>::type GradType;
-
-    const fvMesh& mesh = ssf.mesh();
-
-    tmp<GeometricField<GradType, fvPatchField, volMesh> > treconField
-    (
-        new GeometricField<GradType, fvPatchField, volMesh>
-        (
-            IOobject
-            (
-                "volIntegrate("+ssf.name()+')',
-                ssf.instance(),
-                mesh,
-                IOobject::NO_READ,
-                IOobject::NO_WRITE
-            ),
-            inv(surfaceSum(sqr(mesh.Sf())/mesh.magSf()))
-          & surfaceSum((mesh.Sf()/mesh.magSf())*ssf),
-            zeroGradientFvPatchField<GradType>::typeName
-        )
-    );
-
-    treconField().correctBoundaryConditions();
-
-    return treconField;
-}
-*/
 
 
 template<class Type>

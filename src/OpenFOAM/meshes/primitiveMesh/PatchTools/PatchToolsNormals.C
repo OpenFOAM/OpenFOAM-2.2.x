@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -79,8 +79,7 @@ Foam::tmp<Foam::pointField>
 Foam::PatchTools::pointNormals
 (
     const polyMesh& mesh,
-    const PrimitivePatch<Face, FaceList, PointField, PointType>& p,
-    const labelList& meshFaces
+    const PrimitivePatch<Face, FaceList, PointField, PointType>& p
 )
 {
     // Assume patch is smaller than the globalData().coupledPatch() (?) so
@@ -221,6 +220,92 @@ Foam::PatchTools::pointNormals
     }
 
     return textrudeN;
+}
+
+
+template
+<
+    class Face,
+    template<class> class FaceList,
+    class PointField,
+    class PointType
+>
+
+Foam::tmp<Foam::pointField>
+Foam::PatchTools::edgeNormals
+(
+    const polyMesh& mesh,
+    const PrimitivePatch<Face, FaceList, PointField, PointType>& p,
+    const labelList& patchEdges,
+    const labelList& coupledEdges
+)
+{
+    // 1. Start off with local normals
+
+    tmp<pointField> tedgeNormals(new pointField(p.nEdges(), vector::zero));
+    pointField& edgeNormals = tedgeNormals();
+    {
+        const labelListList& edgeFaces = p.edgeFaces();
+        const vectorField& faceNormals = p.faceNormals();
+
+        forAll(edgeFaces, edgeI)
+        {
+            const labelList& eFaces = edgeFaces[edgeI];
+            forAll(eFaces, i)
+            {
+                edgeNormals[edgeI] += faceNormals[eFaces[i]];
+            }
+        }
+        edgeNormals /= mag(edgeNormals)+VSMALL;
+    }
+
+
+
+    const globalMeshData& globalData = mesh.globalData();
+    const mapDistribute& map = globalData.globalEdgeSlavesMap();
+
+
+    // Convert patch-edge data into cpp-edge data
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    //- Construct with all data in consistent orientation
+    pointField cppEdgeData(map.constructSize(), vector::zero);
+
+    forAll(patchEdges, i)
+    {
+        label patchEdgeI = patchEdges[i];
+        label coupledEdgeI = coupledEdges[i];
+        cppEdgeData[coupledEdgeI] = edgeNormals[patchEdgeI];
+    }
+
+
+    // Synchronise
+    // ~~~~~~~~~~~
+
+    globalData.syncData
+    (
+        cppEdgeData,
+        globalData.globalEdgeSlaves(),
+        globalData.globalEdgeTransformedSlaves(),
+        map,
+        globalData.globalTransforms(),
+        plusEqOp<point>(),              // add since normalised later on
+        mapDistribute::transform()
+    );
+    cppEdgeData /= mag(cppEdgeData)+VSMALL;
+
+
+    // Back from cpp-edge to patch-edge data
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    forAll(patchEdges, i)
+    {
+        label patchEdgeI = patchEdges[i];
+        label coupledEdgeI = coupledEdges[i];
+        edgeNormals[patchEdgeI] = cppEdgeData[coupledEdgeI];
+    }
+
+    return tedgeNormals;
 }
 
 

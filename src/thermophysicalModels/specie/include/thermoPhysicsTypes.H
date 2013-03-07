@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2013-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -37,7 +37,9 @@ Description
 #include "incompressiblePerfectGas.H"
 #include "hConstThermo.H"
 #include "janafThermo.H"
+
 #include "sensibleEnthalpy.H"
+#include "sensibleInternalEnergy.H"
 #include "thermo.H"
 #include "sutherlandTransport.H"
 #include "constTransport.H"
@@ -50,6 +52,7 @@ Description
 
 namespace Foam
 {
+    // thermo physics types based on sensibleEnthalpy
     typedef
     constTransport
     <
@@ -61,7 +64,7 @@ namespace Foam
             >,
             sensibleEnthalpy
         >
-    > constGasThermoPhysics;
+    > constGasHThermoPhysics;
 
     typedef
     sutherlandTransport
@@ -74,7 +77,7 @@ namespace Foam
             >,
             sensibleEnthalpy
         >
-    > gasThermoPhysics;
+    > gasHThermoPhysics;
 
     typedef
     constTransport
@@ -87,7 +90,7 @@ namespace Foam
             >,
             sensibleEnthalpy
         >
-    > constIncompressibleGasThermoPhysics;
+    > constIncompressibleGasHThermoPhysics;
 
     typedef
     sutherlandTransport
@@ -100,7 +103,7 @@ namespace Foam
             >,
             sensibleEnthalpy
         >
-    > incompressibleGasThermoPhysics;
+    > incompressibleGasHThermoPhysics;
 
     typedef
     polynomialTransport
@@ -115,7 +118,76 @@ namespace Foam
             sensibleEnthalpy
         >,
         8
-    > icoPoly8ThermoPhysics;
+    > icoPoly8HThermoPhysics;
+
+
+    // thermo physics types based on sensibleInternalEnergy
+    typedef
+    constTransport
+    <
+        species::thermo
+        <
+            hConstThermo
+            <
+                perfectGas<specie>
+            >,
+            sensibleInternalEnergy
+        >
+    > constGasEThermoPhysics;
+
+    typedef
+    sutherlandTransport
+    <
+        species::thermo
+        <
+            janafThermo
+            <
+                perfectGas<specie>
+            >,
+            sensibleInternalEnergy
+        >
+    > gasEThermoPhysics;
+
+    typedef
+    constTransport
+    <
+        species::thermo
+        <
+            hConstThermo
+            <
+                incompressiblePerfectGas<specie>
+            >,
+            sensibleInternalEnergy
+        >
+    > constIncompressibleGasEThermoPhysics;
+
+    typedef
+    sutherlandTransport
+    <
+        species::thermo
+        <
+            janafThermo
+            <
+                incompressiblePerfectGas<specie>
+            >,
+            sensibleInternalEnergy
+        >
+    > incompressibleGasEThermoPhysics;
+
+    typedef
+    polynomialTransport
+    <
+        species::thermo
+        <
+            hPolynomialThermo
+            <
+                icoPolynomial<specie, 8>,
+                8
+            >,
+            sensibleInternalEnergy
+        >,
+        8
+    > icoPoly8EThermoPhysics;
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

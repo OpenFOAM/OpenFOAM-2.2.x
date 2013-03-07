@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -26,7 +26,7 @@ License
 
 // * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * * //
 
-template <class Type>
+template<class Type>
 Foam::label Foam::interpolationLookUpTable<Type>::index
 (
     const List<scalar>& indices,
@@ -70,7 +70,7 @@ Foam::label Foam::interpolationLookUpTable<Type>::index
 }
 
 
-template <class Type>
+template<class Type>
 Foam::label Foam::interpolationLookUpTable<Type>::index
 (
     const scalar indice

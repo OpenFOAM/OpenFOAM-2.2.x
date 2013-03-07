@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -26,8 +26,7 @@ License
 #include "polyMesh.H"
 #include "primitiveMesh.H"
 #include "globalMeshData.H"
-#include "pointMesh.H"
-#include "Time.H"
+#include "MeshObject.H"
 #include "indexedOctree.H"
 #include "treeDataCell.H"
 
@@ -60,6 +59,8 @@ void Foam::polyMesh::clearGeom()
             << "clearing geometric data"
             << endl;
     }
+
+    meshObject::clear<polyMesh, GeometricMeshObject>(*this);
 
     primitiveMesh::clearGeom();
 
@@ -101,6 +102,8 @@ void Foam::polyMesh::clearAddressing()
             << endl;
     }
 
+    meshObject::clear<polyMesh, TopologicalMeshObject>(*this);
+
     primitiveMesh::clearAddressing();
 
     // parallelData depends on the processorPatch ordering so force
@@ -118,6 +121,7 @@ void Foam::polyMesh::clearAddressing()
 
     // Remove the stored tet base points
     tetBasePtIsPtr_.clear();
+
     // Remove the cell tree
     cellTreePtr_.clear();
 }
@@ -132,8 +136,6 @@ void Foam::polyMesh::clearPrimitives()
     owner_.setSize(0);
     neighbour_.setSize(0);
 
-    pointMesh::Delete(*this);
-
     clearedPrimitives_ = true;
 }
 
@@ -142,8 +144,6 @@ void Foam::polyMesh::clearOut()
 {
     clearGeom();
     clearAddressing();
-
-    pointMesh::Delete(*this);
 }
 
 

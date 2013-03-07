@@ -37,10 +37,10 @@ License
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
-template <class Type, class TrackingData>
+template<class Type, class TrackingData>
 Foam::scalar Foam::PointEdgeWave<Type, TrackingData>::propagationTol_ = 0.01;
 
-template <class Type, class TrackingData>
+template<class Type, class TrackingData>
 int Foam::PointEdgeWave<Type, TrackingData>::dummyTrackData_ = 12345;
 
 namespace Foam
@@ -71,7 +71,7 @@ namespace Foam
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
 // Handle leaving domain. Implementation referred to Type
-template <class Type, class TrackingData>
+template<class Type, class TrackingData>
 void Foam::PointEdgeWave<Type, TrackingData>::leaveDomain
 (
     const polyPatch& patch,
@@ -93,7 +93,7 @@ void Foam::PointEdgeWave<Type, TrackingData>::leaveDomain
 
 
 // Handle entering domain. Implementation referred to Type
-template <class Type, class TrackingData>
+template<class Type, class TrackingData>
 void Foam::PointEdgeWave<Type, TrackingData>::enterDomain
 (
     const polyPatch& patch,
@@ -115,7 +115,7 @@ void Foam::PointEdgeWave<Type, TrackingData>::enterDomain
 
 
 // Transform. Implementation referred to Type
-template <class Type, class TrackingData>
+template<class Type, class TrackingData>
 void Foam::PointEdgeWave<Type, TrackingData>::transform
 (
     const polyPatch& patch,
@@ -156,7 +156,7 @@ void Foam::PointEdgeWave<Type, TrackingData>::transform
 // Updates:
 //      - changedPoint_, changedPoints_, nChangedPoints_,
 //      - statistics: nEvals_, nUnvisitedPoints_
-template <class Type, class TrackingData>
+template<class Type, class TrackingData>
 bool Foam::PointEdgeWave<Type, TrackingData>::updatePoint
 (
     const label pointI,
@@ -203,7 +203,7 @@ bool Foam::PointEdgeWave<Type, TrackingData>::updatePoint
 // Updates:
 //      - changedPoint_, changedPoints_, nChangedPoints_,
 //      - statistics: nEvals_, nUnvisitedPoints_
-template <class Type, class TrackingData>
+template<class Type, class TrackingData>
 bool Foam::PointEdgeWave<Type, TrackingData>::updatePoint
 (
     const label pointI,
@@ -248,7 +248,7 @@ bool Foam::PointEdgeWave<Type, TrackingData>::updatePoint
 // Updates:
 //      - changedEdge_, changedEdges_, nChangedEdges_,
 //      - statistics: nEvals_, nUnvisitedEdge_
-template <class Type, class TrackingData>
+template<class Type, class TrackingData>
 bool Foam::PointEdgeWave<Type, TrackingData>::updateEdge
 (
     const label edgeI,
@@ -291,8 +291,8 @@ bool Foam::PointEdgeWave<Type, TrackingData>::updateEdge
 
 
 // Check if patches of given type name are present
-template <class Type, class TrackingData>
-template <class PatchType>
+template<class Type, class TrackingData>
+template<class PatchType>
 Foam::label Foam::PointEdgeWave<Type, TrackingData>::countPatchType() const
 {
     label nPatches = 0;
@@ -309,7 +309,7 @@ Foam::label Foam::PointEdgeWave<Type, TrackingData>::countPatchType() const
 
 
 // Transfer all the information to/from neighbouring processors
-template <class Type, class TrackingData>
+template<class Type, class TrackingData>
 void Foam::PointEdgeWave<Type, TrackingData>::handleProcPatches()
 {
     // 1. Send all point info on processor patches.
@@ -458,7 +458,7 @@ void Foam::PointEdgeWave<Type, TrackingData>::handleProcPatches()
 }
 
 
-template <class Type, class TrackingData>
+template<class Type, class TrackingData>
 void Foam::PointEdgeWave<Type, TrackingData>::handleCyclicPatches()
 {
     // 1. Send all point info on cyclic patches.
@@ -549,7 +549,7 @@ void Foam::PointEdgeWave<Type, TrackingData>::handleCyclicPatches()
 
 // Guarantee collocated points have same information.
 // Return number of points changed.
-template <class Type, class TrackingData>
+template<class Type, class TrackingData>
 Foam::label Foam::PointEdgeWave<Type, TrackingData>::handleCollocatedPoints()
 {
     // Transfer onto coupled patch
@@ -643,7 +643,7 @@ Foam::label Foam::PointEdgeWave<Type, TrackingData>::handleCollocatedPoints()
 
 // Iterate, propagating changedPointsInfo across mesh, until no change (or
 // maxIter reached). Initial point values specified.
-template <class Type, class TrackingData>
+template<class Type, class TrackingData>
 Foam::PointEdgeWave<Type, TrackingData>::PointEdgeWave
 (
     const polyMesh& mesh,
@@ -728,7 +728,7 @@ Foam::PointEdgeWave<Type, TrackingData>::PointEdgeWave
 }
 
 
-template <class Type, class TrackingData>
+template<class Type, class TrackingData>
 Foam::PointEdgeWave<Type, TrackingData>::PointEdgeWave
 (
     const polyMesh& mesh,
@@ -756,7 +756,7 @@ Foam::PointEdgeWave<Type, TrackingData>::PointEdgeWave
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-template <class Type, class TrackingData>
+template<class Type, class TrackingData>
 Foam::PointEdgeWave<Type, TrackingData>::~PointEdgeWave()
 {}
 
@@ -764,14 +764,14 @@ Foam::PointEdgeWave<Type, TrackingData>::~PointEdgeWave()
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 
-template <class Type, class TrackingData>
+template<class Type, class TrackingData>
 Foam::label Foam::PointEdgeWave<Type, TrackingData>::getUnsetPoints() const
 {
     return nUnvisitedPoints_;
 }
 
 
-template <class Type, class TrackingData>
+template<class Type, class TrackingData>
 Foam::label Foam::PointEdgeWave<Type, TrackingData>::getUnsetEdges() const
 {
     return nUnvisitedEdges_;
@@ -779,7 +779,7 @@ Foam::label Foam::PointEdgeWave<Type, TrackingData>::getUnsetEdges() const
 
 
 // Copy point information into member data
-template <class Type, class TrackingData>
+template<class Type, class TrackingData>
 void Foam::PointEdgeWave<Type, TrackingData>::setPointInfo
 (
     const labelList& changedPoints,
@@ -816,7 +816,7 @@ void Foam::PointEdgeWave<Type, TrackingData>::setPointInfo
 
 
 // Propagate information from edge to point. Return number of points changed.
-template <class Type, class TrackingData>
+template<class Type, class TrackingData>
 Foam::label Foam::PointEdgeWave<Type, TrackingData>::edgeToPoint()
 {
     for
@@ -892,7 +892,7 @@ Foam::label Foam::PointEdgeWave<Type, TrackingData>::edgeToPoint()
 
 
 // Propagate information from point to edge. Return number of edges changed.
-template <class Type, class TrackingData>
+template<class Type, class TrackingData>
 Foam::label Foam::PointEdgeWave<Type, TrackingData>::pointToEdge()
 {
     const labelListList& pointEdges = mesh_.pointEdges();
@@ -960,7 +960,7 @@ Foam::label Foam::PointEdgeWave<Type, TrackingData>::pointToEdge()
 
 
 // Iterate
-template <class Type, class TrackingData>
+template<class Type, class TrackingData>
 Foam::label Foam::PointEdgeWave<Type, TrackingData>::iterate
 (
     const label maxIter

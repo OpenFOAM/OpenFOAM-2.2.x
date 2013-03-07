@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -139,6 +139,26 @@ Type Foam::fieldValues::faceSource::processSameTypeValues
         case opSum:
         {
             result = sum(values);
+            break;
+        }
+        case opSumDirection:
+        {
+            FatalErrorIn
+            (
+                "template<class Type>"
+                "Type Foam::fieldValues::faceSource::processSameTypeValues"
+                "("
+                    "const Field<Type>&, "
+                    "const vectorField&, "
+                    "const scalarField&"
+                ") const"
+            )
+                << "Operation " << operationTypeNames_[operation_]
+                << " not available for values of type "
+                << pTraits<Type>::typeName
+                << exit(FatalError);
+
+            result = pTraits<Type>::zero;
             break;
         }
         case opAverage:

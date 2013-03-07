@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -25,6 +25,7 @@ License
 
 #include "scalarMatrices.H"
 #include "Swap.H"
+#include "ListOps.H"
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
@@ -32,7 +33,7 @@ template<class Type>
 void Foam::solve
 (
     scalarSquareMatrix& tmpMatrix,
-    Field<Type>& sourceSol
+    List<Type>& sourceSol
 )
 {
     label n = tmpMatrix.n();
@@ -103,9 +104,9 @@ void Foam::solve
 template<class Type>
 void Foam::solve
 (
-    Field<Type>& psi,
+    List<Type>& psi,
     const scalarSquareMatrix& matrix,
-    const Field<Type>& source
+    const List<Type>& source
 )
 {
     scalarSquareMatrix tmpMatrix = matrix;
@@ -119,7 +120,7 @@ void Foam::LUBacksubstitute
 (
     const scalarSquareMatrix& luMatrix,
     const labelList& pivotIndices,
-    Field<Type>& sourceSol
+    List<Type>& sourceSol
 )
 {
     label n = luMatrix.n();
@@ -164,15 +165,73 @@ void Foam::LUBacksubstitute
 
 
 template<class Type>
+void Foam::LUBacksubstitute
+(
+    const scalarSymmetricSquareMatrix& luMatrix,
+    List<Type>& sourceSol
+)
+{
+    label n = luMatrix.n();
+
+    label ii = 0;
+
+    for (register label i=0; i<n; i++)
+    {
+        Type sum = sourceSol[i];
+        const scalar* __restrict__ luMatrixi = luMatrix[i];
+
+        if (ii != 0)
+        {
+            for (label j=ii-1; j<i; j++)
+            {
+                sum -= luMatrixi[j]*sourceSol[j];
+            }
+        }
+        else if (sum != pTraits<Type>::zero)
+        {
+            ii = i+1;
+        }
+
+        sourceSol[i] = sum/luMatrixi[i];
+    }
+
+    for (register label i=n-1; i>=0; i--)
+    {
+        Type sum = sourceSol[i];
+        const scalar* __restrict__ luMatrixi = luMatrix[i];
+
+        for (register label j=i+1; j<n; j++)
+        {
+            sum -= luMatrixi[j]*sourceSol[j];
+        }
+
+        sourceSol[i] = sum/luMatrixi[i];
+    }
+}
+
+
+template<class Type>
 void Foam::LUsolve
 (
     scalarSquareMatrix& matrix,
-    Field<Type>& sourceSol
+    List<Type>& sourceSol
 )
 {
     labelList pivotIndices(matrix.n());
     LUDecompose(matrix, pivotIndices);
     LUBacksubstitute(matrix, pivotIndices, sourceSol);
+}
+
+
+template<class Type>
+void Foam::LUsolve
+(
+    scalarSymmetricSquareMatrix& matrix,
+    List<Type>& sourceSol
+)
+{
+    LUDecompose(matrix);
+    LUBacksubstitute(matrix, sourceSol);
 }
 
 

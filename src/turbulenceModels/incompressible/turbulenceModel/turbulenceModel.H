@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -155,6 +155,12 @@ public:
 
         //- Const access to the coefficients dictionary
         virtual const dictionary& coeffDict() const = 0;
+
+        //- Helper function to return the nam eof the turbulence G field
+        inline word GName() const
+        {
+            return word(type() + ":G");
+        }
 
         //- Access function to velocity field
         inline const volVectorField& U() const

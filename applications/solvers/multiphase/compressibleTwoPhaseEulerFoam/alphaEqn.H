@@ -104,6 +104,35 @@ surfaceScalarField alphaPhi2("alphaPhi" + phase2Name, phi2);
             {
                 alphaPhi1 = alphaPhic1;
             }
+
+            /*
+            // Legacy semi-implicit and potentially unbounded form
+            fvScalarMatrix alpha1Eqn
+            (
+                fvm::ddt(alpha1)
+              + fvm::div(phic, alpha1, alphaScheme)
+              + fvm::div
+                (
+                    -fvc::flux(-phir, alpha2, alpharScheme),
+                    alpha1,
+                    alpharScheme
+                )
+             ==
+               fvm::Sp(Sp, alpha1) + Su
+            );
+
+            alpha1Eqn.relax();
+            alpha1Eqn.solve();
+
+            if (nAlphaSubCycles > 1)
+            {
+                alphaPhi1 += (runTime.deltaT()/totalDeltaT)*alpha1Eqn.flux();
+            }
+            else
+            {
+                alphaPhi1 = alpha1Eqn.flux();
+            }
+            */
         }
 
         if (g0.value() > 0.0)

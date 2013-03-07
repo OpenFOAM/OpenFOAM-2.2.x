@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -48,7 +48,7 @@ namespace Foam
 
 class pointMesh
 :
-    public MeshObject<polyMesh, pointMesh>,
+    public MeshObject<polyMesh, UpdateableMeshObject, pointMesh>,
     public GeoMesh<polyMesh>
 {
     // Permanent data
@@ -121,7 +121,7 @@ public:
         // Mesh motion
 
             //- Move points, returns volumes swept by faces in motion
-            void movePoints(const pointField&);
+            bool movePoints();
 
             //- Update the mesh corresponding to given map
             void updateMesh(const mapPolyMesh& mpm);

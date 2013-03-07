@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -38,20 +38,17 @@ void Foam::fvMeshTools::addPatchFields
     const typename GeoField::value_type& defaultPatchValue
 )
 {
-    HashTable<const GeoField*> flds
+    HashTable<GeoField*> flds
     (
         mesh.objectRegistry::lookupClass<GeoField>()
     );
 
-    forAllConstIter(typename HashTable<const GeoField*>, flds, iter)
+    forAllIter(typename HashTable<GeoField*>, flds, iter)
     {
-        const GeoField& fld = *iter();
+        GeoField& fld = *iter();
 
         typename GeoField::GeometricBoundaryField& bfld =
-            const_cast<typename GeoField::GeometricBoundaryField&>
-            (
-                fld.boundaryField()
-            );
+            fld.boundaryField();
 
         label sz = bfld.size();
         bfld.setSize(sz+1);
@@ -95,20 +92,17 @@ void Foam::fvMeshTools::setPatchFields
     const dictionary& patchFieldDict
 )
 {
-    HashTable<const GeoField*> flds
+    HashTable<GeoField*> flds
     (
         mesh.objectRegistry::lookupClass<GeoField>()
     );
 
-    forAllConstIter(typename HashTable<const GeoField*>, flds, iter)
+    forAllIter(typename HashTable<GeoField*>, flds, iter)
     {
-        const GeoField& fld = *iter();
+        GeoField& fld = *iter();
 
         typename GeoField::GeometricBoundaryField& bfld =
-            const_cast<typename GeoField::GeometricBoundaryField&>
-            (
-                fld.boundaryField()
-            );
+            fld.boundaryField();
 
         if (patchFieldDict.found(fld.name()))
         {
@@ -137,20 +131,17 @@ void Foam::fvMeshTools::setPatchFields
     const typename GeoField::value_type& value
 )
 {
-    HashTable<const GeoField*> flds
+    HashTable<GeoField*> flds
     (
         mesh.objectRegistry::lookupClass<GeoField>()
     );
 
-    forAllConstIter(typename HashTable<const GeoField*>, flds, iter)
+    forAllIter(typename HashTable<GeoField*>, flds, iter)
     {
-        const GeoField& fld = *iter();
+        GeoField& fld = *iter();
 
         typename GeoField::GeometricBoundaryField& bfld =
-            const_cast<typename GeoField::GeometricBoundaryField&>
-            (
-                fld.boundaryField()
-            );
+            fld.boundaryField();
 
         bfld[patchI] == value;
     }
@@ -161,19 +152,15 @@ void Foam::fvMeshTools::setPatchFields
 template<class GeoField>
 void Foam::fvMeshTools::trimPatchFields(fvMesh& mesh, const label nPatches)
 {
-    HashTable<const GeoField*> flds
+    HashTable<GeoField*> flds
     (
         mesh.objectRegistry::lookupClass<GeoField>()
     );
 
-    forAllConstIter(typename HashTable<const GeoField*>, flds, iter)
+    forAllIter(typename HashTable<GeoField*>, flds, iter)
     {
-        const GeoField& fld = *iter();
-
-        const_cast<typename GeoField::GeometricBoundaryField&>
-        (
-            fld.boundaryField()
-        ).setSize(nPatches);
+        GeoField& fld = *iter();
+        fld.boundaryField().setSize(nPatches);
     }
 }
 
@@ -186,20 +173,18 @@ void Foam::fvMeshTools::reorderPatchFields
     const labelList& oldToNew
 )
 {
-    HashTable<const GeoField*> flds
+    HashTable<GeoField*> flds
     (
         mesh.objectRegistry::lookupClass<GeoField>()
     );
 
-    forAllConstIter(typename HashTable<const GeoField*>, flds, iter)
+    forAllIter(typename HashTable<GeoField*>, flds, iter)
     {
-        const GeoField& fld = *iter();
+        GeoField& fld = *iter();
 
         typename GeoField::GeometricBoundaryField& bfld =
-            const_cast<typename GeoField::GeometricBoundaryField&>
-            (
-                fld.boundaryField()
-            );
+            fld.boundaryField();
+
         bfld.reorder(oldToNew);
     }
 }

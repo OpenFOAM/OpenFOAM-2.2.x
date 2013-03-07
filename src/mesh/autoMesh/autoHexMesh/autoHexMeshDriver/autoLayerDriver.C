@@ -1464,15 +1464,7 @@ void Foam::autoLayerDriver::getPatchDisplacement
     // Determine pointNormal
     // ~~~~~~~~~~~~~~~~~~~~~
 
-    pointField pointNormals
-    (
-        PatchTools::pointNormals
-        (
-            mesh,
-            pp,
-            pp.addressing()
-        )
-    );
+    pointField pointNormals(PatchTools::pointNormals(mesh, pp));
 
 
     // Determine local length scale on patch

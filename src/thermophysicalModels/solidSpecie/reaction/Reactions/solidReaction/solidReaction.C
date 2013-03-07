@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -150,12 +150,18 @@ Foam::string Foam::solidReaction<ReactionThermo>::solidReactionStr
 ) const
 {
     this->reactionStrLeft(reaction);
-    reaction << " + ";
-    solidReactionStrLeft(reaction);
+    if (glhs().size() > 0)
+    {
+        reaction << " + ";
+        solidReactionStrLeft(reaction);
+    }
     reaction << " = ";
     this->reactionStrRight(reaction);
-    reaction << " + ";
-    solidReactionStrRight(reaction);
+    if (grhs().size() > 0)
+    {
+        reaction << " + ";
+        solidReactionStrRight(reaction);
+    }
     return reaction.str();
 
 }
@@ -169,8 +175,6 @@ void Foam::solidReaction<ReactionThermo>::solidReactionStrLeft
 {
     for (label i = 0; i < glhs().size(); ++i)
     {
-        reaction << " + ";
-
         if (i > 0)
         {
             reaction << " + ";
@@ -197,8 +201,6 @@ void Foam::solidReaction<ReactionThermo>::solidReactionStrRight
 
     for (label i = 0; i < grhs().size(); ++i)
     {
-        reaction << " + ";
-
         if (i > 0)
         {
             reaction << " + ";

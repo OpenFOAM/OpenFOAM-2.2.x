@@ -4,7 +4,6 @@ simpleGeomDecomp/simpleGeomDecomp.C
 hierarchGeomDecomp/hierarchGeomDecomp.C
 manualDecomp/manualDecomp.C
 multiLevelDecomp/multiLevelDecomp.C
-structuredDecomp/topoDistanceData.C
 structuredDecomp/structuredDecomp.C
 noDecomp/noDecomp.C
 

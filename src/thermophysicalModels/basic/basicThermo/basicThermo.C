@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -24,6 +24,14 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "basicThermo.H"
+#include "zeroGradientFvPatchFields.H"
+#include "fixedEnergyFvPatchScalarField.H"
+#include "gradientEnergyFvPatchScalarField.H"
+#include "mixedEnergyFvPatchScalarField.H"
+#include "fixedJumpFvPatchFields.H"
+#include "fixedJumpAMIFvPatchFields.H"
+#include "energyJumpFvPatchScalarField.H"
+#include "energyJumpAMIFvPatchScalarField.H"
 
 
 /* * * * * * * * * * * * * * * private static data * * * * * * * * * * * * * */
@@ -35,6 +43,84 @@ namespace Foam
 }
 
 const Foam::word Foam::basicThermo::dictName("thermophysicalProperties");
+
+
+// * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
+
+Foam::wordList Foam::basicThermo::heBoundaryBaseTypes()
+{
+    const volScalarField::GeometricBoundaryField& tbf =
+        this->T_.boundaryField();
+
+    wordList hbt(tbf.size(), word::null);
+
+    forAll(tbf, patchi)
+    {
+        if (isA<fixedJumpFvPatchScalarField>(tbf[patchi]))
+        {
+            const fixedJumpFvPatchScalarField& pf =
+                dynamic_cast<const fixedJumpFvPatchScalarField&>(tbf[patchi]);
+
+            hbt[patchi] = pf.interfaceFieldType();
+        }
+        else if (isA<fixedJumpAMIFvPatchScalarField>(tbf[patchi]))
+        {
+            const fixedJumpAMIFvPatchScalarField& pf =
+                dynamic_cast<const fixedJumpAMIFvPatchScalarField&>
+                (
+                    tbf[patchi]
+                );
+
+            hbt[patchi] = pf.interfaceFieldType();
+        }
+    }
+
+    return hbt;
+}
+
+
+Foam::wordList Foam::basicThermo::heBoundaryTypes()
+{
+    const volScalarField::GeometricBoundaryField& tbf =
+        this->T_.boundaryField();
+
+    wordList hbt = tbf.types();
+
+    forAll(tbf, patchi)
+    {
+        if (isA<fixedValueFvPatchScalarField>(tbf[patchi]))
+        {
+            hbt[patchi] = fixedEnergyFvPatchScalarField::typeName;
+        }
+        else if
+        (
+            isA<zeroGradientFvPatchScalarField>(tbf[patchi])
+         || isA<fixedGradientFvPatchScalarField>(tbf[patchi])
+        )
+        {
+            hbt[patchi] = gradientEnergyFvPatchScalarField::typeName;
+        }
+        else if (isA<mixedFvPatchScalarField>(tbf[patchi]))
+        {
+            hbt[patchi] = mixedEnergyFvPatchScalarField::typeName;
+        }
+        else if (isA<fixedJumpFvPatchScalarField>(tbf[patchi]))
+        {
+            hbt[patchi] = energyJumpFvPatchScalarField::typeName;
+        }
+        else if (isA<fixedJumpAMIFvPatchScalarField>(tbf[patchi]))
+        {
+            hbt[patchi] = energyJumpAMIFvPatchScalarField::typeName;
+        }
+        else if (tbf[patchi].type() == "energyRegionCoupledFvPatchScalarField")
+        {
+            hbt[patchi] = "energyRegionCoupledFvPatchScalarField";
+        }
+    }
+
+    return hbt;
+}
+
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -390,6 +476,12 @@ const Foam::volScalarField& Foam::basicThermo::p() const
 
 
 const Foam::volScalarField& Foam::basicThermo::T() const
+{
+    return T_;
+}
+
+
+Foam::volScalarField& Foam::basicThermo::T()
 {
     return T_;
 }
