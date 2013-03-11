@@ -1,8 +1,5 @@
 EXE_INC = \
-    -I.. \
-    -I../twoPhaseMixture/lnInclude \
     -I$(LIB_SRC)/finiteVolume/lnInclude
 
 LIB_LIBS = \
-    -ltwoPhaseMixture \
     -lfiniteVolume

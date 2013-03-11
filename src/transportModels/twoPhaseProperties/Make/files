@@ -1,5 +1,3 @@
-twoPhaseMixture/twoPhaseMixture.C
-
 alphaContactAngle/alphaContactAngle/alphaContactAngleFvPatchScalarField.C
 alphaContactAngle/constantAlphaContactAngle/constantAlphaContactAngleFvPatchScalarField.C
 alphaContactAngle/dynamicAlphaContactAngle/dynamicAlphaContactAngleFvPatchScalarField.C
