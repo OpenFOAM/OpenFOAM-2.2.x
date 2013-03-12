@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -62,11 +62,6 @@ int main(int argc, char *argv[])
     (
         "noWrite",
         "suppress writing results"
-    );
-    Foam::argList::addBoolOption
-    (
-        "noFlow",
-        "suppress creating flow models (execFlowFunctionObjects only)"
     );
     #include "addDictOption.H"
 
