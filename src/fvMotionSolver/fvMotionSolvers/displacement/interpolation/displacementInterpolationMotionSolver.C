@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -325,7 +325,7 @@ Foam::displacementInterpolationMotionSolver::curPoints() const
     tmp<pointField> tcurPoints(new pointField(points0()));
     pointField& curPoints = tcurPoints();
 
-    // Interpolate the diplacement of the face zones.
+    // Interpolate the displacement of the face zones.
     vectorField zoneDisp(displacements_.size(), vector::zero);
     forAll(zoneDisp, zoneI)
     {
