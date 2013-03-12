@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -107,6 +107,13 @@ public:
 
 
     // Member Functions
+
+        //- Non-const access to the pointMotionU in order to allow changes
+        //  to the boundary motion
+        pointScalarField& pointMotionU()
+        {
+            return pointMotionU_;
+        }
 
         //- Update local data for geometry changes
         virtual void movePoints(const pointField&);
