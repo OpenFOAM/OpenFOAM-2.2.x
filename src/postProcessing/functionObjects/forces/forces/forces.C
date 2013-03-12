@@ -198,10 +198,10 @@ void Foam::forces::applyBins
 {
     if (nBin_ == 1)
     {
-        force_[0][0] = sum(fN);
-        force_[1][0] = sum(fT);
-        moment_[0][0] = sum(Md ^ fN);
-        moment_[1][0] = sum(Md ^ fT);
+        force_[0][0] += sum(fN);
+        force_[1][0] += sum(fT);
+        moment_[0][0] += sum(Md ^ fN);
+        moment_[1][0] += sum(Md ^ fT);
     }
     else
     {

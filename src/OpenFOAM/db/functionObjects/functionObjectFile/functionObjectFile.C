@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -26,6 +26,7 @@ License
 #include "functionObjectFile.H"
 #include "Time.H"
 #include "polyMesh.H"
+#include "IFstream.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -84,7 +85,16 @@ void Foam::functionObjectFile::createFiles()
 
                 mkDir(outputDir);
 
-                filePtrs_.set(i, new OFstream(outputDir/(iter.key() + ".dat")));
+                word fName(iter.key());
+
+                // check if file already exists
+                IFstream is(outputDir/(fName + ".dat"));
+                if (is.good())
+                {
+                    fName = fName + "_" + obr_.time().timeName();
+                }
+
+                filePtrs_.set(i, new OFstream(outputDir/(fName + ".dat")));
 
                 writeFileHeader(i);
             }
