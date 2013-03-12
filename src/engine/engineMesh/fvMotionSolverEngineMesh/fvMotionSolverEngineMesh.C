@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -80,19 +80,20 @@ void Foam::fvMotionSolverEngineMesh::move()
     // Position of the top of the static mesh layers above the piston
     scalar pistonPlusLayers = pistonPosition_.value() + pistonLayers_.value();
 
-    motionSolver_.cellMotionU().boundaryField()[pistonIndex_] == deltaZ;
+    scalar pistonSpeed = deltaZ/engineDB_.deltaTValue();
+
+    motionSolver_.pointMotionU().boundaryField()[pistonIndex_] == pistonSpeed;
 
     {
         scalarField linerPoints
         (
-            motionSolver_.cellMotionU()
-           .boundaryField()[linerIndex_].patch().Cf().component(vector::Z)
+            boundary()[linerIndex_].patch().localPoints().component(vector::Z)
         );
 
-        motionSolver_.cellMotionU().boundaryField()[linerIndex_] ==
-            deltaZ*pos(deckHeight_.value() - linerPoints)
-            *(deckHeight_.value() - linerPoints)
-            /(deckHeight_.value() - pistonPlusLayers);
+        motionSolver_.pointMotionU().boundaryField()[linerIndex_] ==
+            pistonSpeed*pos(deckHeight_.value() - linerPoints)
+           *(deckHeight_.value() - linerPoints)
+           /(deckHeight_.value() - pistonPlusLayers);
     }
 
     motionSolver_.solve();
@@ -130,7 +131,6 @@ void Foam::fvMotionSolverEngineMesh::move()
 
 
     pistonPosition_.value() += deltaZ;
-    scalar pistonSpeed = deltaZ/engineDB_.deltaTValue();
 
     Info<< "clearance: " << deckHeight_.value() - pistonPosition_.value() << nl
         << "Piston speed = " << pistonSpeed << " m/s" << endl;
