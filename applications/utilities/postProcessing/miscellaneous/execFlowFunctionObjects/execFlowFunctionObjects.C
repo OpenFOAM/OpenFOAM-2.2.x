@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -21,7 +21,7 @@ License
     You should have received a copy of the GNU General Public License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
-Global
+Application
     execFlowFunctionObjects
 
 Description
@@ -35,7 +35,8 @@ Description
 
 \*---------------------------------------------------------------------------*/
 
-#include "calc.H"
+#include "argList.H"
+#include "timeSelector.H"
 
 #include "volFields.H"
 #include "surfaceFields.H"
@@ -51,12 +52,18 @@ Description
 #include "compressible/RAS/RASModel/RASModel.H"
 #include "compressible/LES/LESModel/LESModel.H"
 
+using namespace Foam;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-namespace Foam
+void execFunctionObjects
+(
+    const argList& args,
+    const Time& runTime,
+    autoPtr<functionObjectList>& folPtr
+)
 {
-    void execFlowFunctionObjects(const argList& args, const Time& runTime)
+    if (folPtr.empty())
     {
         if (args.optionFound("dict"))
         {
@@ -70,23 +77,27 @@ namespace Foam
                 )
             );
 
-            functionObjectList fol(runTime, dict);
-            fol.start();
-            fol.execute(true);  // override outputControl - force writing
+            folPtr.reset(new functionObjectList(runTime, dict));
         }
         else
         {
-            functionObjectList fol(runTime);
-            fol.start();
-            fol.execute(true);  // override outputControl - force writing
+            folPtr.reset(new functionObjectList(runTime));
         }
+
+        folPtr->start();
     }
+
+    folPtr->execute(true);
 }
 
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-void Foam::calc(const argList& args, const Time& runTime, const fvMesh& mesh)
+void calc
+(
+    const argList& args,
+    const Time& runTime,
+    const fvMesh& mesh,
+    autoPtr<functionObjectList>& folPtr
+)
 {
     if (args.optionFound("noFlow"))
     {
@@ -148,7 +159,7 @@ void Foam::calc(const argList& args, const Time& runTime, const fvMesh& mesh)
         PtrList<pointTensorField> ptFlds;
         ReadFields(pMesh, objects, ptFlds);
 
-        execFlowFunctionObjects(args, runTime);
+        execFunctionObjects(args, runTime, folPtr);
     }
     else
     {
@@ -191,7 +202,7 @@ void Foam::calc(const argList& args, const Time& runTime, const fvMesh& mesh)
             mesh
         );
 
-        if (phi.dimensions() == dimensionSet(0, 3, -1, 0, 0))
+        if (phi.dimensions() == dimVolume/dimTime)
         {
             IOobject RASPropertiesHeader
             (
@@ -228,7 +239,8 @@ void Foam::calc(const argList& args, const Time& runTime, const fvMesh& mesh)
                         laminarTransport
                     )
                 );
-                execFlowFunctionObjects(args, runTime);
+
+                execFunctionObjects(args, runTime, folPtr);
             }
             else if (LESPropertiesHeader.headerOk())
             {
@@ -241,7 +253,7 @@ void Foam::calc(const argList& args, const Time& runTime, const fvMesh& mesh)
                     incompressible::LESModel::New(U, phi, laminarTransport)
                 );
 
-                execFlowFunctionObjects(args, runTime);
+                execFunctionObjects(args, runTime, folPtr);
             }
             else
             {
@@ -257,12 +269,10 @@ void Foam::calc(const argList& args, const Time& runTime, const fvMesh& mesh)
                     )
                 );
 
-                dimensionedScalar nu(transportProperties.lookup("nu"));
-
-                execFlowFunctionObjects(args, runTime);
+                execFunctionObjects(args, runTime, folPtr);
             }
         }
-        else if (phi.dimensions() == dimensionSet(1, 0, -1, 0, 0))
+        else if (phi.dimensions() == dimMass/dimTime)
         {
             autoPtr<fluidThermo> thermo(fluidThermo::New(mesh));
 
@@ -312,7 +322,7 @@ void Foam::calc(const argList& args, const Time& runTime, const fvMesh& mesh)
                     )
                 );
 
-                execFlowFunctionObjects(args, runTime);
+                execFunctionObjects(args, runTime, folPtr);
             }
             else if (LESPropertiesHeader.headerOk())
             {
@@ -323,7 +333,7 @@ void Foam::calc(const argList& args, const Time& runTime, const fvMesh& mesh)
                     compressible::LESModel::New(rho, U, phi, thermo())
                 );
 
-                execFlowFunctionObjects(args, runTime);
+                execFunctionObjects(args, runTime, folPtr);
             }
             else
             {
@@ -339,9 +349,7 @@ void Foam::calc(const argList& args, const Time& runTime, const fvMesh& mesh)
                     )
                 );
 
-                dimensionedScalar mu(transportProperties.lookup("mu"));
-
-                execFlowFunctionObjects(args, runTime);
+                execFunctionObjects(args, runTime, folPtr);
             }
         }
         else
@@ -351,6 +359,50 @@ void Foam::calc(const argList& args, const Time& runTime, const fvMesh& mesh)
                 << nl << exit(FatalError);
         }
     }
+}
+
+
+int main(int argc, char *argv[])
+{
+    Foam::timeSelector::addOptions();
+    #include "addRegionOption.H"
+    Foam::argList::addBoolOption
+    (
+        "noFlow",
+        "suppress creating flow models"
+    );
+    #include "addDictOption.H"
+
+    #include "setRootCase.H"
+    #include "createTime.H"
+    Foam::instantList timeDirs = Foam::timeSelector::select0(runTime, args);
+    #include "createNamedMesh.H"
+
+    autoPtr<functionObjectList> folPtr;
+
+    forAll(timeDirs, timeI)
+    {
+        runTime.setTime(timeDirs[timeI], timeI);
+
+        Info<< "Time = " << runTime.timeName() << endl;
+
+        mesh.readUpdate();
+
+        FatalIOError.throwExceptions();
+
+        try
+        {
+            calc(args, runTime, mesh, folPtr);
+        }
+        catch (IOerror& err)
+        {
+            Warning<< err << endl;
+        }
+
+        Info<< endl;
+    }
+
+    return 0;
 }
 
 
