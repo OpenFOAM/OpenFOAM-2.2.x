@@ -406,9 +406,11 @@ void v2f::correct()
         "v2f::alpha",
         1.0/T*((C1_ - N)*v2_ - 2.0/3.0*k_*(C1_ - 1.0))
     );
-
-    tmp<volScalarField> Ceps1 =
-        1.4*(1.0 + 0.05*min(sqrt(k_/v2_), scalar(100.0)));
+    const volScalarField Ceps1
+    (
+        "Ceps1",
+        1.4*(1.0 + 0.05*min(sqrt(k_/v2_), scalar(100.0)))
+    );
 
     // Update epsilon (and possibly G) at the wall
     epsilon_.boundaryField().updateCoeffs();
@@ -420,7 +422,7 @@ void v2f::correct()
       + fvm::div(phi_, epsilon_)
       - fvm::laplacian(DepsilonEff(), epsilon_)
      ==
-        Ceps1()*G/T
+        Ceps1*G/T
       - fvm::SuSp(((2.0/3.0)*Ceps1 + Ceps3_)*rho_*divU, epsilon_)
       - fvm::Sp(Ceps2_*rho_/T, epsilon_)
     );
