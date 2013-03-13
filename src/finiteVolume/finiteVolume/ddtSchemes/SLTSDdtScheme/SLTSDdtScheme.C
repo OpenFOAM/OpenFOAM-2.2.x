@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -387,7 +387,8 @@ SLTSDdtScheme<Type>::fvmDdt
 
     scalarField rDeltaT(SLrDeltaT()().internalField());
 
-    Info<< "max/min rDeltaT " << max(rDeltaT) << " " << min(rDeltaT) << endl;
+    Info<< "SLTSDdtScheme<Type>::fvmDdt: max/min rDeltaT "
+        << gMax(rDeltaT) << " " << gMin(rDeltaT) << endl;
 
     fvm.diag() = rDeltaT*mesh().V();
 
