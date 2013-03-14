@@ -442,18 +442,17 @@ public:
             }
 
              //- Swap coupled positions.
-            template<class T>
             static void swapBoundaryFacePositions
             (
                 const polyMesh& mesh,
-                UList<T>& l
+                UList<point>& l
             )
             {
                 syncBoundaryFaceList
                 (
                     mesh,
                     l,
-                    eqOp<T>(),
+                    eqOp<point>(),
                     mapDistribute::transformPosition()
                 );
             }
@@ -488,6 +487,14 @@ public:
                 const polyMesh& mesh,
                 const UList<T>& cellData,
                 List<T>& neighbourCellData
+            );
+
+            //- Swap to obtain neighbour cell positions for all boundary faces
+            static void swapBoundaryCellPositions
+            (
+                const polyMesh& mesh,
+                const UList<point>& cellData,
+                List<point>& neighbourCellData
             );
 
         // Sparse versions
@@ -531,11 +538,11 @@ public:
             }
 
             //- Synchronize locations on selected edges.
-            template<class T, class CombineOp>
+            template<class CombineOp>
             static void syncEdgePositions
             (
                 const polyMesh& mesh,
-                EdgeMap<T>& l,
+                EdgeMap<point>& l,
                 const CombineOp& cop
             )
             {
