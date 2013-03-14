@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -282,10 +282,6 @@ void Foam::sampledSets::correct()
     bool setsFound = dict_.found("sets");
     if (setsFound)
     {
-        // reset interpolation
-        pointMesh::Delete(mesh_);
-        volPointInterpolation::Delete(mesh_);
-
         searchEngine_.correct();
 
         PtrList<sampledSet> newList

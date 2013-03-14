@@ -95,10 +95,18 @@ Foam::dictionary& Foam::debug::controlDict()
         controlDictPtr_ = new dictionary();
         forAllReverse(controlDictFiles, cdfi)
         {
-            controlDictPtr_->merge
-            (
-                dictionary(IFstream(controlDictFiles[cdfi])())
-            );
+            IFstream ifs(controlDictFiles[cdfi]);
+
+            if (!ifs.good())
+            {
+                SafeFatalIOErrorIn
+                (
+                    "debug::controlDict()",
+                    ifs,
+                    "Cannot open controlDict"
+                );
+            }
+            controlDictPtr_->merge(dictionary(ifs));
         }
     }
 
