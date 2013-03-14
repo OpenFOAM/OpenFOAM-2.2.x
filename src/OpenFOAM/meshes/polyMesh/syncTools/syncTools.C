@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -21,11 +21,49 @@ License
     You should have received a copy of the GNU General Public License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
-\*----------------------------------------------------------------------------*/
+\*---------------------------------------------------------------------------*/
 
 #include "syncTools.H"
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
+
+void Foam::syncTools::swapBoundaryCellPositions
+(
+    const polyMesh& mesh,
+    const UList<point>& cellData,
+    List<point>& neighbourCellData
+)
+{
+    if (cellData.size() != mesh.nCells())
+    {
+        FatalErrorIn
+        (
+            "syncTools<class T>::swapBoundaryCellPositions"
+            "(const polyMesh&, const UList<T>&, List<T>&)"
+        )   << "Number of cell values " << cellData.size()
+            << " is not equal to the number of cells in the mesh "
+            << mesh.nCells() << abort(FatalError);
+    }
+
+    const polyBoundaryMesh& patches = mesh.boundaryMesh();
+
+    label nBnd = mesh.nFaces()-mesh.nInternalFaces();
+
+    neighbourCellData.setSize(nBnd);
+
+    forAll(patches, patchI)
+    {
+        const polyPatch& pp = patches[patchI];
+        const labelUList& faceCells = pp.faceCells();
+        forAll(faceCells, i)
+        {
+            label bFaceI = pp.start()+i-mesh.nInternalFaces();
+            neighbourCellData[bFaceI] = cellData[faceCells[i]];
+        }
+    }
+    syncTools::swapBoundaryFacePositions(mesh, neighbourCellData);
+}
+
 
 Foam::PackedBoolList Foam::syncTools::getMasterPoints(const polyMesh& mesh)
 {
