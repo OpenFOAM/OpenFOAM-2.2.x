@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -144,7 +144,17 @@ snGradScheme<Type>::snGrad
 
     forAll(vf.boundaryField(), patchi)
     {
-        ssf.boundaryField()[patchi] = vf.boundaryField()[patchi].snGrad();
+        const fvPatchField<Type>& pvf = vf.boundaryField()[patchi];
+
+        if (pvf.coupled())
+        {
+            ssf.boundaryField()[patchi] =
+                pvf.snGrad(tdeltaCoeffs().boundaryField()[patchi]);
+        }
+        else
+        {
+            ssf.boundaryField()[patchi] = pvf.snGrad();
+        }
     }
 
     return tsf;

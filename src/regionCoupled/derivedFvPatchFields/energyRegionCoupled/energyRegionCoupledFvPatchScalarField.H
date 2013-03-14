@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -43,12 +43,13 @@ SourceFiles
 #include "fvPatchField.H"
 #include "NamedEnum.H"
 #include "basicThermo.H"
+#include "coupledFvPatchField.H"
+
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-
 
 /*---------------------------------------------------------------------------*\
              Class energyRegionCoupledFvPatchScalarField Declaration
@@ -56,9 +57,9 @@ namespace Foam
 
 class energyRegionCoupledFvPatchScalarField
 :
-    public LduInterfaceField<scalar>,
-    public fvPatchScalarField
+    public coupledFvPatchField<scalar>
 {
+
 public:
 
         enum kappaMethodType
@@ -162,12 +163,6 @@ public:
             const DimensionedField<scalar, volMesh>&
         );
 
-
-    //- Destructor
-    virtual ~energyRegionCoupledFvPatchScalarField()
-    {}
-
-
         //- Construct and return a clone setting internal field reference
         virtual tmp<fvPatchField<scalar> > clone
         (
@@ -181,16 +176,14 @@ public:
         }
 
 
+    //- Destructor
+    virtual ~energyRegionCoupledFvPatchScalarField()
+    {}
+
+
     // Member functions
 
-
         // Access
-
-            //- Return true if this patch field is coupled
-            virtual bool coupled() const
-            {
-                return true;
-            }
 
             //- Method to obtain K
             word kappaMethod() const
@@ -207,39 +200,19 @@ public:
             //- Return patch-normal gradient
             virtual tmp<scalarField> snGrad() const;
 
-            //- Initialise the evaluation of the patch field
-            virtual void initEvaluate
+            //- Return patch-normal gradient
+            //  Note: the deltaCoeffs supplied are not used
+            virtual tmp<scalarField> snGrad
             (
-                const Pstream::commsTypes commsType
-            );
+                const scalarField& deltaCoeffs
+            ) const;
+
 
             //- Evaluate the patch field
             virtual void evaluate
             (
                 const Pstream::commsTypes commsType
             );
-
-            //- Return the matrix diagonal coefficients corresponding to the
-            //  evaluation of the value of this patchField with given weights
-            virtual tmp<scalarField> valueInternalCoeffs
-            (
-                const tmp<scalarField>&
-            ) const;
-
-            //- Return the matrix source coefficients corresponding to the
-            //  evaluation of the value of this patchField with given weights
-            virtual tmp<scalarField> valueBoundaryCoeffs
-            (
-                const tmp<scalarField>&
-            ) const;
-
-            //- Return the matrix diagonal coefficients corresponding to the
-            //  evaluation of the gradient of this patchField
-            virtual tmp<scalarField> gradientInternalCoeffs() const;
-
-            //- Return the matrix source coefficients corresponding to the
-            //  evaluation of the gradient of this patchField
-            virtual tmp<scalarField> gradientBoundaryCoeffs() const;
 
 
         // Coupled interface functionality

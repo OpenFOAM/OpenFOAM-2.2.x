@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -28,15 +28,10 @@ License
 #include "demandDrivenData.H"
 #include "transformField.H"
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-namespace Foam
-{
-
 // * * * * * * * * * * * * * * * * Constructors * * * * * * * * * * * * * * //
 
 template<class Type>
-processorFvPatchField<Type>::processorFvPatchField
+Foam::processorFvPatchField<Type>::processorFvPatchField
 (
     const fvPatch& p,
     const DimensionedField<Type, volMesh>& iF
@@ -54,7 +49,7 @@ processorFvPatchField<Type>::processorFvPatchField
 
 
 template<class Type>
-processorFvPatchField<Type>::processorFvPatchField
+Foam::processorFvPatchField<Type>::processorFvPatchField
 (
     const fvPatch& p,
     const DimensionedField<Type, volMesh>& iF,
@@ -74,7 +69,7 @@ processorFvPatchField<Type>::processorFvPatchField
 
 // Construct by mapping given processorFvPatchField<Type>
 template<class Type>
-processorFvPatchField<Type>::processorFvPatchField
+Foam::processorFvPatchField<Type>::processorFvPatchField
 (
     const processorFvPatchField<Type>& ptf,
     const fvPatch& p,
@@ -119,7 +114,7 @@ processorFvPatchField<Type>::processorFvPatchField
 
 
 template<class Type>
-processorFvPatchField<Type>::processorFvPatchField
+Foam::processorFvPatchField<Type>::processorFvPatchField
 (
     const fvPatch& p,
     const DimensionedField<Type, volMesh>& iF,
@@ -157,7 +152,7 @@ processorFvPatchField<Type>::processorFvPatchField
 
 
 template<class Type>
-processorFvPatchField<Type>::processorFvPatchField
+Foam::processorFvPatchField<Type>::processorFvPatchField
 (
     const processorFvPatchField<Type>& ptf
 )
@@ -182,7 +177,7 @@ processorFvPatchField<Type>::processorFvPatchField
 
 
 template<class Type>
-processorFvPatchField<Type>::processorFvPatchField
+Foam::processorFvPatchField<Type>::processorFvPatchField
 (
     const processorFvPatchField<Type>& ptf,
     const DimensionedField<Type, volMesh>& iF
@@ -209,14 +204,15 @@ processorFvPatchField<Type>::processorFvPatchField
 // * * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * //
 
 template<class Type>
-processorFvPatchField<Type>::~processorFvPatchField()
+Foam::processorFvPatchField<Type>::~processorFvPatchField()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 template<class Type>
-tmp<Field<Type> > processorFvPatchField<Type>::patchNeighbourField() const
+Foam::tmp<Foam::Field<Type> >
+Foam::processorFvPatchField<Type>::patchNeighbourField() const
 {
     if (debug && !this->ready())
     {
@@ -230,7 +226,7 @@ tmp<Field<Type> > processorFvPatchField<Type>::patchNeighbourField() const
 
 
 template<class Type>
-void processorFvPatchField<Type>::initEvaluate
+void Foam::processorFvPatchField<Type>::initEvaluate
 (
     const Pstream::commsTypes commsType
 )
@@ -272,7 +268,7 @@ void processorFvPatchField<Type>::initEvaluate
 
 
 template<class Type>
-void processorFvPatchField<Type>::evaluate
+void Foam::processorFvPatchField<Type>::evaluate
 (
     const Pstream::commsTypes commsType
 )
@@ -308,14 +304,18 @@ void processorFvPatchField<Type>::evaluate
 
 
 template<class Type>
-tmp<Field<Type> > processorFvPatchField<Type>::snGrad() const
+Foam::tmp<Foam::Field<Type> >
+Foam::processorFvPatchField<Type>::snGrad
+(
+    const scalarField& deltaCoeffs
+) const
 {
-    return this->patch().deltaCoeffs()*(*this - this->patchInternalField());
+    return deltaCoeffs*(*this - this->patchInternalField());
 }
 
 
 template<class Type>
-void processorFvPatchField<Type>::initInterfaceMatrixUpdate
+void Foam::processorFvPatchField<Type>::initInterfaceMatrixUpdate
 (
     scalarField&,
     const scalarField& psiInternal,
@@ -371,7 +371,7 @@ void processorFvPatchField<Type>::initInterfaceMatrixUpdate
 
 
 template<class Type>
-void processorFvPatchField<Type>::updateInterfaceMatrix
+void Foam::processorFvPatchField<Type>::updateInterfaceMatrix
 (
     scalarField& result,
     const scalarField&,
@@ -435,7 +435,7 @@ void processorFvPatchField<Type>::updateInterfaceMatrix
 
 
 template<class Type>
-void processorFvPatchField<Type>::initInterfaceMatrixUpdate
+void Foam::processorFvPatchField<Type>::initInterfaceMatrixUpdate
 (
     Field<Type>&,
     const Field<Type>& psiInternal,
@@ -490,7 +490,7 @@ void processorFvPatchField<Type>::initInterfaceMatrixUpdate
 
 
 template<class Type>
-void processorFvPatchField<Type>::updateInterfaceMatrix
+void Foam::processorFvPatchField<Type>::updateInterfaceMatrix
 (
     Field<Type>& result,
     const Field<Type>&,
@@ -553,7 +553,7 @@ void processorFvPatchField<Type>::updateInterfaceMatrix
 
 
 template<class Type>
-bool processorFvPatchField<Type>::ready() const
+bool Foam::processorFvPatchField<Type>::ready() const
 {
     if
     (
@@ -586,9 +586,5 @@ bool processorFvPatchField<Type>::ready() const
     return true;
 }
 
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-} // End namespace Foam
 
 // ************************************************************************* //

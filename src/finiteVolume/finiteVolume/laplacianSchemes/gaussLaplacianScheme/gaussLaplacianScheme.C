@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -65,12 +65,23 @@ gaussLaplacianScheme<Type, GType>::fvmLaplacianUncorrected
 
     forAll(vf.boundaryField(), patchi)
     {
-        const fvPatchField<Type>& psf = vf.boundaryField()[patchi];
-        const fvsPatchScalarField& patchGamma =
-            gammaMagSf.boundaryField()[patchi];
+        const fvPatchField<Type>& pvf = vf.boundaryField()[patchi];
+        const fvsPatchScalarField& pGamma = gammaMagSf.boundaryField()[patchi];
+        const fvsPatchScalarField& pDeltaCoeffs =
+            deltaCoeffs.boundaryField()[patchi];
 
-        fvm.internalCoeffs()[patchi] = patchGamma*psf.gradientInternalCoeffs();
-        fvm.boundaryCoeffs()[patchi] = -patchGamma*psf.gradientBoundaryCoeffs();
+        if (pvf.coupled())
+        {
+            fvm.internalCoeffs()[patchi] =
+                pGamma*pvf.gradientInternalCoeffs(pDeltaCoeffs);
+            fvm.boundaryCoeffs()[patchi] =
+               -pGamma*pvf.gradientBoundaryCoeffs(pDeltaCoeffs);
+        }
+        else
+        {
+            fvm.internalCoeffs()[patchi] = pGamma*pvf.gradientInternalCoeffs();
+            fvm.boundaryCoeffs()[patchi] = -pGamma*pvf.gradientBoundaryCoeffs();
+        }
     }
 
     return tfvm;
