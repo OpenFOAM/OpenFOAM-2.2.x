@@ -80,7 +80,7 @@ label nValuesForPatchFaces = 0;
 // Dummy yywrap to keep yylex happy at compile time.
 // It is called by yylex but is not used as the mechanism to change file.
 // See <<EOF>>
-#if YY_FLEX_SUBMINOR_VERSION < 34 || YY_FLEX_SUBMINOR_VERSION > 36
+#if YY_FLEX_SUBMINOR_VERSION < 34
 extern "C" int yywrap()
 #else
 int yyFlexLexer::yywrap()

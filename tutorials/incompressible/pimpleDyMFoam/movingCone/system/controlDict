@@ -49,5 +49,9 @@ adjustTimeStep  no;
 
 maxCo           0.2;
 
+functions
+{
+    #include "cuttingPlane"
+}
 
 // ************************************************************************* //

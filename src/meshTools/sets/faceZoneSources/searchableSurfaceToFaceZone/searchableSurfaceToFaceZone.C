@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -120,7 +120,7 @@ void Foam::searchableSurfaceToFaceZone::applyToSet
 
         // Boundary faces
         vectorField nbrCellCentres;
-        syncTools::swapBoundaryCellList(mesh_, cc, nbrCellCentres);
+        syncTools::swapBoundaryCellPositions(mesh_, cc, nbrCellCentres);
 
         const polyBoundaryMesh& pbm = mesh_.boundaryMesh();
 

@@ -909,6 +909,8 @@ int main(int argc, char *argv[])
         {
             if (own[faceI] != -1 && nei[faceI] != -1)
             {
+                faceToCell[1].insert(faceI, own[faceI]);
+                faceToCell[0].insert(faceI, nei[faceI]);
                 cnt++;
             }
         }

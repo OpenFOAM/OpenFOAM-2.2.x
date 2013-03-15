@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -60,7 +60,7 @@ Foam::tmp<Foam::scalarField> Foam::polyMeshTools::faceOrthogonality
     // Coupled faces
 
     pointField neighbourCc;
-    syncTools::swapBoundaryCellList(mesh, cc, neighbourCc);
+    syncTools::swapBoundaryCellPositions(mesh, cc, neighbourCc);
 
     forAll(pbm, patchI)
     {
@@ -123,7 +123,7 @@ Foam::tmp<Foam::scalarField> Foam::polyMeshTools::faceSkewness
     // (i.e. treat as if mirror cell on other side)
 
     pointField neighbourCc;
-    syncTools::swapBoundaryCellList(mesh, cellCtrs, neighbourCc);
+    syncTools::swapBoundaryCellPositions(mesh, cellCtrs, neighbourCc);
 
     forAll(pbm, patchI)
     {
