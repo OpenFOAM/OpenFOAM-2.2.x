@@ -3,7 +3,7 @@
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
 #  \\    /   O peration     |
-#   \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+#   \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
 #    \\/     M anipulation  |
 #-------------------------------------------------------------------------------
 # License
@@ -32,7 +32,7 @@
 #------------------------------------------------------------------------------
 
 # Base settings
-MIN_VERSION_GCC=4.3.2
+MIN_VERSION_GCC=4.5.0
 
 # General
 WIDTH=20
