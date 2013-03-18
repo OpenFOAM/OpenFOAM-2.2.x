@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -31,7 +31,7 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #include "fvCFD.H"
-
+#include "fvIOoptionList.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -49,16 +49,19 @@ int main(int argc, char *argv[])
     #include "createMesh.H"
     #include "readControls.H"
     #include "createFields.H"
+    #include "createFvOptions.H"
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
     Info<< nl << "Calculating potential flow" << endl;
 
     // Since solver contains no time loop it would never execute
-    // function objects so do it ourselves.
+    // function objects so do it ourselves
     runTime.functionObjects().start();
 
     adjustPhi(phi, U, p);
+
+    fvOptions.relativeFlux(phi);
 
     for (int nonOrth=0; nonOrth<=nNonOrthCorr; nonOrth++)
     {
@@ -79,6 +82,7 @@ int main(int argc, char *argv[])
         );
 
         pEqn.setReference(pRefCell, pRefValue);
+
         pEqn.solve();
 
         if (nonOrth == nNonOrthCorr)
@@ -86,6 +90,8 @@ int main(int argc, char *argv[])
             phi -= pEqn.flux();
         }
     }
+
+    fvOptions.absoluteFlux(phi);
 
     Info<< "continuity error = "
         << mag(fvc::div(phi))().weightedAverage(mesh.V()).value()
