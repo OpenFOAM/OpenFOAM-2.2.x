@@ -88,15 +88,10 @@
 
     p = max(p_rgh + (alpha1*rho1 + alpha2*rho2)*gh, pMin);
 
-    // twoPhaseProperties.correct();
-
-    Info<< "max(U) " << max(mag(U)).value() << endl;
-    Info<< "min(p_rgh) " << min(p_rgh).value() << endl;
+    twoPhaseProperties.correct();
 
     K = 0.5*magSqr(U);
 
-    if (twoPhaseProperties.dpdt())
-    {
-        dpdt = fvc::ddt(p);
-    }
+    Info<< "max(U) " << max(mag(U)).value() << endl;
+    Info<< "min(p_rgh) " << min(p_rgh).value() << endl;
 }

@@ -34,6 +34,7 @@ divSchemes
     div(phid2,p_rgh) Gauss upwind;
     div(rho*phi,T)  Gauss upwind;
     div(rho*phi,K)  Gauss upwind;
+    div(phi,p)      Gauss upwind;
     div(phi,k)      Gauss vanLeer;
     div((muEff*dev2(T(grad(U))))) Gauss linear;
 }
