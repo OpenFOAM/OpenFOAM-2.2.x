@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -37,10 +37,7 @@ namespace Foam
 }
 
 
-// * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
-
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::processorCyclicPolyPatch::processorCyclicPolyPatch
 (
@@ -66,20 +63,10 @@ Foam::processorCyclicPolyPatch::processorCyclicPolyPatch
         neighbProcNo,
         transform
     ),
-    tag_
-    (
-        Pstream::nProcs()*max(myProcNo, neighbProcNo)
-      + min(myProcNo, neighbProcNo)
-    ),
     referPatchName_(referPatchName),
+    tag_(-1),
     referPatchID_(-1)
-{
-    if (debug)
-    {
-        Pout<< "processorCyclicPolyPatch " << name << " uses tag " << tag_
-            << endl;
-    }
-}
+{}
 
 
 Foam::processorCyclicPolyPatch::processorCyclicPolyPatch
@@ -92,20 +79,10 @@ Foam::processorCyclicPolyPatch::processorCyclicPolyPatch
 )
 :
     processorPolyPatch(name, dict, index, bm, patchType),
-    tag_
-    (
-        Pstream::nProcs()*max(myProcNo(), neighbProcNo())
-      + min(myProcNo(), neighbProcNo())
-    ),
     referPatchName_(dict.lookup("referPatch")),
+    tag_(dict.lookupOrDefault<int>("tag", -1)),
     referPatchID_(-1)
-{
-    if (debug)
-    {
-        Pout<< "processorCyclicPolyPatch " << name << " uses tag " << tag_
-            << endl;
-    }
-}
+{}
 
 
 Foam::processorCyclicPolyPatch::processorCyclicPolyPatch
@@ -115,8 +92,8 @@ Foam::processorCyclicPolyPatch::processorCyclicPolyPatch
 )
 :
     processorPolyPatch(pp, bm),
-    tag_(pp.tag_),
     referPatchName_(pp.referPatchName()),
+    tag_(pp.tag()),
     referPatchID_(-1)
 {}
 
@@ -132,8 +109,8 @@ Foam::processorCyclicPolyPatch::processorCyclicPolyPatch
 )
 :
     processorPolyPatch(pp, bm, index, newSize, newStart),
-    tag_(pp.tag_),
     referPatchName_(referPatchName),
+    tag_(-1),
     referPatchID_(-1)
 {}
 
@@ -148,8 +125,8 @@ Foam::processorCyclicPolyPatch::processorCyclicPolyPatch
 )
 :
     processorPolyPatch(pp, bm, index, mapAddressing, newStart),
-    tag_(pp.tag_),
     referPatchName_(pp.referPatchName()),
+    tag_(-1),
     referPatchID_(-1)
 {}
 
@@ -161,6 +138,45 @@ Foam::processorCyclicPolyPatch::~processorCyclicPolyPatch()
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
+
+int Foam::processorCyclicPolyPatch::tag() const
+{
+    if (tag_ == -1)
+    {
+        // Get unique tag to use for all comms. Make sure that both sides
+        // use the same tag
+        const cyclicPolyPatch& cycPatch = refCast<const cyclicPolyPatch>
+        (
+            referPatch()
+        );
+
+        if (cycPatch.owner())
+        {
+            tag_ = Hash<word>()(cycPatch.name());
+        }
+        else
+        {
+            tag_ = Hash<word>()(cycPatch.neighbPatch().name());
+        }
+
+        if (tag_ == Pstream::msgType() || tag_ == -1)
+        {
+            FatalErrorIn("processorCyclicPolyPatch::tag() const")
+                << "Tag calculated from cyclic patch name " << tag_
+                << " is the same as the current message type "
+                << Pstream::msgType() << " or -1" << nl
+                << "Please set a non-conflicting, unique, tag by hand"
+                << " using the 'tag' entry"
+                << exit(FatalError);
+        }
+        if (debug)
+        {
+            Pout<< "processorCyclicPolyPatch " << name() << " uses tag " << tag_
+                << endl;
+        }
+    }
+    return tag_;
+}
 
 
 void Foam::processorCyclicPolyPatch::initGeometry(PstreamBuffers& pBufs)
@@ -283,6 +299,11 @@ void Foam::processorCyclicPolyPatch::write(Ostream& os) const
     processorPolyPatch::write(os);
     os.writeKeyword("referPatch") << referPatchName_
         << token::END_STATEMENT << nl;
+    if (tag_ != -1)
+    {
+        os.writeKeyword("tag") << tag_
+            << token::END_STATEMENT << nl;
+    }
 }
 
 

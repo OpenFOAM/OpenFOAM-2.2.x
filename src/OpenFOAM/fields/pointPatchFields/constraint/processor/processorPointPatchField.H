@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -56,7 +56,6 @@ class processorPointPatchField
 
         //- Local reference to processor patch
         const processorPointPatch& procPatch_;
-
 
 public:
 
@@ -176,19 +175,13 @@ public:
             )
             {}
 
-            //- Initialise swap of non-collocated patch point values
-            virtual void initSwapAddSeparated
-            (
-                const Pstream::commsTypes commsType,
-                Field<Type>&
-            ) const;
-
-            //- Complete swap of patch point values and add to local values
+            //- Assume processor patch always collocated
             virtual void swapAddSeparated
             (
                 const Pstream::commsTypes commsType,
                 Field<Type>&
-            ) const;
+            ) const
+            {}
 };
 
 
