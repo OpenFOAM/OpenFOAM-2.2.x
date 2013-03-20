@@ -1,5 +1,5 @@
 {
-    solve
+    fvScalarMatrix TEqn
     (
         fvm::ddt(rho, T)
       + fvm::div(rhoPhi, T)
@@ -13,6 +13,9 @@
          + alpha2/twoPhaseProperties.thermo2().Cv()
         )
     );
+
+    TEqn.relax();
+    TEqn.solve();
 
     twoPhaseProperties.correct();
 }
