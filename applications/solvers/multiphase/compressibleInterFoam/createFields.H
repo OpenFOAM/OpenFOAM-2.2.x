@@ -38,9 +38,9 @@
 
     volScalarField& p = twoPhaseProperties.p();
     volScalarField& T = twoPhaseProperties.T();
-    const volScalarField& rho1 = twoPhaseProperties.thermo1().rho();
+    volScalarField& rho1 = twoPhaseProperties.thermo1().rho();
     const volScalarField& psi1 = twoPhaseProperties.thermo1().psi();
-    const volScalarField& rho2 = twoPhaseProperties.thermo2().rho();
+    volScalarField& rho2 = twoPhaseProperties.thermo2().rho();
     const volScalarField& psi2 = twoPhaseProperties.thermo2().psi();
 
     volScalarField rho
