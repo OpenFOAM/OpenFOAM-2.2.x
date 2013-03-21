@@ -62,10 +62,10 @@
 
     volScalarField& p = thermo1.p();
 
-    volScalarField rho1("rho" + phase1Name, thermo1.rho());
+    volScalarField& rho1 = thermo1.rho();
     const volScalarField& psi1 = thermo1.psi();
 
-    volScalarField rho2("rho" + phase2Name, thermo2.rho());
+    volScalarField& rho2 = thermo2.rho();
     const volScalarField& psi2 = thermo2.psi();
 
     volVectorField U
