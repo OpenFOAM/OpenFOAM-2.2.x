@@ -104,8 +104,6 @@ int main(int argc, char *argv[])
             }
         }
 
-        rho = alpha1*rho1 + alpha2*rho2;
-
         runTime.write();
 
         Info<< "ExecutionTime = "

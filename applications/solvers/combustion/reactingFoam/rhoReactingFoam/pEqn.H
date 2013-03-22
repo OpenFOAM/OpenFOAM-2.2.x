@@ -27,7 +27,7 @@
         fvScalarMatrix pDDtEqn
         (
             fvc::ddt(rho) + fvc::div(phiHbyA)
-          + correction(fvm::ddt(psi, p) + fvm::div(phid, p))
+          + correction(psi*fvm::ddt(p) + fvm::div(phid, p))
         );
 
         while (pimple.correctNonOrthogonal())

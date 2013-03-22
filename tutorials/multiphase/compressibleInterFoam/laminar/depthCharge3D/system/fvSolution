@@ -103,9 +103,9 @@ solvers
 PIMPLE
 {
     momentumPredictor no;
-    transSonic      no;
-    nOuterCorrectors 3;
-    nCorrectors     1;
+    transonic       no;
+    nOuterCorrectors 1;
+    nCorrectors     2;
     nNonOrthogonalCorrectors 0;
     nAlphaCorr      1;
     nAlphaSubCycles 1;

@@ -1,7 +1,4 @@
 {
-    rho1 = thermo1.rho();
-    rho2 = thermo2.rho();
-
     surfaceScalarField alpha1f(fvc::interpolate(alpha1));
     surfaceScalarField alpha2f(scalar(1) - alpha1f);
 
@@ -91,10 +88,7 @@
     tmp<fvScalarMatrix> pEqnComp1;
     tmp<fvScalarMatrix> pEqnComp2;
 
-    //if (transonic)
-    //{
-    //}
-    //else
+    if (pimple.transonic())
     {
         surfaceScalarField phid1
         (
@@ -108,15 +102,40 @@
         );
 
         pEqnComp1 =
+            fvc::ddt(rho1)
+          + fvc::div(phi1, rho1) - fvc::Sp(fvc::div(phi1), rho1)
+          + correction
+            (
+                psi1*fvm::ddt(p)
+              + fvm::div(phid1, p) - fvm::Sp(fvc::div(phid1), p)
+            );
+        deleteDemandDrivenData(pEqnComp1().faceFluxCorrectionPtr());
+        pEqnComp1().relax();
+
+        pEqnComp2 =
+            fvc::ddt(rho2)
+          + fvc::div(phi2, rho2) - fvc::Sp(fvc::div(phi2), rho2)
+          + correction
+            (
+                psi2*fvm::ddt(p)
+              + fvm::div(phid2, p) - fvm::Sp(fvc::div(phid2), p)
+            );
+        deleteDemandDrivenData(pEqnComp2().faceFluxCorrectionPtr());
+        pEqnComp2().relax();
+    }
+    else
+    {
+        pEqnComp1 =
             fvc::ddt(rho1) + psi1*correction(fvm::ddt(p))
-          + fvc::div(phid1, p)
-          - fvc::Sp(fvc::div(phid1), p);
+          + fvc::div(phi1, rho1) - fvc::Sp(fvc::div(phi1), rho1);
 
         pEqnComp2 =
             fvc::ddt(rho2) + psi2*correction(fvm::ddt(p))
-          + fvc::div(phid2, p)
-          - fvc::Sp(fvc::div(phid2), p);
+          + fvc::div(phi2, rho2) - fvc::Sp(fvc::div(phi2), rho2);
     }
+
+    // Cache p prior to solve for density update
+    volScalarField p_0(p);
 
     while (pimple.correctNonOrthogonal())
     {
@@ -182,10 +201,9 @@
 
     p = max(p, pMin);
 
-    thermo1.correct();
-    thermo2.correct();
-    rho1 = thermo1.rho();
-    rho2 = thermo2.rho();
+    // Update densities from change in p
+    rho1 += psi1*(p - p_0);
+    rho2 += psi2*(p - p_0);
 
     K1 = 0.5*magSqr(U1);
     K2 = 0.5*magSqr(U2);

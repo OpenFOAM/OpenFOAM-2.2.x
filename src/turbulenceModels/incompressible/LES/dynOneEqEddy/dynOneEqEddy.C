@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -66,7 +66,7 @@ volScalarField dynOneEqEddy::ck
 
     const volSymmTensorField MM
     (
-        simpleFilter_(-2.0*delta()*pow(KK, 0.5)*filter_(D))
+        simpleFilter_(-2.0*delta()*sqrt(KK)*filter_(D))
     );
 
     const volScalarField ck

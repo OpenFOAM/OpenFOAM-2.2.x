@@ -26,28 +26,44 @@
     tmp<fvScalarMatrix> p_rghEqnComp1;
     tmp<fvScalarMatrix> p_rghEqnComp2;
 
-    //if (transonic)
-    //{
-    //}
-    //else
+    if (pimple.transonic())
     {
         surfaceScalarField phid1("phid1", fvc::interpolate(psi1)*phi);
         surfaceScalarField phid2("phid2", fvc::interpolate(psi2)*phi);
 
         p_rghEqnComp1 =
+            fvc::ddt(rho1) + fvc::div(phi, rho1) - fvc::Sp(fvc::div(phi), rho1)
+          + correction
+            (
+                psi1*fvm::ddt(p_rgh)
+              + fvm::div(phid1, p_rgh) - fvm::Sp(fvc::div(phid1), p_rgh)
+            );
+        deleteDemandDrivenData(p_rghEqnComp1().faceFluxCorrectionPtr());
+        p_rghEqnComp1().relax();
+
+        p_rghEqnComp2 =
+            fvc::ddt(rho2) + fvc::div(phi, rho2) - fvc::Sp(fvc::div(phi), rho2)
+          + correction
+            (
+                psi2*fvm::ddt(p_rgh)
+              + fvm::div(phid2, p_rgh) - fvm::Sp(fvc::div(phid2), p_rgh)
+            );
+        deleteDemandDrivenData(p_rghEqnComp2().faceFluxCorrectionPtr());
+        p_rghEqnComp2().relax();
+    }
+    else
+    {
+        p_rghEqnComp1 =
             fvc::ddt(rho1) + psi1*correction(fvm::ddt(p_rgh))
-          + fvc::div(phid1, p_rgh)
-          - fvc::Sp(fvc::div(phid1), p_rgh);
+          + fvc::div(phi, rho1) - fvc::Sp(fvc::div(phi), rho1);
 
         p_rghEqnComp2 =
             fvc::ddt(rho2) + psi2*correction(fvm::ddt(p_rgh))
-          + fvc::div(phid2, p_rgh)
-          - fvc::Sp(fvc::div(phid2), p_rgh);
+          + fvc::div(phi, rho2) - fvc::Sp(fvc::div(phi), rho2);
     }
 
-    // Thermodynamic density needs to be updated by psi*d(p) after the
-    // pressure solution - done in 2 parts. Part 1:
-    //twoPhaseProperties.rho() -= psi*p_rgh;
+    // Cache p_rgh prior to solve for density update
+    volScalarField p_rgh_0(p_rgh);
 
     while (pimple.correctNonOrthogonal())
     {
@@ -69,8 +85,8 @@
 
         if (pimple.finalNonOrthogonalIter())
         {
-            // Second part of thermodynamic density update
-            //twoPhaseProperties.rho() += psi*p_rgh;
+            //p = max(p_rgh + (alpha1*rho1 + alpha2*rho2)*gh, pMin);
+            //p_rgh = p - (alpha1*rho1 + alpha2*rho2)*gh;
 
             dgdt =
             (
@@ -88,15 +104,14 @@
 
     p = max(p_rgh + (alpha1*rho1 + alpha2*rho2)*gh, pMin);
 
-    // twoPhaseProperties.correct();
+    // Update densities from change in p_rgh
+    rho1 += psi1*(p_rgh - p_rgh_0);
+    rho2 += psi2*(p_rgh - p_rgh_0);
 
-    Info<< "max(U) " << max(mag(U)).value() << endl;
-    Info<< "min(p_rgh) " << min(p_rgh).value() << endl;
+    rho = alpha1*rho1 + alpha2*rho2;
 
     K = 0.5*magSqr(U);
 
-    if (twoPhaseProperties.dpdt())
-    {
-        dpdt = fvc::ddt(p);
-    }
+    Info<< "max(U) " << max(mag(U)).value() << endl;
+    Info<< "min(p_rgh) " << min(p_rgh).value() << endl;
 }

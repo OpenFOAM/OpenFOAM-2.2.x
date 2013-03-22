@@ -38,9 +38,9 @@
 
     volScalarField& p = twoPhaseProperties.p();
     volScalarField& T = twoPhaseProperties.T();
-    const volScalarField& rho1 = twoPhaseProperties.thermo1().rho();
+    volScalarField& rho1 = twoPhaseProperties.thermo1().rho();
     const volScalarField& psi1 = twoPhaseProperties.thermo1().psi();
-    const volScalarField& rho2 = twoPhaseProperties.thermo2().rho();
+    volScalarField& rho2 = twoPhaseProperties.thermo2().rho();
     const volScalarField& psi2 = twoPhaseProperties.thermo2().psi();
 
     volScalarField rho
@@ -91,19 +91,6 @@
     autoPtr<compressible::turbulenceModel> turbulence
     (
         compressible::turbulenceModel::New(rho, U, rhoPhi, twoPhaseProperties)
-    );
-
-    Info<< "Creating field dpdt\n" << endl;
-    volScalarField dpdt
-    (
-        IOobject
-        (
-            "dpdt",
-            runTime.timeName(),
-            mesh
-        ),
-        mesh,
-        dimensionedScalar("dpdt", p.dimensions()/dimTime, 0)
     );
 
     Info<< "Creating field kinetic energy K\n" << endl;
