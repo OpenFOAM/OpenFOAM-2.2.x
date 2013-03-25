@@ -30,6 +30,7 @@ boundaryField
     top
     {
         type                inletOutlet;
+        phi                 phi1;
         inletValue          uniform 1.0e-8;
     }
 
