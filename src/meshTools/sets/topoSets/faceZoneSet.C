@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -49,8 +49,8 @@ void faceZoneSet::updateSet()
 {
     labelList order;
     sortedOrder(addressing_, order);
-    inplaceReorder(order, addressing_);
-    inplaceReorder(order, flipMap_);
+    addressing_ = UIndirectList<label>(addressing_, order)();
+    flipMap_ = UIndirectList<bool>(flipMap_, order)();
 
     faceSet::clearStorage();
     faceSet::resize(2*addressing_.size());
