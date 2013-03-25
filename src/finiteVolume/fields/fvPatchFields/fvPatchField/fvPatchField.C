@@ -198,10 +198,61 @@ void Foam::fvPatchField<Type>::patchInternalField(Field<Type>& pif) const
 template<class Type>
 void Foam::fvPatchField<Type>::autoMap
 (
-    const fvPatchFieldMapper& m
+    const fvPatchFieldMapper& mapper
 )
 {
-    Field<Type>::autoMap(m);
+    Field<Type>& f = *this;
+
+    if (!this->size())
+    {
+        f.setSize(mapper.size());
+        if (f.size())
+        {
+            f = this->patchInternalField();
+        }
+    }
+    else
+    {
+        // Map all faces provided with mapping data
+        Field<Type>::autoMap(mapper);
+
+        // For unmapped faces set to internal field value (zero-gradient)
+        if
+        (
+            mapper.direct()
+         && &mapper.directAddressing()
+         && mapper.directAddressing().size()
+        )
+        {
+            Field<Type> pif(this->patchInternalField());
+
+            const labelList& mapAddressing = mapper.directAddressing();
+
+            forAll(mapAddressing, i)
+            {
+                if (mapAddressing[i] < 0)
+                {
+                    f[i] = pif[i];
+                }
+            }
+        }
+        else if (!mapper.direct() && mapper.addressing().size())
+        {
+            Field<Type> pif(this->patchInternalField());
+
+            const labelListList& mapAddressing = mapper.addressing();
+
+            forAll(mapAddressing, i)
+            {
+                const labelList& localAddrs = mapAddressing[i];
+
+                if (!localAddrs.size())
+                {
+                    f[i] = pif[i];
+                }
+            }
+        }
+    }
 }
 
 

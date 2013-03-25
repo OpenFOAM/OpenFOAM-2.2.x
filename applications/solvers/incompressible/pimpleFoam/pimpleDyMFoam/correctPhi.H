@@ -68,4 +68,6 @@
     }
 }
 
+phi.oldTime() = phi;
+
 #include "continuityErrs.H"

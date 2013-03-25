@@ -53,6 +53,8 @@
             fvc::makeRelative(phi, U);
         }
     }
-
-    #include "continuityErrs.H"
 }
+
+phi.oldTime() = phi;
+
+#include "continuityErrs.H"
