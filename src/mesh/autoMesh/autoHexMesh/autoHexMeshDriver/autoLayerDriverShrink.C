@@ -1287,7 +1287,7 @@ void Foam::autoLayerDriver::shrinkMeshMedialDistance
               + ".obj"
             )
         );
-        Info<< "Writing points with too large a extrusion distance to "
+        Info<< "Writing points with too large an extrusion distance to "
             << str().name() << endl;
     }
 
@@ -1304,7 +1304,7 @@ void Foam::autoLayerDriver::shrinkMeshMedialDistance
               + ".obj"
             )
         );
-        Info<< "Writing points with too large a extrusion distance to "
+        Info<< "Writing points with too large an extrusion distance to "
             << medialVecStr().name() << endl;
     }
 
