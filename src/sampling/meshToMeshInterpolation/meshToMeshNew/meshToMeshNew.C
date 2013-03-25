@@ -271,6 +271,7 @@ void Foam::meshToMeshNew::calcDirect
     DynamicList<label> srcSeeds;
 
     const scalarField& srcVc = src.cellVolumes();
+    const scalarField& tgtVc = tgt.cellVolumes();
 
     label srcCellI = srcSeedI;
     label tgtCellI = tgtSeedI;
@@ -305,14 +306,16 @@ void Foam::meshToMeshNew::calcDirect
     // transfer addressing into persistent storage
     forAll(srcToTgtCellAddr_, i)
     {
+        scalar v = srcVc[i];
         srcToTgtCellAddr_[i].transfer(srcToTgt[i]);
-        srcToTgtCellWght_[i] = scalarList(srcToTgtCellAddr_[i].size(), 1.0);
+        srcToTgtCellWght_[i] = scalarList(srcToTgtCellAddr_[i].size(), v);
     }
 
     forAll(tgtToSrcCellAddr_, i)
     {
+        scalar v = tgtVc[i];
         tgtToSrcCellAddr_[i].transfer(tgtToSrc[i]);
-        tgtToSrcCellWght_[i] = scalarList(tgtToSrcCellAddr_[i].size(), 1.0);
+        tgtToSrcCellWght_[i] = scalarList(tgtToSrcCellAddr_[i].size(), v);
     }
 }
 

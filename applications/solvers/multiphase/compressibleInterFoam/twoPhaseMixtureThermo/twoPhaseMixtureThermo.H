@@ -94,6 +94,16 @@ public:
             return thermo2_();
         }
 
+        rhoThermo& thermo1()
+        {
+            return thermo1_();
+        }
+
+        rhoThermo& thermo2()
+        {
+            return thermo2_();
+        }
+
         //- Update properties
         virtual void correct();
 

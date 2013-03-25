@@ -180,10 +180,13 @@ public:
 
     // Member operators
 
-        inline sutherlandTransport& operator=
-        (
-            const sutherlandTransport&
-        );
+        inline sutherlandTransport& operator=(const sutherlandTransport&);
+
+        inline void operator+=(const sutherlandTransport&);
+
+        inline void operator-=(const sutherlandTransport&);
+
+        inline void operator*=(const scalar);
 
 
     // Friend operators

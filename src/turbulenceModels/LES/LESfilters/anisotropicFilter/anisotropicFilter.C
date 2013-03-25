@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -66,8 +66,12 @@ Foam::anisotropicFilter::anisotropicFilter
         coeff_.internalField().replace
         (
             d,
-            (2.0/widthCoeff_)*mesh.V()
-           /fvc::surfaceSum(mag(mesh.Sf().component(d)))().internalField()
+            (1/widthCoeff_)*
+            sqr
+            (
+                2.0*mesh.V()
+               /fvc::surfaceSum(mag(mesh.Sf().component(d)))().internalField()
+            )
         );
     }
 }
@@ -99,8 +103,12 @@ Foam::anisotropicFilter::anisotropicFilter
         coeff_.internalField().replace
         (
             d,
-            (2.0/widthCoeff_)*mesh.V()
-            /fvc::surfaceSum(mag(mesh.Sf().component(d)))().internalField()
+            (1/widthCoeff_)*
+            sqr
+            (
+                2.0*mesh.V()
+               /fvc::surfaceSum(mag(mesh.Sf().component(d)))().internalField()
+            )
         );
     }
 }

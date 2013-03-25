@@ -78,6 +78,9 @@ void Foam::fv::interRegionHeatTransferModel::setNbrModel()
     }
 
     firstIter_ = false;
+
+    // set nbr model's nbr model to avoid construction order problems
+    nbrModel_->setNbrModel();
 }
 
 
