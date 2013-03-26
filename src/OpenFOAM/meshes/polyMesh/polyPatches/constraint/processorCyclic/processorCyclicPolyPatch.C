@@ -150,13 +150,13 @@ int Foam::processorCyclicPolyPatch::tag() const
             referPatch()
         );
 
-        if (cycPatch.owner())
+        if (owner())
         {
-            tag_ = Hash<word>()(cycPatch.name());
+            tag_ = Hash<word>()(cycPatch.name()) % 32768u;
         }
         else
         {
-            tag_ = Hash<word>()(cycPatch.neighbPatch().name());
+            tag_ = Hash<word>()(cycPatch.neighbPatch().name()) % 32768u;
         }
 
         if (tag_ == Pstream::msgType() || tag_ == -1)
