@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -66,16 +66,31 @@ Foam::PatchTools::sortedEdgeFaces
             vector e2 = e.vec(localPoints);
             e2 /= mag(e2) + VSMALL;
 
-            // Get opposite vertex for 0th face
-            const Face& f = localFaces[faceNbs[0]];
+            // Get the vertex on 0th face that forms a vector with the first
+            // edge point that has the largest angle with the edge
+            const Face& f0 = localFaces[faceNbs[0]];
 
-            label fp0 = findIndex(f, e[0]);
-            label fp1 = f.fcIndex(fp0);
-            label vertI = (f[fp1] != e[1] ? f[fp1] : f.fcIndex(fp1));
+            scalar maxAngle = GREAT;
+            vector maxAngleEdgeDir(vector::max);
+
+            forAll(f0, fpI)
+            {
+                if (f0[fpI] != e.start())
+                {
+                    const vector faceEdgeDir = localPoints[f0[fpI]] - edgePt;
+                    const scalar angle = faceEdgeDir & e2;
+
+                    if (angle < maxAngle)
+                    {
+                        maxAngle = angle;
+                        maxAngleEdgeDir = faceEdgeDir;
+                    }
+                }
+            }
 
             // Get vector normal both to e2 and to edge from opposite vertex
             // to edge (will be x-axis of our coordinate system)
-            vector e0 = e2 ^ (localPoints[vertI] - edgePt);
+            vector e0 = e2 ^ maxAngleEdgeDir;
             e0 /= mag(e0) + VSMALL;
 
             // Get y-axis of coordinate system
@@ -88,13 +103,29 @@ Foam::PatchTools::sortedEdgeFaces
 
             for (label nbI = 1; nbI < faceNbs.size(); nbI++)
             {
-                // Get opposite vertex
+                // Get the vertex on face that forms a vector with the first
+                // edge point that has the largest angle with the edge
                 const Face& f = localFaces[faceNbs[nbI]];
-                label fp0 = findIndex(f, e[0]);
-                label fp1 = f.fcIndex(fp0);
-                label vertI = (f[fp1] != e[1] ? f[fp1] : f.fcIndex(fp1));
 
-                vector vec = e2 ^ (localPoints[vertI] - edgePt);
+                maxAngle = GREAT;
+                maxAngleEdgeDir = vector::max;
+
+                forAll(f, fpI)
+                {
+                    if (f[fpI] != e.start())
+                    {
+                        const vector faceEdgeDir = localPoints[f[fpI]] - edgePt;
+                        const scalar angle = faceEdgeDir & e2;
+
+                        if (angle < maxAngle)
+                        {
+                            maxAngle = angle;
+                            maxAngleEdgeDir = faceEdgeDir;
+                        }
+                    }
+                }
+
+                vector vec = e2 ^ maxAngleEdgeDir;
                 vec /= mag(vec) + VSMALL;
 
                 faceAngles[nbI] = pseudoAngle
