@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -41,23 +41,31 @@ void Foam::refinementFeatures::read
 
         fileName featFileName(dict.lookup("file"));
 
-        set
-        (
-            featI,
-            new featureEdgeMesh
+        {
+            IOobject featObj
             (
-                IOobject
+                featFileName,                       // name
+                io.time().constant(),               // instance
+                "triSurface",                       // local
+                io.time(),                          // registry
+                IOobject::MUST_READ,
+                IOobject::NO_WRITE,
+                false
+            );
+
+            autoPtr<edgeMesh> eMeshPtr = edgeMesh::New(featObj.filePath());
+
+            set
+            (
+                featI,
+                new featureEdgeMesh
                 (
-                    featFileName,                       // name
-                    io.time().constant(),               // instance
-                    "triSurface",                       // local
-                    io.time(),                          // registry
-                    IOobject::MUST_READ,
-                    IOobject::NO_WRITE,
-                    false
+                    featObj,
+                    eMeshPtr->points(),
+                    eMeshPtr->edges()
                 )
-            )
-        );
+            );
+        }
 
         const featureEdgeMesh& eMesh = operator[](featI);
 
