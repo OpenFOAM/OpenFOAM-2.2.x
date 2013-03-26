@@ -146,7 +146,8 @@ bool Foam::GeometricField<Type, PatchField, GeoMesh>::readOldTimeIfPresent()
         this->time().timeName(),
         this->db(),
         IOobject::READ_IF_PRESENT,
-        IOobject::AUTO_WRITE
+        IOobject::AUTO_WRITE,
+        this->registerObject()
     );
 
     if (field0.headerOk())
@@ -761,7 +762,10 @@ Foam::GeometricField<Type, PatchField, GeoMesh>::oldTime() const
             (
                 this->name() + "_0",
                 this->time().timeName(),
-                this->db()
+                this->db(),
+                IOobject::NO_READ,
+                IOobject::NO_WRITE,
+                this->registerObject()
             ),
             *this
         );
