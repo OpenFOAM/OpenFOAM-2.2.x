@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -190,6 +190,35 @@ externalWallHeatFluxTemperatureFvPatchScalarField
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
+
+void Foam::externalWallHeatFluxTemperatureFvPatchScalarField::autoMap
+(
+    const fvPatchFieldMapper& m
+)
+{
+    mixedFvPatchScalarField::autoMap(m);
+    q_.autoMap(m);
+    h_.autoMap(m);
+    Ta_.autoMap(m);
+}
+
+
+void Foam::externalWallHeatFluxTemperatureFvPatchScalarField::rmap
+(
+    const fvPatchScalarField& ptf,
+    const labelList& addr
+)
+{
+    mixedFvPatchScalarField::rmap(ptf, addr);
+
+    const externalWallHeatFluxTemperatureFvPatchScalarField& tiptf =
+        refCast<const externalWallHeatFluxTemperatureFvPatchScalarField>(ptf);
+
+    q_.rmap(tiptf.q_, addr);
+    h_.rmap(tiptf.h_, addr);
+    Ta_.rmap(tiptf.Ta_, addr);
+}
+
 
 void Foam::externalWallHeatFluxTemperatureFvPatchScalarField::updateCoeffs()
 {
