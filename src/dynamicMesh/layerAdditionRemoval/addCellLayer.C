@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -203,8 +203,8 @@ void Foam::layerAdditionRemoval::addCellLayer
         // Flip the face as necessary
         if
         (
-            mc[faceI] == nei[mf[faceI]]
-         || !mesh.isInternalFace(mf[faceI])
+           !mesh.isInternalFace(mf[faceI])
+         || mc[faceI] == nei[mf[faceI]]
         )
         {
             flipFaceFlux = true;
