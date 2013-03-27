@@ -157,6 +157,47 @@ timeVaryingMappedFixedValuePointPatchField
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 template<class Type>
+void Foam::timeVaryingMappedFixedValuePointPatchField<Type>::autoMap
+(
+    const pointPatchFieldMapper& m
+)
+{
+    fixedValuePointPatchField<Type>::autoMap(m);
+    if (startSampledValues_.size())
+    {
+        startSampledValues_.autoMap(m);
+        endSampledValues_.autoMap(m);
+    }
+    // Clear interpolator
+    mapperPtr_.clear();
+    startSampleTime_ = -1;
+    endSampleTime_ = -1;
+}
+
+
+template<class Type>
+void Foam::timeVaryingMappedFixedValuePointPatchField<Type>::rmap
+(
+    const pointPatchField<Type>& ptf,
+    const labelList& addr
+)
+{
+    fixedValuePointPatchField<Type>::rmap(ptf, addr);
+
+    const timeVaryingMappedFixedValuePointPatchField<Type>& tiptf =
+        refCast<const timeVaryingMappedFixedValuePointPatchField<Type> >(ptf);
+
+    startSampledValues_.rmap(tiptf.startSampledValues_, addr);
+    endSampledValues_.rmap(tiptf.endSampledValues_, addr);
+
+    // Clear interpolator
+    mapperPtr_.clear();
+    startSampleTime_ = -1;
+    endSampleTime_ = -1;
+}
+
+
+template<class Type>
 void Foam::timeVaryingMappedFixedValuePointPatchField<Type>::checkTable()
 {
     // Initialise

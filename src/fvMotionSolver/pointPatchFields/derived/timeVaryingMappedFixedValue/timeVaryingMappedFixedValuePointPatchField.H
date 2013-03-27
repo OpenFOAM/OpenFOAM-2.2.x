@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -165,6 +165,23 @@ public:
 
             //- Find boundary data inbetween current time and interpolate
             void checkTable();
+
+
+        // Mapping functions
+
+            //- Map (and resize as needed) from self given a mapping object
+            virtual void autoMap
+            (
+                const pointPatchFieldMapper&
+            );
+
+            //- Reverse map the given PointPatchField onto
+            //  this PointPatchField
+            virtual void rmap
+            (
+                const pointPatchField<Type>&,
+                const labelList&
+            );
 
 
         // Evaluation functions
