@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anispulation  |
 -------------------------------------------------------------------------------
 License
@@ -494,7 +494,13 @@ autoPtr<mapPolyMesh> reorderMesh
                     newFlipMap[i] = fZone.flipMap()[i];
                 }
             }
-            fZone.resetAddressing(newAddressing, newFlipMap);
+            labelList newToOld;
+            sortedOrder(newAddressing, newToOld);
+            fZone.resetAddressing
+            (
+                UIndirectList<label>(newAddressing, newToOld)(),
+                UIndirectList<bool>(newFlipMap, newToOld)()
+            );
         }
     }
     // Re-do the cellZones
@@ -508,6 +514,7 @@ autoPtr<mapPolyMesh> reorderMesh
                 reverseCellOrder,
                 cellZones[zoneI]
             )();
+            Foam::sort(cellZones[zoneI]);
         }
     }
 
