@@ -77,10 +77,12 @@ Foam::PatchTools::sortedEdgeFaces
             {
                 if (f0[fpI] != e.start())
                 {
-                    const vector faceEdgeDir = localPoints[f0[fpI]] - edgePt;
-                    const scalar angle = faceEdgeDir & e2;
+                    vector faceEdgeDir = localPoints[f0[fpI]] - edgePt;
+                    faceEdgeDir /= mag(faceEdgeDir) + VSMALL;
 
-                    if (angle < maxAngle)
+                    const scalar angle = e2 & faceEdgeDir;
+
+                    if (mag(angle) < maxAngle)
                     {
                         maxAngle = angle;
                         maxAngleEdgeDir = faceEdgeDir;
@@ -114,10 +116,12 @@ Foam::PatchTools::sortedEdgeFaces
                 {
                     if (f[fpI] != e.start())
                     {
-                        const vector faceEdgeDir = localPoints[f[fpI]] - edgePt;
-                        const scalar angle = faceEdgeDir & e2;
+                        vector faceEdgeDir = localPoints[f[fpI]] - edgePt;
+                        faceEdgeDir /= mag(faceEdgeDir) + VSMALL;
 
-                        if (angle < maxAngle)
+                        const scalar angle = e2 & faceEdgeDir;
+
+                        if (mag(angle) < maxAngle)
                         {
                             maxAngle = angle;
                             maxAngleEdgeDir = faceEdgeDir;
