@@ -254,8 +254,8 @@ public:
     );
 
 
-    //- Gather points and faces onto master and merge (geometrically) into
-    //  single patch.
+    //- Gather points and faces onto master and merge into single patch.
+    //  Note: uses faces/points, not localFaces/localPoints.
     template
     <
         class Face,
