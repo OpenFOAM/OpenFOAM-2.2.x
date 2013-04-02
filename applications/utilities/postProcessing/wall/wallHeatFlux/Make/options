@@ -9,6 +9,9 @@ EXE_INC = \
 
 EXE_LIBS = \
     -lcompressibleTurbulenceModel \
+    -lcompressibleRASModels \
+    -lcompressibleLESModels \
+    -lLESdeltas \
     -lreactionThermophysicalModels \
     -lfiniteVolume \
     -lgenericPatchFields \
