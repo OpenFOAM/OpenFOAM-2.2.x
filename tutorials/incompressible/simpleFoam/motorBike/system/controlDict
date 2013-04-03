@@ -40,10 +40,10 @@ writeInterval   100;
 purgeWrite      0;
 
 
-//- Have regular restart files
-secondaryWriteControl    cpuTime;
-secondaryWriteInterval   120;
-secondaryPurgeWrite      1;
+//- Uncomment to have regular (every 2 hours of run time) restart files
+//secondaryWriteControl    cpuTime; // runtime
+//secondaryWriteInterval   7200;    // seconds
+//secondaryPurgeWrite      1;       // keep all but last dump
 
 
 writeFormat     binary;
