@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -417,6 +417,47 @@ Foam::multiphaseSystem::multiphaseSystem
                 *phases_.lookup(iter.key().second())
             ).ptr()
         );
+    }
+
+    forAllConstIter(PtrDictionary<phaseModel>, phases_, iter1)
+    {
+        const phaseModel& phase1 = iter1();
+
+        forAllConstIter(PtrDictionary<phaseModel>, phases_, iter2)
+        {
+            const phaseModel& phase2 = iter2();
+
+            if (&phase2 != &phase1)
+            {
+                scalarCoeffSymmTable::const_iterator sigma
+                (
+                    sigmas_.find(interfacePair(phase1, phase2))
+                );
+
+                if (sigma != sigmas_.end())
+                {
+                    scalarCoeffSymmTable::const_iterator cAlpha
+                    (
+                        cAlphas_.find(interfacePair(phase1, phase2))
+                    );
+
+                    if (cAlpha == cAlphas_.end())
+                    {
+                        WarningIn
+                        (
+                            "multiphaseSystem::multiphaseSystem"
+                            "(const volVectorField& U,"
+                            "const surfaceScalarField& phi)"
+                        ) << "Compression coefficient not specified for "
+                             "phase pair ("
+                          << phase1.name() << ' ' << phase2.name()
+                          << ") for which a surface tension "
+                             "coefficient is specified"
+                          << endl;
+                    }
+                }
+            }
+        }
     }
 }
 
