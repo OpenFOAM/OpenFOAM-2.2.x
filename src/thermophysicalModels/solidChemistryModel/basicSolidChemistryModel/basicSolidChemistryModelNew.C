@@ -53,11 +53,12 @@ New
 
     Info<< "Selecting chemistry type " << chemistryTypeDict << endl;
 
-    const int nCmpt = 12;
+    const int nCmpt = 13;
     const char* cmptNames[nCmpt] =
     {
         "chemistrySolver",
         "chemistryThermo",
+        "baseChemistry",
         "transport",
         "thermo",
         "equationOfState",
@@ -107,8 +108,9 @@ New
     word chemistryTypeName
     (
         word(chemistryTypeDict.lookup("chemistrySolver")) + '<'
-      + word(chemistryTypeDict.lookup("chemistryThermo")) + ','
-      + solidThermoTypeName + ',' + gasThermoTypeName + ">"
+      + word(chemistryTypeDict.lookup("chemistryThermo")) + '<'
+      + typeName + ','
+      + solidThermoTypeName + ',' + gasThermoTypeName + ">>"
     );
 
     Info<< "chemistryTypeName " << chemistryTypeName << endl;
