@@ -18,7 +18,7 @@ FoamFile
 chemistryType
 {
     chemistrySolver   ode;
-    chemistryThermo   solid;
+    chemistryThermo   pyrolysisChemistryModel;
 }
 
 chemistry           on;
