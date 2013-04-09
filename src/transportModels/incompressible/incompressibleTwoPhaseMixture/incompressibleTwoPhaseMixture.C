@@ -175,8 +175,14 @@ bool Foam::incompressibleTwoPhaseMixture::read()
     {
         if
         (
-            nuModel1_().read(subDict(phase1Name_))
-         && nuModel2_().read(subDict(phase2Name_))
+            nuModel1_().read
+            (
+                subDict(phase1Name_ == "1" ? "phase1": phase1Name_)
+            )
+         && nuModel2_().read
+            (
+                subDict(phase2Name_ == "2" ? "phase2": phase2Name_)
+            )
         )
         {
             nuModel1_->viscosityProperties().lookup("rho") >> rho1_;

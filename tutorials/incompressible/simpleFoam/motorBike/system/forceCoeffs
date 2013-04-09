@@ -9,8 +9,12 @@
 forceCoeffs1
 {
     type        forceCoeffs;
+
     functionObjectLibs ( "libforces.so" );
-    outputControl outputTime;
+
+    outputControl   timeStep;
+    outputInterval  1;
+
     log         yes;
 
     patches     ( "motorBike.*" );

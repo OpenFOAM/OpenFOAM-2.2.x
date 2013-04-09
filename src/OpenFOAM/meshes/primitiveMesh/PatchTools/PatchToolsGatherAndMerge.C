@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -52,7 +52,8 @@ void Foam::PatchTools::gatherAndMerge
     labelList pointSizes;
     {
         List<Field<PointType> > gatheredPoints(Pstream::nProcs());
-        gatheredPoints[Pstream::myProcNo()] = p.localPoints();
+        gatheredPoints[Pstream::myProcNo()] = p.points();
+
         Pstream::gatherList(gatheredPoints);
 
         if (Pstream::master())
@@ -75,7 +76,7 @@ void Foam::PatchTools::gatherAndMerge
     // gathered points
     {
         List<List<Face> > gatheredFaces(Pstream::nProcs());
-        gatheredFaces[Pstream::myProcNo()] = p.localFaces();
+        gatheredFaces[Pstream::myProcNo()] = p;
         Pstream::gatherList(gatheredFaces);
 
         if (Pstream::master())
