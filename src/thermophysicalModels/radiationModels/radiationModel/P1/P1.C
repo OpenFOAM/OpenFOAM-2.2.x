@@ -241,10 +241,14 @@ void Foam::radiation::P1::calculate()
     );
 
     // Calculate radiative heat flux on boundaries.
-    forAll(mesh_.boundaryMesh(), patchI)
+    forAll(mesh_.boundaryMesh(), patchi)
     {
-        Qr_.boundaryField()[patchI] =
-            -gamma.boundaryField()[patchI]*G_.boundaryField()[patchI].snGrad();
+        if (!G_.boundaryField()[patchi].coupled())
+        {
+            Qr_.boundaryField()[patchi] =
+                -gamma.boundaryField()[patchi]
+                *G_.boundaryField()[patchi].snGrad();
+        }
     }
 }
 
