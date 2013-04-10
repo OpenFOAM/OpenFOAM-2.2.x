@@ -270,7 +270,7 @@ void Foam::extendedFeatureEdgeMesh::sortPointsAndEdges
     edgeMesh::operator=(edgeMesh(pts, eds));
 
     // Initialise sorted edge related data
-    edgeDirections_ = edgeDirections/mag(edgeDirections);
+    edgeDirections_ = edgeDirections/(mag(edgeDirections) + VSMALL);
     edgeNormals_ = edgeNormals;
     regionEdges_ = regionEdges;
 
