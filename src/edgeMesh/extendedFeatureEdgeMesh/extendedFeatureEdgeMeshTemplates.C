@@ -65,14 +65,17 @@ void Foam::extendedFeatureEdgeMesh::sortPointsAndEdges
     labelListList featurePointFeatureEdges(nFeatPts);
     forAll(featurePointFeatureEdges, pI)
     {
-        featurePointFeatureEdges[pI] =
-            labelList(pointEdges[featurePoints[pI]].size(), -1);
+        featurePointFeatureEdges[pI] = pointEdges[featurePoints[pI]];
     }
 
     // Mapping between old and new indices, there is entry in the map for each
     // of surf.localPoints, -1 means that this point hasn't been used (yet),
     // >= 0 corresponds to the index
     labelList pointMap(sFeatLocalPts.size(), -1);
+
+    // Mapping between surface edge index and its feature edge index. -1 if it
+    // is not a feature edge
+    labelList edgeMap(sFeatEds.size(), -1);
 
     // Noting when the normal of a face has been used so not to duplicate
     labelList faceMap(surf.size(), -1);
@@ -97,6 +100,8 @@ void Foam::extendedFeatureEdgeMesh::sortPointsAndEdges
     forAll(featureEdges, i)
     {
         label sFEI = featureEdges[i];
+
+        edgeMap[sFEI] = i;
 
         const edge& fE(sFeatEds[sFEI]);
 
@@ -156,42 +161,30 @@ void Foam::extendedFeatureEdgeMesh::sortPointsAndEdges
         {
             regionEdges.append(i);
         }
-
-        forAll(featurePointFeatureEdges, pI)
-        {
-            const labelList& fpfEdges = pointEdges[featurePoints[pI]];
-
-            labelList& fpfe = featurePointFeatureEdges[pI];
-
-            forAll(fpfEdges, eI)
-            {
-                if (sFEI == fpfEdges[eI])
-                {
-                    fpfe[eI] = i;
-                }
-            }
-        }
     }
+
+    // Populate feature point feature edges
+    DynamicList<label> newFeatureEdges;
 
     forAll(featurePointFeatureEdges, pI)
     {
         const labelList& fpfe = featurePointFeatureEdges[pI];
 
-        DynamicList<label> newFeatureEdges(fpfe.size());
+        newFeatureEdges.setCapacity(fpfe.size());
 
         forAll(fpfe, eI)
         {
-            const label edgeIndex = fpfe[eI];
+            const label oldEdgeIndex = fpfe[eI];
+            const label newFeatureEdgeIndex = edgeMap[oldEdgeIndex];
 
-            if (edgeIndex != -1)
+            if (newFeatureEdgeIndex != -1)
             {
-                newFeatureEdges.append(edgeIndex);
+                newFeatureEdges.append(newFeatureEdgeIndex);
             }
         }
 
-        featurePointFeatureEdges[pI] = newFeatureEdges;
+        featurePointFeatureEdges[pI].transfer(newFeatureEdges);
     }
-
 
     // Reorder the edges by classification
 
