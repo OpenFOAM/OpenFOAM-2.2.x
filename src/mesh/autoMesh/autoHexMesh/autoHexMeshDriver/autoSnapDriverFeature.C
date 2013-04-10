@@ -767,7 +767,7 @@ void Foam::autoSnapDriver::binFeatureFace
 ) const
 {
     // What to do with very far attraction? For now just ignore the face
-    if (magSqr(faceDisp) < sqr(snapDist))
+    if (magSqr(faceDisp) < sqr(snapDist) && mag(faceSurfaceNormal) > VSMALL)
     {
         const point pt = fc + faceDisp;
 
