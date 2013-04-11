@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -62,7 +62,11 @@ Foam::fv::fourthGrad<Type>::calcGrad
     // Assemble the second-order least-square gradient
     // Calculate the second-order least-square gradient
     tmp<GeometricField<GradType, fvPatchField, volMesh> > tsecondfGrad
-        = leastSquaresGrad<Type>(mesh).grad(vsf);
+      = leastSquaresGrad<Type>(mesh).grad
+        (
+            vsf,
+            "leastSquaresGrad(" + vsf.name() + ")"
+        );
     const GeometricField<GradType, fvPatchField, volMesh>& secondfGrad =
         tsecondfGrad();
 
