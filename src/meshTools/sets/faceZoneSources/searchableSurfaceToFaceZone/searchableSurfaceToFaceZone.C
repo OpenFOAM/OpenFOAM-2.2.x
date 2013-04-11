@@ -28,6 +28,7 @@ License
 #include "faceZoneSet.H"
 #include "searchableSurface.H"
 #include "syncTools.H"
+#include "Time.H"
 
 #include "addToRunTimeSelectionTable.H"
 
@@ -77,7 +78,7 @@ Foam::searchableSurfaceToFaceZone::searchableSurfaceToFaceZone
                 mesh.objectRegistry::db(),
                 IOobject::MUST_READ,
                 IOobject::NO_WRITE
-            )
+            ),
             dict
         )
     )
