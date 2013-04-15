@@ -155,7 +155,7 @@ public:
         {
             return
                 2.0
-              * pow((2.0/sqrt(2.0))*ce_*flm_/fmm_, 2.0/3.0)/ce_
+              * pow((2.0/sqrt(2.0))*sqrt(ce_)*flm_/fmm_, 2.0/3.0)/ce_
               * sqr(delta())*magSqr(dev(symm(gradU)));
         }
 
