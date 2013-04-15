@@ -153,7 +153,10 @@ public:
         //- Return SGS kinetic energy
         tmp<volScalarField> k(const tmp<volTensorField>& gradU) const
         {
-            return 2.0*sqr(delta())*magSqr(dev(symm(gradU)));
+            return
+                2.0
+              * pow((2.0/sqrt(2.0))*ce_*flm_/fmm_, 2.0/3.0)/ce_
+              * sqr(delta())*magSqr(dev(symm(gradU)));
         }
 
         //- Return SGS kinetic energy
