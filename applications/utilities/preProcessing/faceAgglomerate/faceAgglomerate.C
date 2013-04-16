@@ -149,7 +149,6 @@ int main(int argc, char *argv[])
 
     if (writeAgglom)
     {
-        Pout << "nCoarseFaces " << nCoarseFaces << endl;
         globalIndex index(nCoarseFaces);
         volScalarField facesAgglomeration
         (
