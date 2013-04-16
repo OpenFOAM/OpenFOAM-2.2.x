@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
         label patchI = pp.index();
         finalAgglom[patchI].setSize(pp.size(), 0);
 
-        if (!pp.coupled())
+        if (!pp.coupled() && pp.size() > 0)
         {
             if (agglomDict.found(pp.name()))
             {
@@ -101,6 +101,7 @@ int main(int argc, char *argv[])
                 agglomObject.agglomerate();
                 finalAgglom[patchI] =
                     agglomObject.restrictTopBottomAddressing();
+
                 nCoarseFaces += max(finalAgglom[patchI] + 1);
             }
             else
@@ -148,6 +149,7 @@ int main(int argc, char *argv[])
 
     if (writeAgglom)
     {
+        Pout << "nCoarseFaces " << nCoarseFaces << endl;
         globalIndex index(nCoarseFaces);
         volScalarField facesAgglomeration
         (

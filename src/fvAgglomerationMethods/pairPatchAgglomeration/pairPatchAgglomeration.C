@@ -39,12 +39,14 @@ void Foam::pairPatchAgglomeration::compactLevels(const label nCreatedLevels)
 
 bool Foam::pairPatchAgglomeration::continueAgglomerating
 (
-    label nCoarseFaces
+    const label nCoarseFaces
 )
 {
+    label localnCoarseFaces = nCoarseFaces;
     // Check the need for further agglomeration on all processors
-    reduce(nCoarseFaces, sumOp<label>());
-    bool contAgg = nCoarseFaces >= nFacesInCoarsestLevel_;
+//    reduce(localnCoarseFaces, sumOp<label>());
+    bool contAgg = localnCoarseFaces >= nFacesInCoarsestLevel_;
+    reduce(contAgg, andOp<bool>());
     return contAgg;
 }
 
@@ -346,7 +348,7 @@ void Foam::pairPatchAgglomeration:: agglomerate()
 
     while (nCreatedLevels < maxLevels_)
     {
-        label nCoarseFaces = -1;
+        label nCoarseCells = -1;
 
         const bPatch& patch = patchLevels_[nCreatedLevels - 1];
         tmp<labelField> finalAgglomPtr(new labelField(patch.size()));
@@ -356,7 +358,7 @@ void Foam::pairPatchAgglomeration:: agglomerate()
         {
             finalAgglomPtr = agglomerateOneLevel
             (
-                nCoarseFaces,
+                nCoarseCells,
                 patch
             );
 
@@ -368,11 +370,11 @@ void Foam::pairPatchAgglomeration:: agglomerate()
             );
         }
 
-        nFaces_[nCreatedLevels] = nCoarseFaces;
+        nFaces_[nCreatedLevels] = nCoarseCells;
         restrictAddressing_.set(nCreatedLevels, finalAgglomPtr);
         mapBaseToTopAgglom(nCreatedLevels);
 
-        if (!continueAgglomerating(nCoarseFaces))
+        if (!continueAgglomerating(nCoarseCells))
         {
             break;
         }
@@ -395,7 +397,7 @@ void Foam::pairPatchAgglomeration:: agglomerate()
 
 Foam::tmp<Foam::labelField> Foam::pairPatchAgglomeration::agglomerateOneLevel
 (
-    label& nCoarseFaces,
+    label& nCoarseCells,
     const bPatch& patch
 )
 {
@@ -406,7 +408,7 @@ Foam::tmp<Foam::labelField> Foam::pairPatchAgglomeration::agglomerateOneLevel
 
     const labelListList& faceFaces = patch.faceFaces();
 
-    nCoarseFaces = 0;
+    nCoarseCells = 0;
 
     forAll(faceFaces, facei)
     {
@@ -440,9 +442,9 @@ Foam::tmp<Foam::labelField> Foam::pairPatchAgglomeration::agglomerateOneLevel
             if (matchFaceNo >= 0)
             {
                 // Make a new group
-                coarseCellMap[matchFaceNo] = nCoarseFaces;
-                coarseCellMap[matchFaceNeibNo] = nCoarseFaces;
-                nCoarseFaces++;
+                coarseCellMap[matchFaceNo] = nCoarseCells;
+                coarseCellMap[matchFaceNeibNo] = nCoarseCells;
+                nCoarseCells++;
             }
             else
             {
@@ -475,8 +477,8 @@ Foam::tmp<Foam::labelField> Foam::pairPatchAgglomeration::agglomerateOneLevel
                 else
                 {
                     // if not create single-cell "clusters" for each
-                    coarseCellMap[facei] = nCoarseFaces;
-                    nCoarseFaces ++;
+                    coarseCellMap[facei] = nCoarseCells;
+                    nCoarseCells ++;
                 }
             }
         }
