@@ -28,6 +28,7 @@ License
 #include "syncTools.H"
 #include "searchableSurface.H"
 #include "fvMesh.H"
+#include "Time.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -61,7 +62,15 @@ Foam::faceSelections::searchableSurfaceSelection::searchableSurfaceSelection
         searchableSurface::New
         (
             word(dict.lookup("surface")),
-            mesh.objectRegistry::db(),
+            IOobject
+            (
+                dict.lookupOrDefault("name", mesh.objectRegistry::db().name()),
+                mesh.time().constant(),
+                "triSurface",
+                mesh.objectRegistry::db(),
+                IOobject::MUST_READ,
+                IOobject::NO_WRITE
+            ),
             dict
         )
     )
