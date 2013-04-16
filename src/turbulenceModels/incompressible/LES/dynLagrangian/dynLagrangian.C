@@ -48,7 +48,7 @@ void dynLagrangian::updateSubGridScaleFields
     const tmp<volTensorField>& gradU
 )
 {
-    nuSgs_ = 2.0*(flm_/fmm_)*sqr(delta())*mag(dev(symm(gradU)));
+    nuSgs_ = (flm_/fmm_)*sqr(delta())*mag(dev(symm(gradU)));
     nuSgs_.correctBoundaryConditions();
 }
 
