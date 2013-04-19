@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -182,8 +182,17 @@ void Foam::csvTableReader<Type>::write(Ostream& os) const
         << headerLine_ << token::END_STATEMENT << nl;
     os.writeKeyword("timeColumn")
         << timeColumn_ << token::END_STATEMENT << nl;
-    os.writeKeyword("valueColumns")
-        << componentColumns_ << token::END_STATEMENT << nl;
+
+    // Force writing labelList in ascii
+    os.writeKeyword("valueColumns");
+    if (os.format() == IOstream::BINARY)
+    {
+        os.format(IOstream::ASCII);
+        os  << componentColumns_;
+        os.format(IOstream::BINARY);
+    }
+    os  << token::END_STATEMENT << nl;
+
     os.writeKeyword("separator")
         << string(separator_) << token::END_STATEMENT << nl;
 }
