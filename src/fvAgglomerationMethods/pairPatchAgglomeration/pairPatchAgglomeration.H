@@ -116,7 +116,7 @@ private:
         void compactLevels(const label fineLevelIndex);
 
         //- Check the need for further agglomeration
-        bool continueAgglomerating(const label fineLevelIndex);
+        bool continueAgglomerating(label fineLevelIndex);
 
         //- Set edge weights
         void setEdgeWeights(const label indexLevel);

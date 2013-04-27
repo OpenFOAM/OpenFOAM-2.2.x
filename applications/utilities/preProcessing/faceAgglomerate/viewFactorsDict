@@ -17,6 +17,12 @@ FoamFile
 // Write agglomeration as a volScalarField with calculated boundary values
 writeFacesAgglomeration   true;
 
+//Debug option
+debug                     0;
+
+//Dump connectivity rays
+dumpRays                  false;
+
 // Per patch (wildcard possible) the coarsening level
 bottomAir_to_heater
 {

@@ -1026,7 +1026,7 @@ void Foam::ensightMesh::write
 
     if (timeIndex == 0)
     {
-        timeFile += "000.";
+        timeFile += "0000.";
     }
     else if (meshMoving)
     {

@@ -378,6 +378,7 @@ FoamFile
 //            surface searchableSphere;
 //            centre  (0.05 0.05 0.005);
 //            radius  0.025;
+//            //name  sphere.stl; // Optional name if surface triSurfaceMesh
 //        }
 //    }
 //

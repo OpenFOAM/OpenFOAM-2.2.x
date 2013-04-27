@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -40,6 +40,7 @@ Description
 #include "pairPatchAgglomeration.H"
 #include "labelListIOList.H"
 #include "syncTools.H"
+#include "globalIndex.H"
 
 using namespace Foam;
 
@@ -53,7 +54,7 @@ int main(int argc, char *argv[])
     #include "createTime.H"
     #include "createNamedMesh.H"
 
-    const word dictName("faceAgglomerateDict");
+    const word dictName("viewFactorsDict");
 
     #include "setConstantMeshDictionaryIO.H"
 
@@ -79,6 +80,7 @@ int main(int argc, char *argv[])
         boundary.size()
     );
 
+    label nCoarseFaces = 0;
     forAll(boundary, patchId)
     {
         const polyPatch& pp = boundary[patchId];
@@ -86,7 +88,7 @@ int main(int argc, char *argv[])
         label patchI = pp.index();
         finalAgglom[patchI].setSize(pp.size(), 0);
 
-        if (!pp.coupled())
+        if (!pp.coupled() && pp.size() > 0)
         {
             if (agglomDict.found(pp.name()))
             {
@@ -99,6 +101,8 @@ int main(int argc, char *argv[])
                 agglomObject.agglomerate();
                 finalAgglom[patchI] =
                     agglomObject.restrictTopBottomAddressing();
+
+                nCoarseFaces += max(finalAgglom[patchI] + 1);
             }
             else
             {
@@ -109,6 +113,7 @@ int main(int argc, char *argv[])
         }
     }
 
+    //reduce(nCoarseFaces, sumOp<scalar>());
     // Sync agglomeration across coupled patches
     labelList nbrAgglom(mesh.nFaces() - mesh.nInternalFaces(), -1);
 
@@ -144,6 +149,7 @@ int main(int argc, char *argv[])
 
     if (writeAgglom)
     {
+        globalIndex index(nCoarseFaces);
         volScalarField facesAgglomeration
         (
             IOobject
@@ -158,6 +164,7 @@ int main(int argc, char *argv[])
             dimensionedScalar("facesAgglomeration", dimless, 0)
         );
 
+        //label coarsePatchIndex = 0;
         forAll(boundary, patchId)
         {
             fvPatchScalarField& bFacesAgglomeration =
@@ -165,7 +172,12 @@ int main(int argc, char *argv[])
 
             forAll(bFacesAgglomeration, j)
             {
-                bFacesAgglomeration[j] = finalAgglom[patchId][j];
+                bFacesAgglomeration[j] =
+                    index.toGlobal
+                    (
+                        Pstream::myProcNo(),
+                        finalAgglom[patchId][j]
+                    );
             }
         }
 

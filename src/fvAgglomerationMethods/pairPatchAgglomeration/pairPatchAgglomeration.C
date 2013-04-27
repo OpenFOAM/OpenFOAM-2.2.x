@@ -42,8 +42,10 @@ bool Foam::pairPatchAgglomeration::continueAgglomerating
     const label nCoarseFaces
 )
 {
+    label localnCoarseFaces = nCoarseFaces;
     // Check the need for further agglomeration on all processors
-    bool contAgg = nCoarseFaces >= nFacesInCoarsestLevel_;
+//    reduce(localnCoarseFaces, sumOp<label>());
+    bool contAgg = localnCoarseFaces >= nFacesInCoarsestLevel_;
     reduce(contAgg, andOp<bool>());
     return contAgg;
 }

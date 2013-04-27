@@ -159,7 +159,7 @@ class sampledSurfaces
         );
 
         //- Sample and write all sampled fields
-        template<class Type> void sampleAndWrite();
+        template<class Type> void sampleAndWrite(const IOobjectList& objects);
 
         //- Disallow default bitwise copy construct and assignment
         sampledSurfaces(const sampledSurfaces&);

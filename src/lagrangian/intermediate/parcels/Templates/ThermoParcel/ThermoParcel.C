@@ -260,7 +260,7 @@ void Foam::ThermoParcel<ParcelType>::calc
             const scalar T4 = pow4(this->T_);
             td.cloud().radAreaP()[cellI] += dt*np0*ap;
             td.cloud().radT4()[cellI] += dt*np0*T4;
-            td.cloud().radAreaP()[cellI] += dt*np0*ap*T4;
+            td.cloud().radAreaPT4()[cellI] += dt*np0*ap*T4;
         }
     }
 }

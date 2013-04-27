@@ -166,52 +166,54 @@ void Foam::sampledSurfaces::sampleAndWrite
 
 
 template<class GeoField>
-void Foam::sampledSurfaces::sampleAndWrite()
+void Foam::sampledSurfaces::sampleAndWrite(const IOobjectList& objects)
 {
-    DynamicList<wordRe> fields;
-    bool found = false;
-    forAll (fieldSelection_, fieldI)
+    wordList names;
+    if (loadFromFiles_)
     {
-        const wordRe field = fieldSelection_[fieldI];
-        if (mesh_.thisDb().foundObject<GeoField>(field))
-        {
-            found = true;
-            fields.append(field);
-        }
+        IOobjectList fieldObjects(objects.lookupClass(GeoField::typeName));
+        names = fieldObjects.names();
     }
-    if (fields.size() && found)
+    else
     {
-        forAll (fields, fieldI)
+        names = mesh_.thisDb().names<GeoField>();
+    }
+
+    labelList nameIDs(findStrings(fieldSelection_, names));
+
+    wordHashSet fieldNames(wordList(names, nameIDs));
+
+    forAllConstIter(wordHashSet, fieldNames, iter)
+    {
+        const word& fieldName = iter.key();
+
+        if ((Pstream::master()) && verbose_)
         {
-            const wordRe field = fields[fieldI];
-            if ((Pstream::master()) && verbose_)
-            {
-                Pout<< "sampleAndWrite: " << field << endl;
-            }
+            Pout<< "sampleAndWrite: " << fieldName << endl;
+        }
 
-            if (loadFromFiles_)
-            {
-                const GeoField geoField
+        if (loadFromFiles_)
+        {
+            const GeoField fld
+            (
+                IOobject
                 (
-                    IOobject
-                    (
-                        field,
-                        mesh_.time().timeName(),
-                        mesh_,
-                        IOobject::MUST_READ
-                    ),
-                    mesh_
-                );
+                    fieldName,
+                    mesh_.time().timeName(),
+                    mesh_,
+                    IOobject::MUST_READ
+                ),
+                mesh_
+            );
 
-                sampleAndWrite(geoField);
-            }
-            else
-            {
-                sampleAndWrite
-                (
-                    mesh_.thisDb().lookupObject<GeoField>(field)
-                );
-            }
+            sampleAndWrite(fld);
+        }
+        else
+        {
+            sampleAndWrite
+            (
+                mesh_.thisDb().lookupObject<GeoField>(fieldName)
+            );
         }
     }
 }
