@@ -5,7 +5,10 @@ EXE_INC = \
     -I$(LIB_SRC)/transportModels/interfaceProperties/lnInclude \
     -I$(LIB_SRC)/turbulenceModels/incompressible/turbulenceModel \
     -IphaseChangeTwoPhaseMixtures/phaseChangeTwoPhaseMixture \
-    -I$(LIB_SRC)/finiteVolume/lnInclude
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I$(LIB_SRC)/meshTools/lnInclude \
+    -I$(LIB_SRC)/fvOptions/lnInclude\
+    -I$(LIB_SRC)/sampling/lnInclude
 
 EXE_LIBS = \
     -ltwoPhaseMixture \
@@ -15,4 +18,7 @@ EXE_LIBS = \
     -lincompressibleTurbulenceModel \
     -lincompressibleRASModels \
     -lincompressibleLESModels \
-    -lfiniteVolume
+    -lfiniteVolume \
+    -lmeshTools \
+    -lfvOptions \
+    -lsampling
