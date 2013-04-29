@@ -12,20 +12,6 @@
         mesh
     );
 
-    Info<< "Reading field alpha1\n" << endl;
-    volScalarField alpha1
-    (
-        IOobject
-        (
-            "alpha1",
-            runTime.timeName(),
-            mesh,
-            IOobject::MUST_READ,
-            IOobject::AUTO_WRITE
-        ),
-        mesh
-    );
-
     Info<< "Reading field U\n" << endl;
     volVectorField U
     (
@@ -42,13 +28,18 @@
 
     #include "createPhi.H"
 
+
     Info<< "Creating phaseChangeTwoPhaseMixture\n" << endl;
     autoPtr<phaseChangeTwoPhaseMixture> twoPhaseProperties =
         phaseChangeTwoPhaseMixture::New(U, phi);
 
+    volScalarField& alpha1(twoPhaseProperties->alpha1());
+    volScalarField& alpha2(twoPhaseProperties->alpha2());
+
     const dimensionedScalar& rho1 = twoPhaseProperties->rho1();
     const dimensionedScalar& rho2 = twoPhaseProperties->rho2();
     const dimensionedScalar& pSat = twoPhaseProperties->pSat();
+
 
     // Need to store rho for ddt(rho, U)
     volScalarField rho
@@ -60,10 +51,11 @@
             mesh,
             IOobject::READ_IF_PRESENT
         ),
-        alpha1*rho1 + (scalar(1) - alpha1)*rho2,
+        alpha1*rho1 + alpha2*rho2,
         alpha1.boundaryField().types()
     );
     rho.oldTime();
+
 
     // Construct interface from alpha1 distribution
     interfaceProperties interface(alpha1, U, twoPhaseProperties());
@@ -113,3 +105,5 @@
         );
         p_rgh = p - rho*gh;
     }
+
+    fv::IOoptionList fvOptions(mesh);

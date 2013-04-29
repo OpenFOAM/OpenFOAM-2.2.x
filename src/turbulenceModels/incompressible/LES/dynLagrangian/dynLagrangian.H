@@ -154,8 +154,7 @@ public:
         tmp<volScalarField> k(const tmp<volTensorField>& gradU) const
         {
             return
-                pow(2.0, 4.0/3.0)
-              * pow(flm_/fmm_, 2.0/3.0)
+                pow(2.0*flm_/fmm_, 2.0/3.0)
               * pow(ce_, -2.0/3.0)
               * sqr(delta())*magSqr(dev(symm(gradU)));
         }

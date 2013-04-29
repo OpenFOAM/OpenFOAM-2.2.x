@@ -22,30 +22,22 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Application
-    interPhaseChangeFoam
+    rhoPimpleFoam
 
 Description
-    Solver for 2 incompressible, isothermal immiscible fluids with phase-change
-    (e.g. cavitation).  Uses a VOF (volume of fluid) phase-fraction based
-    interface capturing approach.
+    Transient solver for laminar or turbulent flow of compressible fluids
+    for HVAC and similar applications.
 
-    The momentum and other fluid properties are of the "mixture" and a
-    single momentum equation is solved.
-
-    The set of phase-change models provided are designed to simulate cavitation
-    but other mechanisms of phase-change are supported within this solver
-    framework.
-
-    Turbulence modelling is generic, i.e. laminar, RAS or LES may be selected.
+    Uses the flexible PIMPLE (PISO-SIMPLE) solution for time-resolved and
+    pseudo-transient simulations.
 
 \*---------------------------------------------------------------------------*/
 
 #include "fvCFD.H"
-#include "MULES.H"
-#include "subCycle.H"
-#include "interfaceProperties.H"
-#include "phaseChangeTwoPhaseMixture.H"
+#include "dynamicFvMesh.H"
+#include "psiThermo.H"
 #include "turbulenceModel.H"
+#include "bound.H"
 #include "pimpleControl.H"
 #include "fvIOoptionList.H"
 
@@ -55,17 +47,21 @@ int main(int argc, char *argv[])
 {
     #include "setRootCase.H"
     #include "createTime.H"
-    #include "createMesh.H"
-    #include "readGravitationalAcceleration.H"
+    #include "createDynamicFvMesh.H"
     #include "initContinuityErrs.H"
-    #include "createFields.H"
-    #include "readTimeControls.H"
 
     pimpleControl pimple(mesh);
 
-    #include "../interFoam/correctPhi.H"
+    #include "readControls.H"
+    #include "createFields.H"
+    #include "createFvOptions.H"
+    #include "createPcorrTypes.H"
     #include "CourantNo.H"
     #include "setInitialDeltaT.H"
+
+    // Create old-time absolute flux for ddtPhiCorr
+    surfaceScalarField phiAbs("phiAbs", phi);
+
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -73,23 +69,54 @@ int main(int argc, char *argv[])
 
     while (runTime.run())
     {
-        #include "readTimeControls.H"
-        #include "CourantNo.H"
+        #include "readControls.H"
+        #include "compressibleCourantNo.H"
+
+        // Make the fluxes absolute before mesh-motion
+        fvc::makeAbsolute(phi, rho, U);
+
+        // Update absolute flux for ddtPhiCorr
+        phiAbs = phi;
+
         #include "setDeltaT.H"
 
         runTime++;
 
         Info<< "Time = " << runTime.timeName() << nl << endl;
 
-        twoPhaseProperties->correct();
+        {
+            // Store divrhoU from the previous time-step/mesh for the correctPhi
+            volScalarField divrhoU(fvc::div(phi));
 
-        #include "alphaEqnSubCycle.H"
-        interface.correct();
+            // Do any mesh changes
+            mesh.update();
+
+            if (mesh.changing() && correctPhi)
+            {
+                #include "correctPhi.H"
+            }
+        }
+
+        // Make the fluxes relative to the mesh-motion
+        fvc::makeRelative(phi, rho, U);
+
+        if (mesh.changing() && checkMeshCourantNo)
+        {
+            #include "meshCourantNo.H"
+        }
+
+        if (pimple.nCorrPIMPLE() <= 1)
+        {
+            #include "rhoEqn.H"
+            Info<< "rhoEqn max/min : " << max(rho).value()
+                << " " << min(rho).value() << endl;
+        }
 
         // --- Pressure-velocity PIMPLE corrector loop
         while (pimple.loop())
         {
             #include "UEqn.H"
+            #include "EEqn.H"
 
             // --- Pressure corrector loop
             while (pimple.correct())

@@ -16,7 +16,7 @@
             )
           + fvc::flux
             (
-                -fvc::flux(-phir, scalar(1) - alpha1, alpharScheme),
+                -fvc::flux(-phir, alpha2, alpharScheme),
                 alpha1,
                 alpharScheme
             )
@@ -76,6 +76,7 @@
             0
         );
 
+        alpha2 = 1.0 - alpha1;
         rhoPhi +=
             (runTime.deltaT()/totalDeltaT)
            *(phiAlpha*(rho1 - rho2) + phi*rho2);
