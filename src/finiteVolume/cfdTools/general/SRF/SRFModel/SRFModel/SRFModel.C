@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -81,7 +81,7 @@ bool Foam::SRF::SRFModel::read()
     if (regIOobject::read())
     {
         // Re-read axis
-        SRFModelCoeffs_.lookup("axis") >> axis_;
+        lookup("axis") >> axis_;
         axis_ /= mag(axis_);
 
         // Re-read sub-model coeffs
