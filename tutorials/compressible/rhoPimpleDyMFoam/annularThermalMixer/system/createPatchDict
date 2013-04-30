@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.2.0                                 |
+|  \\    /   O peration     | Version:  2.2.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -10,32 +10,19 @@ FoamFile
     version     2.0;
     format      ascii;
     class       dictionary;
-    location    "system";
-    object      fvSolution;
+    object      createPatchDict;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-solvers
-{
-    "(D|Dcorr)"
-    {
-        solver          GAMG;
-        tolerance       1e-06;
-        relTol          0.99;
-        smoother        GaussSeidel;
-        cacheAgglomeration  true;
-        nCellsInCoarsestLevel 6;
-        agglomerator    faceAreaPair;
-        mergeLevels     1;
-    }
-}
+// Do a synchronisation of coupled points after creation of any patches.
+// Note: this does not work with points that are on multiple coupled patches
+//       with transformations (i.e. cyclics).
+pointSync false;
 
-stressAnalysis
-{
-    nCorrectors     1;
-    D               1e-10;
-    accelerationFactor 2;   // lower for other Poisson ratio (e.g. 0.1 for 0.3)
-}
-
+// Patches to create. An empty patch list just removes patches with zero
+// faces from $FOAM_CASE/constant/polyMesh/boundary.
+patches
+(
+);
 
 // ************************************************************************* //

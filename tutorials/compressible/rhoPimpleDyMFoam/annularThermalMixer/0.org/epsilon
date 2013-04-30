@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.2.0                                 |
+|  \\    /   O peration     | Version:  2.2.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -9,33 +9,37 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       dictionary;
-    location    "system";
-    object      fvSolution;
+    class       volScalarField;
+    location    "0";
+    object      epsilon;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-solvers
+#include "${FOAM_CASE}/constant/caseSettings"
+
+dimensions      [0 2 -3 0 0 0 0];
+
+internalField   uniform $:innerInlet.epsilon;
+
+boundaryField
 {
-    "(D|Dcorr)"
+    innerInlet
     {
-        solver          GAMG;
-        tolerance       1e-06;
-        relTol          0.99;
-        smoother        GaussSeidel;
-        cacheAgglomeration  true;
-        nCellsInCoarsestLevel 6;
-        agglomerator    faceAreaPair;
-        mergeLevels     1;
+        type            fixedValue;
+        value           uniform $:innerInlet.epsilon;
     }
-}
 
-stressAnalysis
-{
-    nCorrectors     1;
-    D               1e-10;
-    accelerationFactor 2;   // lower for other Poisson ratio (e.g. 0.1 for 0.3)
-}
+    outerInlet
+    {
+        type            fixedValue;
+        value           uniform $:outerInlet.epsilon;
+    }
 
+    outlet      { $:outlet.epsilon; }
+    staticWalls { $:wall.epsilon; }
+    movingWalls { $staticWalls; }
+
+    #include "${WM_PROJECT_DIR}/etc/caseDicts/setConstraintTypes"
+}
 
 // ************************************************************************* //

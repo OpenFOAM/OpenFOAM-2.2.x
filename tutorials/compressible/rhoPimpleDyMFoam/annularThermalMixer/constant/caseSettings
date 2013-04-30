@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.2.0                                 |
+|  \\    /   O peration     | Version:  2.2.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -10,32 +10,32 @@ FoamFile
     version     2.0;
     format      ascii;
     class       dictionary;
-    location    "system";
-    object      fvSolution;
+    location    "";
+    object      caseSummary;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-solvers
+innerInlet
 {
-    "(D|Dcorr)"
-    {
-        solver          GAMG;
-        tolerance       1e-06;
-        relTol          0.99;
-        smoother        GaussSeidel;
-        cacheAgglomeration  true;
-        nCellsInCoarsestLevel 6;
-        agglomerator    faceAreaPair;
-        mergeLevels     1;
-    }
+    U               (0 0 0.2);
+    epsilon         5.70e-5;
+    k               2.40e-5;
+    T               233;
 }
 
-stressAnalysis
+outerInlet
 {
-    nCorrectors     1;
-    D               1e-10;
-    accelerationFactor 2;   // lower for other Poisson ratio (e.g. 0.1 for 0.3)
+    U               (0 0 0.1);
+    epsilon         3.98e-5;
+    k               6.00e-6;
+    T               293;
 }
 
+meshMotionProperties
+{
+    radialVelocity (0 0 1440); // deg/s
+}
+
+#include "${FOAM_CASE}/constant/boundaryConditions"
 
 // ************************************************************************* //

@@ -363,7 +363,7 @@ Type Foam::TableBase<Type>::value(const scalar x) const
     }
 
     // Use interpolator
-    interpolator().valueWeights(x, currentIndices_, currentWeights_);
+    interpolator().valueWeights(xDash, currentIndices_, currentWeights_);
 
     Type t = currentWeights_[0]*table_[currentIndices_[0]].second();
     for (label i = 1; i < currentIndices_.size(); i++)
