@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -133,13 +133,13 @@ void Foam::targetVolumeToCell::combine(topoSet& set, const bool add) const
 
     scalar maxComp = -GREAT;
     label maxCells = 0;
-    scalar maxVol = 0;
+    //scalar maxVol = 0;
     scalar minComp = GREAT;
     {
         const boundBox& bb = mesh_.bounds();
         pointField points(bb.points());
 
-        label minPointI = -1;
+        //label minPointI = -1;
         label maxPointI = -1;
         forAll(points, pointI)
         {
@@ -152,13 +152,13 @@ void Foam::targetVolumeToCell::combine(topoSet& set, const bool add) const
             else if (c < minComp)
             {
                 minComp = c;
-                minPointI = pointI;
+                //minPointI = pointI;
             }
         }
 
         PackedBoolList maxSelected(mesh_.nCells());
         maxCells = selectCells(maxComp, maskSet, maxSelected);
-        maxVol = volumeOfSet(maxSelected);
+        //maxVol = volumeOfSet(maxSelected);
 
         // Check that maxPoint indeed selects all cells
         if (maxCells != nTotCells)
@@ -179,7 +179,7 @@ void Foam::targetVolumeToCell::combine(topoSet& set, const bool add) const
     PackedBoolList selected(mesh_.nCells());
     label nSelected = -1;
     scalar selectedVol = 0.0;
-    scalar selectedComp = 0.0;
+    //scalar selectedComp = 0.0;
 
 
     scalar low = minComp;
@@ -228,7 +228,7 @@ void Foam::targetVolumeToCell::combine(topoSet& set, const bool add) const
 
     if (selectedVol < vol_)
     {
-        selectedComp = high;
+        //selectedComp = high;
     }
     else
     {
@@ -237,7 +237,7 @@ void Foam::targetVolumeToCell::combine(topoSet& set, const bool add) const
 
         if (selectedVol < vol_)
         {
-            selectedComp = low;
+            //selectedComp = low;
         }
         else
         {
