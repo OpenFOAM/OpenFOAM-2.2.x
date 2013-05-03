@@ -271,11 +271,6 @@ energyRegionCoupledFvPatchScalarField
             << " in file " << dimensionedInternalField().objectPath()
             << exit(FatalError);
     }
-
-    if (dict.found("value"))
-    {
-        fvPatchScalarField::operator=(scalarField("value", dict, p.size()));
-    }
 }
 
 
