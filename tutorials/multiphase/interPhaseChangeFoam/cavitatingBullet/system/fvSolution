@@ -19,7 +19,7 @@ solvers
     alpha1
     {
         maxUnboundedness 1e-5;
-        CoCoeff          2;
+        CoCoeff          0;
         maxIter          5;
         nLimiterIter     2;
 
