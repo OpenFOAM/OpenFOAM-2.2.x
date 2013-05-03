@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -138,6 +138,8 @@ bool Foam::CollidingParcel<ParcelType>::move
                 }
 
                 p.age() += dt;
+
+                td.cloud().functions().postMove(p, cellI, dt, td.keepParticle);
             }
 
             break;
