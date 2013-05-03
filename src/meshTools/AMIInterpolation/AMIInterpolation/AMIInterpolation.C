@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -26,6 +26,7 @@ License
 #include "AMIInterpolation.H"
 #include "meshTools.H"
 #include "mapDistribute.H"
+#include "unitConversion.H"
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
@@ -78,6 +79,7 @@ void Foam::AMIInterpolation<SourcePatch, TargetPatch>::writeIntersectionOBJ
     os<< " " << f1pts.size() + 1 << endl;
 
     count++;
+
 }
 
 
@@ -239,6 +241,8 @@ void Foam::AMIInterpolation<SourcePatch, TargetPatch>::appendNbrFaces
 {
     const labelList& nbrFaces = patch.faceFaces()[faceI];
 
+    const pointField& tgtPoints = patch.points();
+
     // filter out faces already visited from src face neighbours
     forAll(nbrFaces, i)
     {
@@ -267,7 +271,17 @@ void Foam::AMIInterpolation<SourcePatch, TargetPatch>::appendNbrFaces
 
         if (valid)
         {
-            faceIDs.append(nbrFaceI);
+            const face& myn = patch[faceI];
+            const face& nbrn = patch[nbrFaceI];
+            const vector& nbrNormal = nbrn.normal(tgtPoints);
+            const vector& mynNormal = myn.normal(tgtPoints);
+
+            scalar cosI = nbrNormal & mynNormal;
+
+            if (cosI > Foam::cos(degToRad(89.0)))
+            {
+                faceIDs.append(nbrFaceI);
+            }
         }
     }
 }
@@ -298,19 +312,23 @@ bool Foam::AMIInterpolation<SourcePatch, TargetPatch>::processSourceFace
 
     // append initial target face and neighbours
     nbrFaces.append(tgtStartFaceI);
+
     appendNbrFaces(tgtStartFaceI, tgtPatch, visitedFaces, nbrFaces);
 
     bool faceProcessed = false;
+
+    scalar sumArea = 0.0;
 
     do
     {
         // process new target face
         label tgtFaceI = nbrFaces.remove();
+
         visitedFaces.append(tgtFaceI);
         scalar area = interArea(srcFaceI, tgtFaceI, srcPatch, tgtPatch);
 
         // store when intersection area > 0
-        if (area > 0)
+        if (area/srcMagSf_[srcFaceI] > faceAreaIntersect::tolerance())
         {
             srcAddr[srcFaceI].append(tgtFaceI);
             srcWght[srcFaceI].append(area);
@@ -321,7 +339,10 @@ bool Foam::AMIInterpolation<SourcePatch, TargetPatch>::processSourceFace
             appendNbrFaces(tgtFaceI, tgtPatch, visitedFaces, nbrFaces);
 
             faceProcessed = true;
+
+            sumArea += area;
         }
+
 
     } while (nbrFaces.size() > 0);
 
@@ -398,7 +419,6 @@ void Foam::AMIInterpolation<SourcePatch, TargetPatch>::setNextFaces
                 {
                     srcFaceI = faceI;
                     tgtFaceI = seedFaces[faceI];
-
                     return;
                 }
             }
@@ -469,7 +489,8 @@ Foam::scalar Foam::AMIInterpolation<SourcePatch, TargetPatch>::interArea
 
     // quick reject if either face has zero area
     // Note: do not used stored face areas for target patch
-    if ((srcMagSf_[srcFaceI] < ROOTVSMALL) || (tgt.mag(tgtPoints) < ROOTVSMALL))
+    const scalar tgtMag = tgt.mag(tgtPoints);
+    if ((srcMagSf_[srcFaceI] < ROOTVSMALL) || ( tgtMag < ROOTVSMALL))
     {
         return 0.0;
     }
@@ -477,15 +498,17 @@ Foam::scalar Foam::AMIInterpolation<SourcePatch, TargetPatch>::interArea
     // create intersection object
     faceAreaIntersect inter(srcPoints, tgtPoints, reverseTarget_);
 
+
     // crude resultant norm
     vector n(-src.normal(srcPoints));
+    n /= mag(n);
     if (reverseTarget_)
     {
-        n -= tgt.normal(tgtPoints);
+        n -= tgt.normal(tgtPoints)/tgtMag;
     }
     else
     {
-        n += tgt.normal(tgtPoints);
+        n += tgt.normal(tgtPoints)/tgtMag;
     }
     n *= 0.5;
 
@@ -513,12 +536,6 @@ Foam::scalar Foam::AMIInterpolation<SourcePatch, TargetPatch>::interArea
             << endl;
     }
 
-
-    if ((debug > 1) && (area > 0))
-    {
-        writeIntersectionOBJ(area, src, tgt, srcPoints, tgtPoints);
-    }
-
     return area;
 }
 
@@ -539,6 +556,7 @@ restartUncoveredSourceFace
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     labelHashSet lowWeightFaces(100);
+
     forAll(srcWght, srcFaceI)
     {
         scalar s = sum(srcWght[srcFaceI]);
@@ -584,7 +602,6 @@ restartUncoveredSourceFace
                 srcWeights.transfer(okSrcWeights);
             }
         }
-
 
 
         // Restart search from best hit

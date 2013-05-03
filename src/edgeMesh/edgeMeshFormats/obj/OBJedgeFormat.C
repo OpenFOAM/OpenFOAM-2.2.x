@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -141,8 +141,6 @@ bool Foam::fileFormats::OBJedgeFormat::read(const fileName& filename)
         }
         else if (cmd == "l")
         {
-            edge edgeRead;
-
             // Assume 'l' is followed by space.
             string::size_type endNum = 1;
 
@@ -162,6 +160,33 @@ bool Foam::fileFormats::OBJedgeFormat::read(const fileName& filename)
                 dynUsedPoints[edgeRead[1]] = edgeRead[1];
 
                 dynEdges.append(edgeRead);
+            }
+        }
+        else if (cmd == "f")
+        {
+            // Support for faces with 2 vertices
+
+            // Assume 'f' is followed by space.
+            string::size_type endNum = 1;
+
+            readVertices
+            (
+                line,
+                endNum,
+                dynVertices
+            );
+
+            if (dynVertices.size() == 2)
+            {
+                for (label i = 1; i < dynVertices.size(); i++)
+                {
+                    edge edgeRead(dynVertices[i-1], dynVertices[i]);
+
+                    dynUsedPoints[edgeRead[0]] = edgeRead[0];
+                    dynUsedPoints[edgeRead[1]] = edgeRead[1];
+
+                    dynEdges.append(edgeRead);
+                }
             }
         }
     }

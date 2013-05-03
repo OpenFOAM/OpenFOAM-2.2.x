@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -132,7 +132,9 @@ inline const T& Foam::PtrList<T>::operator[](const label i) const
     if (!ptrs_[i])
     {
         FatalErrorIn("PtrList::operator[] const")
-            << "hanging pointer, cannot dereference"
+            << "hanging pointer at index " << i
+            << " (size " << size()
+            << "), cannot dereference"
             << abort(FatalError);
     }
 
@@ -146,7 +148,9 @@ inline T& Foam::PtrList<T>::operator[](const label i)
     if (!ptrs_[i])
     {
         FatalErrorIn("PtrList::operator[]")
-            << "hanging pointer, cannot dereference"
+            << "hanging pointer at index " << i
+            << " (size " << size()
+            << "), cannot dereference"
             << abort(FatalError);
     }
 
