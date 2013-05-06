@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -72,7 +72,9 @@ void Foam::calcTypes::addSubtract::writeAddSubtractField
                     mesh,
                     IOobject::NO_READ
                 ),
-                calcMode_ == ADD ? baseField + addField : baseField - addField
+                calcMode_ == ADD
+              ? (baseField + addField)()
+              : (baseField - addField)()
             );
             newField.write();
         }

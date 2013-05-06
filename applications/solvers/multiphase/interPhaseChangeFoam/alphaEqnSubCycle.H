@@ -12,9 +12,7 @@ surfaceScalarField rhoPhi
 
 {
     const dictionary& pimpleDict = pimple.dict();
-
     label nAlphaCorr(readLabel(pimpleDict.lookup("nAlphaCorr")));
-
     label nAlphaSubCycles(readLabel(pimpleDict.lookup("nAlphaSubCycles")));
 
     surfaceScalarField phic(mag(phi/mesh.magSf()));
@@ -22,10 +20,11 @@ surfaceScalarField rhoPhi
 
     volScalarField divU(fvc::div(phi));
 
-    dimensionedScalar totalDeltaT = runTime.deltaT();
-
     if (nAlphaSubCycles > 1)
     {
+        dimensionedScalar totalDeltaT = runTime.deltaT();
+        surfaceScalarField rhoPhiSum("rhoPhiSum", rhoPhi);
+
         for
         (
             subCycle<volScalarField> alphaSubCycle(alpha1, nAlphaSubCycles);
@@ -33,7 +32,10 @@ surfaceScalarField rhoPhi
         )
         {
             #include "alphaEqn.H"
+            rhoPhiSum += (runTime.deltaT()/totalDeltaT)*rhoPhi;
         }
+
+        rhoPhi = rhoPhiSum;
     }
     else
     {
