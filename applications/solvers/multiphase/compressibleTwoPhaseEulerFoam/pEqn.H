@@ -208,13 +208,8 @@
     K1 = 0.5*magSqr(U1);
     K2 = 0.5*magSqr(U2);
 
-    if (thermo1.dpdt())
+    if (thermo1.dpdt() || thermo2.dpdt())
     {
-        dalpha1pdt = fvc::ddt(alpha1, p);
-    }
-
-    if (thermo2.dpdt())
-    {
-        dalpha2pdt = fvc::ddt(alpha2, p);
+        dpdt = fvc::ddt(p);
     }
 }
