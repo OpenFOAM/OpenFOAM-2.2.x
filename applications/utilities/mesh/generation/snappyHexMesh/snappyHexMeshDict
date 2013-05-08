@@ -378,8 +378,10 @@ addLayersControls
     nLayerIter 50;
 
     // Max number of iterations after which relaxed meshQuality controls
-    // get used. Up to nRelaxIter it uses the settings in meshQualityControls,
-    // after nRelaxIter it uses the values in meshQualityControls::relaxed.
+    // get used. Up to nRelaxedIter it uses the settings in
+    // meshQualityControls,
+    // after nRelaxedIter it uses the values in
+    // meshQualityControls::relaxed.
     nRelaxedIter 20;
 
     // Additional reporting: if there are just a few faces where there
