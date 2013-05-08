@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -54,7 +54,7 @@ Foam::label Foam::mergePolyMesh::patchIndex(const polyPatch& p)
     {
         if (patchNames_[patchI] == pName)
         {
-            if (patchTypes_[patchI] == pType)
+            if (word(patchDicts_[patchI]["type"]) == pType)
             {
                 // Found name and types match
                 return patchI;
@@ -68,7 +68,11 @@ Foam::label Foam::mergePolyMesh::patchIndex(const polyPatch& p)
     }
 
     // Patch not found.  Append to the list
-    patchTypes_.append(pType);
+    {
+        OStringStream os;
+        p.write(os);
+        patchDicts_.append(dictionary(IStringStream(os.str())()));
+    }
 
     if (nameFound)
     {
@@ -121,20 +125,22 @@ Foam::mergePolyMesh::mergePolyMesh(const IOobject& io)
 :
     polyMesh(io),
     meshMod_(*this),
-    patchTypes_(2*boundaryMesh().size()),
     patchNames_(2*boundaryMesh().size()),
+    patchDicts_(2*boundaryMesh().size()),
     pointZoneNames_(),
     faceZoneNames_(),
     cellZoneNames_()
 {
     // Insert the original patches into the list
-    wordList curPatchTypes = boundaryMesh().types();
     wordList curPatchNames = boundaryMesh().names();
 
-    forAll(curPatchTypes, patchI)
+    forAll(boundaryMesh(), patchI)
     {
-        patchTypes_.append(curPatchTypes[patchI]);
-        patchNames_.append(curPatchNames[patchI]);
+        patchNames_.append(boundaryMesh()[patchI].name());
+
+        OStringStream os;
+        boundaryMesh()[patchI].write(os);
+        patchDicts_.append(dictionary(IStringStream(os.str())()));
     }
 
     // Insert point, face and cell zones into the list
@@ -379,7 +385,7 @@ void Foam::mergePolyMesh::addMesh(const polyMesh& m)
 void Foam::mergePolyMesh::merge()
 {
     Info<< "patch names: " << patchNames_ << nl
-        << "patch types: " << patchTypes_ << nl
+        << "patch dicts: " << patchDicts_ << nl
         << "point zone names: " << pointZoneNames_ << nl
         << "face zone names: " << faceZoneNames_ << nl
         << "cell zone names: " << cellZoneNames_ << endl;
@@ -409,14 +415,16 @@ void Foam::mergePolyMesh::merge()
         for (; patchI < patchNames_.size(); patchI++)
         {
             // Add a patch
+            dictionary dict(patchDicts_[patchI]);
+            dict.set("nFaces", 0);
+            dict.set("startFace", endOfLastPatch);
+
             newPatches[patchI] =
             (
                 polyPatch::New
                 (
-                    patchTypes_[patchI],
                     patchNames_[patchI],
-                    0,
-                    endOfLastPatch,
+                    dict,
                     patchI,
                     oldPatches
                 ).ptr()
