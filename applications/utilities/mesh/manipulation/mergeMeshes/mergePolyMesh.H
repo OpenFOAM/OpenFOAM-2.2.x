@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -58,11 +58,11 @@ class mergePolyMesh
         //- Topological change to accumulated all mesh changes
         polyTopoChange meshMod_;
 
-        //- Patch types
-        DynamicList<word> patchTypes_;
-
         //- Patch names
         DynamicList<word> patchNames_;
+
+        //- Patch dictionaries
+        DynamicList<dictionary> patchDicts_;
 
         //- Point zone names
         DynamicList<word> pointZoneNames_;
