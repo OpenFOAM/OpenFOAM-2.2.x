@@ -498,28 +498,60 @@ bool Foam::meshToMeshNew::intersect
     const label tgtCellI
 ) const
 {
-    scalar threshold = tolerance_*src.cellVolumes()[srcCellI];
+    bool result = false;
 
-    tetOverlapVolume overlapEngine;
+    switch (method_)
+    {
+        case imMap:
+        {
+            result = tgt.pointInCell(src.cellCentres()[srcCellI], tgtCellI);
+            break;
+        }
+        case imCellVolumeWeight:
+        {
+            scalar threshold = tolerance_*src.cellVolumes()[srcCellI];
 
-    treeBoundBox bbTgtCell
-    (
-        pointField
-        (
-            tgt.points(),
-            tgt.cellPoints()[tgtCellI]
-        )
-    );
+            tetOverlapVolume overlapEngine;
 
-    return overlapEngine.cellCellOverlapMinDecomp
-    (
-        src,
-        srcCellI,
-        tgt,
-        tgtCellI,
-        bbTgtCell,
-        threshold
-    );
+            treeBoundBox bbTgtCell
+            (
+                pointField
+                (
+                    tgt.points(),
+                    tgt.cellPoints()[tgtCellI]
+                )
+            );
+
+            result = overlapEngine.cellCellOverlapMinDecomp
+            (
+                src,
+                srcCellI,
+                tgt,
+                tgtCellI,
+                bbTgtCell,
+                threshold
+            );
+
+            break;
+        }
+        default:
+        {
+            FatalErrorIn
+            (
+                "bool Foam::meshToMeshNew::intersect"
+                "("
+                    "const polyMesh&, "
+                    "const polyMesh&, "
+                    "const label, "
+                    "const label"
+                ") const"
+            )
+                << "Unknown interpolation method"
+                << abort(FatalError);
+        }
+    }
+
+    return result;
 }
 
 
