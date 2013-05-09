@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -126,12 +126,6 @@ class forceCoeffs
 
             //- Area
             scalar Aref_;
-
-
-        // Bin information
-
-            //- Writer for bin data
-            autoPtr<writer<scalar> > binWriterPtr_;
 
 
     // Private Member Functions

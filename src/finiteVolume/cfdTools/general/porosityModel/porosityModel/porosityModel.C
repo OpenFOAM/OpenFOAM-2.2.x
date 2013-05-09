@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -77,6 +77,7 @@ Foam::porosityModel::porosityModel
     const word& cellZoneName
 )
 :
+    MeshObject<fvMesh, Foam::UpdateableMeshObject, porosityModel>(mesh),
     name_(name),
     mesh_(mesh),
     dict_(dict),
@@ -123,6 +124,24 @@ Foam::porosityModel::~porosityModel()
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
+
+Foam::tmp<Foam::vectorField> Foam::porosityModel::porosityModel::force
+(
+    const volVectorField& U,
+    const volScalarField& rho,
+    const volScalarField& mu
+) const
+{
+    tmp<vectorField> tforce(new vectorField(U.size(), vector::zero));
+
+    if (!cellZoneIds_.empty())
+    {
+        this->calcForce(U, rho, mu, tforce());
+    }
+
+    return tforce;
+}
+
 
 void Foam::porosityModel::porosityModel::addResistance
 (
@@ -175,6 +194,25 @@ void Foam::porosityModel::porosityModel::addResistance
         // for the pressure equation.
         AU.correctBoundaryConditions();
     }
+}
+
+
+bool Foam::porosityModel::porosityModel::movePoints()
+{
+    // no updates necessary; all member data independent of mesh
+    return true;
+}
+
+
+void Foam::porosityModel::porosityModel::updateMesh(const mapPolyMesh& mpm)
+{
+    // no updates necessary; all member data independent of mesh
+}
+
+
+bool Foam::porosityModel::writeData(Ostream& os) const
+{
+    return true;
 }
 
 
