@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -108,9 +108,8 @@ public:
         //  and a coefficient to multiply  alphal for the vaporisation rate
         virtual Pair<tmp<volScalarField> > mDotAlphal() const;
 
-        //- Return the mass condensation and vaporisation rates as an
-        //  explicit term for the condensation rate and a coefficient to
-        //  multiply (p - pSat) for the vaporisation rate
+        //- Return the mass condensation and vaporisation rates as coefficients
+        //  to multiply (p - pSat)
         virtual Pair<tmp<volScalarField> > mDotP() const;
 
         //- Correct the Kunz phaseChange model
