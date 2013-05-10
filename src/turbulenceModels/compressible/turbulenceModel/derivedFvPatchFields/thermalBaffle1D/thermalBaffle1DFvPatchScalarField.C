@@ -51,6 +51,7 @@ thermalBaffle1DFvPatchScalarField
     baffleActivated_(true),
     thickness_(p.size()),
     Qs_(p.size()),
+    solidDict_(),
     solidPtr_(NULL)
 {}
 
@@ -70,6 +71,7 @@ thermalBaffle1DFvPatchScalarField
     baffleActivated_(ptf.baffleActivated_),
     thickness_(ptf.thickness_),
     Qs_(ptf.Qs_),
+    solidDict_(ptf.solidDict_),
     solidPtr_(ptf.solidPtr_)
 {}
 
@@ -88,6 +90,7 @@ thermalBaffle1DFvPatchScalarField
     baffleActivated_(readBool(dict.lookup("baffleActivated"))),
     thickness_(scalarField("thickness", dict, p.size())),
     Qs_(scalarField("Qs", dict, p.size())),
+    solidDict_(dict),
     solidPtr_(new solidType(dict))
 {
     if (!isA<mappedPatchBase>(this->patch().patch()))
@@ -141,6 +144,7 @@ thermalBaffle1DFvPatchScalarField
     baffleActivated_(ptf.baffleActivated_),
     thickness_(ptf.thickness_),
     Qs_(ptf.Qs_),
+    solidDict_(ptf.solidDict_),
     solidPtr_(ptf.solidPtr_)
 {}
 
@@ -158,11 +162,27 @@ thermalBaffle1DFvPatchScalarField
     baffleActivated_(ptf.baffleActivated_),
     thickness_(ptf.thickness_),
     Qs_(ptf.Qs_),
+    solidDict_(ptf.solidDict_),
     solidPtr_(ptf.solidPtr_)
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
+
+template<class solidType>
+const solidType& thermalBaffle1DFvPatchScalarField<solidType>::solidPtr() const
+{
+    if (!solidPtr_.empty())
+    {
+        return solidPtr_();
+    }
+    else
+    {
+        solidPtr_.reset(new solidType(solidDict_));
+        return solidPtr_();
+    }
+}
+
 
 template<class solidType>
 void thermalBaffle1DFvPatchScalarField<solidType>::autoMap
@@ -171,6 +191,8 @@ void thermalBaffle1DFvPatchScalarField<solidType>::autoMap
 )
 {
     mixedFvPatchScalarField::autoMap(m);
+    thickness_.autoMap(m);
+    Qs_.autoMap(m);
 }
 
 template<class solidType>
@@ -181,6 +203,12 @@ void thermalBaffle1DFvPatchScalarField<solidType>::rmap
 )
 {
     mixedFvPatchScalarField::rmap(ptf, addr);
+
+    const thermalBaffle1DFvPatchScalarField& tiptf =
+        refCast<const thermalBaffle1DFvPatchScalarField>(ptf);
+
+    thickness_.rmap(tiptf.thickness_, addr);
+    Qs_.rmap(tiptf.Qs_, addr);
 }
 
 
@@ -348,7 +376,7 @@ write(Ostream& os) const
     os.writeKeyword("baffleActivated")
         << baffleActivated_ << token::END_STATEMENT << nl;
     Qs_.writeEntry("Qs", os);
-    solidPtr_->write(os);
+    solidPtr().write(os);
 }
 
 

@@ -70,8 +70,17 @@ class thermalBaffle1DFvPatchScalarField
         //- Superficial heat source [W/m2]
         scalarField Qs_;
 
-        // Solid thermo
-        autoPtr<solidType> solidPtr_;
+        //- Solid dictionary
+        dictionary  solidDict_;
+
+        //- Solid thermo
+        mutable autoPtr<solidType> solidPtr_;
+
+
+    // Private members
+
+        //- Return const solid thermo autoMap
+        const solidType& solidPtr() const;
 
 
 public:
