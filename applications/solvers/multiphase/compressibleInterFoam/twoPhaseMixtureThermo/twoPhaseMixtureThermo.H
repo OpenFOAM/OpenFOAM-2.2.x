@@ -27,9 +27,7 @@ Class
 Description
 
 SourceFiles
-    twoPhaseMixtureThermoI.H
     twoPhaseMixtureThermo.C
-    twoPhaseMixtureThermoIO.C
 
 \*---------------------------------------------------------------------------*/
 

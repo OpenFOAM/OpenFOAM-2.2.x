@@ -278,7 +278,7 @@ void Foam::AMIInterpolation<SourcePatch, TargetPatch>::appendNbrFaces
 
             scalar cosI = nbrNormal & mynNormal;
 
-            if (cosI > Foam::cos(degToRad(89.0)))
+            if (cosI < Foam::cos(degToRad(89.0)))
             {
                 faceIDs.append(nbrFaceI);
             }

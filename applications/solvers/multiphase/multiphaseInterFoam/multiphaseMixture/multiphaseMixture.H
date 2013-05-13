@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -47,7 +47,6 @@ SourceFiles
 #include "PtrDictionary.H"
 #include "volFields.H"
 #include "surfaceFields.H"
-#include "multivariateSurfaceInterpolationScheme.H"
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -155,9 +154,6 @@ private:
 
         //- Conversion factor for degrees into radians
         static const scalar convertToRad;
-
-        //- Phase-fraction field table for multivariate discretisation
-        multivariateSurfaceInterpolationScheme<scalar>::fieldTable alphaTable_;
 
 
     // Private member functions

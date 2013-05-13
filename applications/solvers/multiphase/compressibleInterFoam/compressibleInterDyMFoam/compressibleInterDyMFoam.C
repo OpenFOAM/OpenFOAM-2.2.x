@@ -71,6 +71,7 @@ int main(int argc, char *argv[])
     while (runTime.run())
     {
         #include "readControls.H"
+        #include "alphaCourantNo.H"
         #include "CourantNo.H"
 
         // Make the fluxes absolute
@@ -147,9 +148,9 @@ int main(int argc, char *argv[])
 
         runTime.write();
 
-        Info<< "ExecutionTime = "
-            << runTime.elapsedCpuTime()
-            << " s\n\n" << endl;
+        Info<< "ExecutionTime = " << runTime.elapsedCpuTime() << " s"
+            << "  ClockTime = " << runTime.elapsedClockTime() << " s"
+            << nl << endl;
     }
 
     Info<< "End\n" << endl;
