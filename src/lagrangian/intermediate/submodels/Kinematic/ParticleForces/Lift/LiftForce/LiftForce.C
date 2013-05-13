@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -141,7 +141,7 @@ Foam::forceSuSp Foam::LiftForce<CloudType>::calcCoupled
 
     scalar Cl = this->Cl(p, curlUc, Re, muc);
 
-    value.Su() = mass/p.rho()*p.d()/2.0*p.rhoc()*Cl*((p.Uc() - p.U())^curlUc);
+    value.Su() = mass/p.rho()*p.rhoc()*Cl*((p.Uc() - p.U())^curlUc);
 
     return value;
 }
