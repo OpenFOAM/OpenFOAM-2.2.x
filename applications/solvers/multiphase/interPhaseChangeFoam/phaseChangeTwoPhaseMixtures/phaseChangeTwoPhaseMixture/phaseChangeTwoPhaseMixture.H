@@ -139,9 +139,8 @@ public:
         //  and a coefficient to multiply  alphal for the vaporisation rate
         virtual Pair<tmp<volScalarField> > mDotAlphal() const = 0;
 
-        //- Return the mass condensation and vaporisation rates as an
-        //  explicit term for the condensation rate and a coefficient to
-        //  multiply (p - pSat) for the vaporisation rate
+        //- Return the mass condensation and vaporisation rates as coefficients
+        //  to multiply (p - pSat)
         virtual Pair<tmp<volScalarField> > mDotP() const = 0;
 
         //- Return the volumetric condensation and vaporisation rates as a
@@ -149,9 +148,8 @@ public:
         //  and a coefficient to multiply  alphal for the vaporisation rate
         Pair<tmp<volScalarField> > vDotAlphal() const;
 
-        //- Return the volumetric condensation and vaporisation rates as an
-        //  explicit term for the condensation rate and a coefficient to
-        //  multiply (p - pSat) for the vaporisation rate
+        //- Return the volumetric condensation and vaporisation rates as
+        //  coefficients to multiply (p - pSat)
         Pair<tmp<volScalarField> > vDotP() const;
 
         //- Correct the phaseChange model

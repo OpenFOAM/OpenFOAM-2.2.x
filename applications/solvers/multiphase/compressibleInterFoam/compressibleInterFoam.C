@@ -70,6 +70,7 @@ int main(int argc, char *argv[])
     {
         #include "readControls.H"
         #include "CourantNo.H"
+        #include "alphaCourantNo.H"
         #include "setDeltaT.H"
 
         runTime++;
@@ -106,9 +107,9 @@ int main(int argc, char *argv[])
 
         runTime.write();
 
-        Info<< "ExecutionTime = "
-            << runTime.elapsedCpuTime()
-            << " s\n\n" << endl;
+        Info<< "ExecutionTime = " << runTime.elapsedCpuTime() << " s"
+            << "  ClockTime = " << runTime.elapsedClockTime() << " s"
+            << nl << endl;
     }
 
     Info<< "End\n" << endl;

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -78,7 +78,7 @@ public:
         //  up to the user.
         virtual bool parallelAware() const
         {
-            return false;
+            return true;
         }
 
         //- Return for every coordinate the wanted processor number. Use the
@@ -90,12 +90,7 @@ public:
             const scalarField& cWeights
         )
         {
-            notImplemented
-            (
-                "decompose(const polyMesh&, const pointField&"
-                ", const scalarField&)"
-            );
-            return labelList(0);
+            return labelList(cc.size(), Pstream::myProcNo());
         }
 
         //- Return for every coordinate the wanted processor number. Explicitly
@@ -112,12 +107,7 @@ public:
             const scalarField& cWeights
         )
         {
-            notImplemented
-            (
-                "decompose(const labelListList&, const pointField&"
-                ", const scalarField&)"
-            );
-            return labelList(0);
+            return labelList(globalCellCells.size(), Pstream::myProcNo());
         }
 
 };
