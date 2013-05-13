@@ -311,6 +311,7 @@ Foam::fieldAverage::fieldAverage
     prevTimeIndex_(-1),
     resetOnRestart_(false),
     resetOnOutput_(false),
+    initialised_(false),
     faItems_(),
     meanScalarFields_(),
     meanVectorFields_(),
@@ -361,11 +362,7 @@ void Foam::fieldAverage::read(const dictionary& dict)
         dict.readIfPresent("resetOnOutput", resetOnOutput_);
         dict.lookup("fields") >> faItems_;
 
-        initialize();
         readAveragingProperties();
-
-        // ensure first averaging works unconditionally
-        prevTimeIndex_ = -1;
     }
 }
 
@@ -374,6 +371,16 @@ void Foam::fieldAverage::execute()
 {
     if (active_)
     {
+        if (!initialised_)
+        {
+            initialize();
+
+            // ensure first averaging works unconditionally
+            prevTimeIndex_ = -1;
+
+            initialised_ = true;
+        }
+
         calcAverages();
     }
 }
