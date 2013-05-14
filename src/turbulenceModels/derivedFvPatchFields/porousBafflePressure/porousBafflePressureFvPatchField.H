@@ -34,7 +34,7 @@ Description
     The porous baffle introduces a pressure jump defined by:
 
         \f[
-            \Delta p = -(I \mu U + 0.5 D \rho |U|^2 L)
+            \Delta p = -(I \mu U + 0.5 D \rho |U|^2)L
         \f]
 
     where
