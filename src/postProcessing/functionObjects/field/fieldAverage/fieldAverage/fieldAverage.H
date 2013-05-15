@@ -171,6 +171,9 @@ protected:
         //- Reset the averaging process on output flag
         Switch resetOnOutput_;
 
+        //- Initialised flag
+        bool initialised_;
+
         //- List of field average items, describing what averages to be
         //  calculated and output
         List<fieldAverageItem> faItems_;
