@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -446,6 +446,10 @@ public:
         // regIOobject implementation
 
             //- Write using given format, version and compression
+            //  Do not use the triSurfaceMesh::writeObject since it
+            //  would filter out empty regions. These need to be preserved
+            //  in case we want to make decisions based on the number of
+            //  regions.
             virtual bool writeObject
             (
                 IOstream::streamFormat fmt,

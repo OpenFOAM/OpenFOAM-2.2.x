@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -533,29 +533,33 @@ Foam::triSurfaceMesh::tree() const
     if (tree_.empty())
     {
         // Calculate bb without constructing local point numbering.
-        treeBoundBox bb;
-        label nPoints;
-        calcBounds(bb, nPoints);
+        treeBoundBox bb(vector::zero, vector::zero);
 
-        if (nPoints != points()().size())
+        if (size())
         {
-            WarningIn("triSurfaceMesh::tree() const")
-                << "Surface " << searchableSurface::name()
-                << " does not have compact point numbering."
-                << " Of " << points()().size() << " only " << nPoints
-                << " are used. This might give problems in some routines."
-                << endl;
+            label nPoints;
+            calcBounds(bb, nPoints);
+
+            if (nPoints != points()().size())
+            {
+                WarningIn("triSurfaceMesh::tree() const")
+                    << "Surface " << searchableSurface::name()
+                    << " does not have compact point numbering."
+                    << " Of " << points()().size() << " only " << nPoints
+                    << " are used. This might give problems in some routines."
+                    << endl;
+            }
+
+
+            // Random number generator. Bit dodgy since not exactly random ;-)
+            Random rndGen(65431);
+
+            // Slightly extended bb. Slightly off-centred just so on symmetric
+            // geometry there are less face/edge aligned items.
+            bb = bb.extend(rndGen, 1e-4);
+            bb.min() -= point(ROOTVSMALL, ROOTVSMALL, ROOTVSMALL);
+            bb.max() += point(ROOTVSMALL, ROOTVSMALL, ROOTVSMALL);
         }
-
-
-        // Random number generator. Bit dodgy since not exactly random ;-)
-        Random rndGen(65431);
-
-        // Slightly extended bb. Slightly off-centred just so on symmetric
-        // geometry there are less face/edge aligned items.
-        bb = bb.extend(rndGen, 1e-4);
-        bb.min() -= point(ROOTVSMALL, ROOTVSMALL, ROOTVSMALL);
-        bb.max() += point(ROOTVSMALL, ROOTVSMALL, ROOTVSMALL);
 
         scalar oldTol = indexedOctree<treeDataTriSurface>::perturbTol();
         indexedOctree<treeDataTriSurface>::perturbTol() = tolerance_;
@@ -595,19 +599,23 @@ Foam::triSurfaceMesh::edgeTree() const
           + nInternalEdges()
         );
 
-        treeBoundBox bb;
-        label nPoints;
-        calcBounds(bb, nPoints);
+        treeBoundBox bb(vector::zero, vector::zero);
 
-        // Random number generator. Bit dodgy since not exactly random ;-)
-        Random rndGen(65431);
+        if (bEdges.size())
+        {
+            label nPoints;
+            calcBounds(bb, nPoints);
 
-        // Slightly extended bb. Slightly off-centred just so on symmetric
-        // geometry there are less face/edge aligned items.
+            // Random number generator. Bit dodgy since not exactly random ;-)
+            Random rndGen(65431);
 
-        bb = bb.extend(rndGen, 1e-4);
-        bb.min() -= point(ROOTVSMALL, ROOTVSMALL, ROOTVSMALL);
-        bb.max() += point(ROOTVSMALL, ROOTVSMALL, ROOTVSMALL);
+            // Slightly extended bb. Slightly off-centred just so on symmetric
+            // geometry there are less face/edge aligned items.
+
+            bb = bb.extend(rndGen, 1e-4);
+            bb.min() -= point(ROOTVSMALL, ROOTVSMALL, ROOTVSMALL);
+            bb.max() += point(ROOTVSMALL, ROOTVSMALL, ROOTVSMALL);
+        }
 
         scalar oldTol = indexedOctree<treeDataTriSurface>::perturbTol();
         indexedOctree<treeDataEdge>::perturbTol() = tolerance_;
