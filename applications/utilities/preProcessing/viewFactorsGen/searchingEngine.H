@@ -26,7 +26,8 @@ dict.add("mergeDistance", SMALL);
 labelHashSet includePatches;
 forAll(patches, patchI)
 {
-    if (!isA<processorPolyPatch>(patches[patchI]))
+    const polyPatch& pp = patches[patchI];
+    if (!pp.coupled() && !isA<cyclicAMIPolyPatch>(pp))
     {
         includePatches.insert(patchI);
     }
