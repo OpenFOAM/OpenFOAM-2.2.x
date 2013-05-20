@@ -79,7 +79,12 @@ timeVaryingMappedFixedValueFvPatchField
     endSampleTime_(-1),
     endSampledValues_(0),
     endAverage_(pTraits<Type>::zero),
-    offset_(ptf.offset_().clone().ptr())
+    offset_
+    (
+        ptf.offset_.valid()
+      ? ptf.offset_().clone().ptr()
+      : NULL
+    )
 {}
 
 
@@ -138,7 +143,12 @@ timeVaryingMappedFixedValueFvPatchField
     endSampleTime_(ptf.endSampleTime_),
     endSampledValues_(ptf.endSampledValues_),
     endAverage_(ptf.endAverage_),
-    offset_(ptf.offset_().clone().ptr())
+    offset_
+    (
+        ptf.offset_.valid()
+      ? ptf.offset_().clone().ptr()
+      : NULL
+    )
 {}
 
 
@@ -163,7 +173,12 @@ timeVaryingMappedFixedValueFvPatchField
     endSampleTime_(ptf.endSampleTime_),
     endSampledValues_(ptf.endSampledValues_),
     endAverage_(ptf.endAverage_),
-    offset_(ptf.offset_().clone().ptr())
+    offset_
+    (
+        ptf.offset_.valid()
+      ? ptf.offset_().clone().ptr()
+      : NULL
+    )
 {}
 
 
