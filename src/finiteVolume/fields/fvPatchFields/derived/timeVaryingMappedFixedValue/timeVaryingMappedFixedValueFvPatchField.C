@@ -46,6 +46,7 @@ timeVaryingMappedFixedValueFvPatchField
     fieldTableName_(iF.name()),
     setAverage_(false),
     perturb_(0),
+    mapperPtr_(NULL),
     sampleTimes_(0),
     startSampleTime_(-1),
     startSampledValues_(0),
@@ -71,7 +72,7 @@ timeVaryingMappedFixedValueFvPatchField
     fieldTableName_(ptf.fieldTableName_),
     setAverage_(ptf.setAverage_),
     perturb_(ptf.perturb_),
-    mapperPtr_(ptf.mapperPtr_),
+    mapperPtr_(NULL),
     sampleTimes_(0),
     startSampleTime_(-1),
     startSampledValues_(0),
@@ -135,7 +136,7 @@ timeVaryingMappedFixedValueFvPatchField
     fieldTableName_(ptf.fieldTableName_),
     setAverage_(ptf.setAverage_),
     perturb_(ptf.perturb_),
-    mapperPtr_(ptf.mapperPtr_),
+    mapperPtr_(NULL),
     sampleTimes_(ptf.sampleTimes_),
     startSampleTime_(ptf.startSampleTime_),
     startSampledValues_(ptf.startSampledValues_),
@@ -152,7 +153,6 @@ timeVaryingMappedFixedValueFvPatchField
 {}
 
 
-
 template<class Type>
 timeVaryingMappedFixedValueFvPatchField<Type>::
 timeVaryingMappedFixedValueFvPatchField
@@ -165,7 +165,7 @@ timeVaryingMappedFixedValueFvPatchField
     fieldTableName_(ptf.fieldTableName_),
     setAverage_(ptf.setAverage_),
     perturb_(ptf.perturb_),
-    mapperPtr_(ptf.mapperPtr_),
+    mapperPtr_(NULL),
     sampleTimes_(ptf.sampleTimes_),
     startSampleTime_(ptf.startSampleTime_),
     startSampledValues_(ptf.startSampledValues_),
