@@ -38,7 +38,7 @@ boundaryField
     }
     atmosphere
     {
-        type            fluxCorrectedVelocity;
+        type            pressureInletOutletVelocity;
         value           uniform (0 0 0);
     }
     defaultFaces
