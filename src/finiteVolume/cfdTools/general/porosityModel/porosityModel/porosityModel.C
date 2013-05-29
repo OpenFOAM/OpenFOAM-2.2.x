@@ -125,7 +125,7 @@ Foam::porosityModel::~porosityModel()
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-Foam::tmp<Foam::vectorField> Foam::porosityModel::porosityModel::force
+Foam::tmp<Foam::vectorField> Foam::porosityModel::force
 (
     const volVectorField& U,
     const volScalarField& rho,
@@ -143,7 +143,7 @@ Foam::tmp<Foam::vectorField> Foam::porosityModel::porosityModel::force
 }
 
 
-void Foam::porosityModel::porosityModel::addResistance
+void Foam::porosityModel::addResistance
 (
     fvVectorMatrix& UEqn
 ) const
@@ -157,7 +157,7 @@ void Foam::porosityModel::porosityModel::addResistance
 }
 
 
-void Foam::porosityModel::porosityModel::addResistance
+void Foam::porosityModel::addResistance
 (
     fvVectorMatrix& UEqn,
     const volScalarField& rho,
@@ -173,7 +173,7 @@ void Foam::porosityModel::porosityModel::addResistance
 }
 
 
-void Foam::porosityModel::porosityModel::addResistance
+void Foam::porosityModel::addResistance
 (
     const fvVectorMatrix& UEqn,
     volTensorField& AU,
@@ -197,14 +197,14 @@ void Foam::porosityModel::porosityModel::addResistance
 }
 
 
-bool Foam::porosityModel::porosityModel::movePoints()
+bool Foam::porosityModel::movePoints()
 {
     // no updates necessary; all member data independent of mesh
     return true;
 }
 
 
-void Foam::porosityModel::porosityModel::updateMesh(const mapPolyMesh& mpm)
+void Foam::porosityModel::updateMesh(const mapPolyMesh& mpm)
 {
     // no updates necessary; all member data independent of mesh
 }
