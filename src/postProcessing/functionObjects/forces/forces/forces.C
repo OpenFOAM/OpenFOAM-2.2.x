@@ -384,7 +384,13 @@ Foam::forces::forces
     binPoints_(),
     binFormat_("undefined"),
     binCumulative_(true)
-{}
+{
+    forAll(force_, i)
+    {
+        force_[i].setSize(nBin_);
+        moment_[i].setSize(nBin_);
+    }
+}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
