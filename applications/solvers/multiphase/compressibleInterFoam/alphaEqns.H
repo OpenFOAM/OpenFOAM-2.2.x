@@ -4,7 +4,7 @@
 
     surfaceScalarField phir(phic*interface.nHatf());
 
-    for (int gCorr=0; gCorr<nAlphaCorr; gCorr++)
+    for (int aCorr=0; aCorr<nAlphaCorr; aCorr++)
     {
         volScalarField::DimensionedInternalField Sp
         (

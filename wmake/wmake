@@ -3,7 +3,7 @@
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
 #  \\    /   O peration     |
-#   \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+#   \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
 #    \\/     M anipulation  |
 #-------------------------------------------------------------------------------
 # License
@@ -202,9 +202,9 @@ fi
     exit 1
 }
 
-# transform "all" option to "libso" if that looks appropriate or remove it
+# transform "all" or no option to "libso" if that looks appropriate or remove it
 # so that the call to make builds the application
-if [ "$makeType" = all ]
+if [ "$makeType" = all -o "$makeType" = "" ]
 then
     unset makeType
     if grep -e '^ *LIB *=' "$MakeDir/files" >/dev/null 2>&1

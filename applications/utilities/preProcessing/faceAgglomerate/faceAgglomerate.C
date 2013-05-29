@@ -81,16 +81,15 @@ int main(int argc, char *argv[])
     );
 
     label nCoarseFaces = 0;
-    forAll(boundary, patchId)
+
+    forAllConstIter(dictionary, agglomDict, iter)
     {
-        const polyPatch& pp = boundary[patchId];
-
-        label patchI = pp.index();
-        finalAgglom[patchI].setSize(pp.size(), 0);
-
-        if (!pp.coupled() && pp.size() > 0)
+        labelList patchIds = boundary.findIndices(iter().keyword());
+        forAll(patchIds, i)
         {
-            if (agglomDict.found(pp.name()))
+            label patchI =  patchIds[i];
+            const polyPatch& pp = boundary[patchI];
+            if (!pp.coupled())
             {
                 Info << "\nAgglomerating patch : " << pp.name() << endl;
                 pairPatchAgglomeration agglomObject
@@ -102,18 +101,14 @@ int main(int argc, char *argv[])
                 finalAgglom[patchI] =
                     agglomObject.restrictTopBottomAddressing();
 
-                nCoarseFaces += max(finalAgglom[patchI] + 1);
-            }
-            else
-            {
-                FatalErrorIn(args.executable())
-                    << "Patch " << pp.name() << " not found in dictionary: "
-                    << agglomDict.name() << exit(FatalError);
+                if (finalAgglom[patchI].size())
+                {
+                    nCoarseFaces += max(finalAgglom[patchI] + 1);
+                }
             }
         }
     }
 
-    //reduce(nCoarseFaces, sumOp<scalar>());
     // Sync agglomeration across coupled patches
     labelList nbrAgglom(mesh.nFaces() - mesh.nInternalFaces(), -1);
 
@@ -164,20 +159,26 @@ int main(int argc, char *argv[])
             dimensionedScalar("facesAgglomeration", dimless, 0)
         );
 
-        //label coarsePatchIndex = 0;
+        label coarsePatchIndex = 0;
         forAll(boundary, patchId)
         {
-            fvPatchScalarField& bFacesAgglomeration =
-                facesAgglomeration.boundaryField()[patchId];
-
-            forAll(bFacesAgglomeration, j)
+            const polyPatch& pp = boundary[patchId];
+            if (pp.size() > 0)
             {
-                bFacesAgglomeration[j] =
-                    index.toGlobal
-                    (
-                        Pstream::myProcNo(),
-                        finalAgglom[patchId][j]
-                    );
+                fvPatchScalarField& bFacesAgglomeration =
+                    facesAgglomeration.boundaryField()[patchId];
+
+                forAll(bFacesAgglomeration, j)
+                {
+                    bFacesAgglomeration[j] =
+                        index.toGlobal
+                        (
+                            Pstream::myProcNo(),
+                            finalAgglom[patchId][j] + coarsePatchIndex
+                        );
+                }
+
+                coarsePatchIndex += max(finalAgglom[patchId]) + 1;
             }
         }
 
