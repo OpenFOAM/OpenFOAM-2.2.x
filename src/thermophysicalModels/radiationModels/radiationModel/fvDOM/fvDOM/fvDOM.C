@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -27,6 +27,7 @@ License
 #include "absorptionEmissionModel.H"
 #include "scatterModel.H"
 #include "constants.H"
+#include "fvm.H"
 
 using namespace Foam::constant;
 using namespace Foam::constant::mathematical;
@@ -172,10 +173,39 @@ void Foam::radiation::fvDOM::initialise()
     Info<< "fvDOM : Allocated " << IRay_.size()
         << " rays with average orientation:" << nl;
 
-    forAll(IRay_, i)
+    if (cacheDiv_)
     {
-        Info<< '\t' << IRay_[i].I().name()
-            << '\t' << IRay_[i].dAve() << nl;
+        Info<< "Caching div fvMatrix..."<< endl;
+        for (label lambdaI = 0; lambdaI < nLambda_; lambdaI++)
+        {
+            fvRayDiv_[lambdaI].setSize(nRay_);
+
+            forAll(IRay_, rayId)
+            {
+                const surfaceScalarField Ji = IRay_[rayId].dAve() & mesh_.Sf();
+                const volScalarField& iRayLambdaI =
+                    IRay_[rayId].ILambda(lambdaI);
+
+                fvRayDiv_[lambdaI].set
+                (
+                    rayId,
+                    new fvScalarMatrix
+                    (
+                        fvm::div(Ji, iRayLambdaI, "div(Ji,Ii_h)")
+                    )
+                );
+            }
+        }
+    }
+
+    forAll(IRay_, rayId)
+    {
+        if (omegaMax_ <  IRay_[rayId].omega())
+        {
+            omegaMax_ = IRay_[rayId].omega();
+        }
+        Info<< '\t' << IRay_[rayId].I().name() << " : " << "omega : "
+            << '\t' << IRay_[rayId].omega() << nl;
     }
 
     Info<< endl;
@@ -194,7 +224,7 @@ Foam::radiation::fvDOM::fvDOM(const volScalarField& T)
             "G",
             mesh_.time().timeName(),
             mesh_,
-            IOobject::READ_IF_PRESENT,
+            IOobject::NO_READ,
             IOobject::AUTO_WRITE
         ),
         mesh_,
@@ -247,7 +277,7 @@ Foam::radiation::fvDOM::fvDOM(const volScalarField& T)
             mesh_.time().timeName(),
             mesh_,
             IOobject::NO_READ,
-            IOobject::NO_WRITE
+            IOobject::AUTO_WRITE
         ),
         mesh_,
         dimensionedScalar("a", dimless/dimLength, 0.0)
@@ -260,7 +290,10 @@ Foam::radiation::fvDOM::fvDOM(const volScalarField& T)
     blackBody_(nLambda_, T),
     IRay_(0),
     convergence_(coeffs_.lookupOrDefault<scalar>("convergence", 0.0)),
-    maxIter_(coeffs_.lookupOrDefault<label>("maxIter", 50))
+    maxIter_(coeffs_.lookupOrDefault<label>("maxIter", 50)),
+    fvRayDiv_(nLambda_),
+    cacheDiv_(coeffs_.lookupOrDefault<bool>("cacheDiv", false)),
+    omegaMax_(0)
 {
     initialise();
 }
@@ -346,7 +379,10 @@ Foam::radiation::fvDOM::fvDOM
     blackBody_(nLambda_, T),
     IRay_(0),
     convergence_(coeffs_.lookupOrDefault<scalar>("convergence", 0.0)),
-    maxIter_(coeffs_.lookupOrDefault<label>("maxIter", 50))
+    maxIter_(coeffs_.lookupOrDefault<label>("maxIter", 50)),
+    fvRayDiv_(nLambda_),
+    cacheDiv_(coeffs_.lookupOrDefault<bool>("cacheDiv", false)),
+    omegaMax_(0)
 {
     initialise();
 }
@@ -364,7 +400,6 @@ bool Foam::radiation::fvDOM::read()
     if (radiationModel::read())
     {
         // Only reading solution parameters - not changing ray geometry
-
         coeffs_.readIfPresent("convergence", convergence_);
         coeffs_.readIfPresent("maxIter", maxIter_);
 
@@ -383,19 +418,30 @@ void Foam::radiation::fvDOM::calculate()
 
     updateBlackBodyEmission();
 
+    // Set rays convergence false
+    List<bool> rayIdConv(nRay_, false);
+
     scalar maxResidual = 0.0;
     label radIter = 0;
     do
     {
+        Info<< "Radiation solver iter: " << radIter << endl;
+
         radIter++;
+        maxResidual = 0.0;
         forAll(IRay_, rayI)
         {
-            maxResidual = 0.0;
-            scalar maxBandResidual = IRay_[rayI].correct();
-            maxResidual = max(maxBandResidual, maxResidual);
-        }
+            if (!rayIdConv[rayI])
+            {
+                scalar maxBandResidual = IRay_[rayI].correct();
+                maxResidual = max(maxBandResidual, maxResidual);
 
-        Info<< "Radiation solver iter: " << radIter << endl;
+                if (maxBandResidual < convergence_)
+                {
+                    rayIdConv[rayI] = true;
+                }
+            }
+        }
 
     } while (maxResidual > convergence_ && radIter < maxIter_);
 
@@ -433,7 +479,7 @@ Foam::radiation::fvDOM::Ru() const
     const DimensionedField<scalar, volMesh> E =
         absorptionEmission_->ECont()().dimensionedInternalField();
     const DimensionedField<scalar, volMesh> a =
-        a_.dimensionedInternalField(); //absorptionEmission_->aCont()()
+        a_.dimensionedInternalField();
 
     return  a*G - E;
 }

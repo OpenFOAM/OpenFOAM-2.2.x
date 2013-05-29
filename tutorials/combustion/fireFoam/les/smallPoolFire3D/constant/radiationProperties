@@ -20,10 +20,14 @@ radiationModel  fvDOM;
 
 fvDOMCoeffs
 {
-    nPhi    2;          // azimuthal angles in PI/2 on X-Y.(from Y to X)
-    nTheta  2;          // polar angles in PI (from Z to X-Y plane)
-    convergence 1e-3;   // convergence criteria for radiation iteration
-    maxIter 10;         // maximum number of iterations
+    nPhi        2;          // azimuthal angles in PI/2 on X-Y.(from Y to X)
+    nTheta      2;          // polar angles in PI (from Z to X-Y plane)
+    convergence 1e-1;       // convergence criteria for radiation iteration
+    maxIter     1;          // maximum number of iterations
+    cacheDiv    true;       // cache the div of the RTE equation.
+
+//  NOTE: Caching div is "only" accurate if the upwind scheme is used in
+//  div(Ji,Ii_h)
 }
 
 // Number of flow iterations per radiation iteration
@@ -33,9 +37,9 @@ absorptionEmissionModel greyMeanAbsorptionEmission;
 
 constantAbsorptionEmissionCoeffs
 {
-    absorptivity    absorptivity    [ 0 -1 0 0 0 0 0 ] 0.01;
-    emissivity      emissivity      [ 0 -1 0 0 0 0 0 ] 0.01;
-    E               E   [ 1 -1 -3 0 0 0 0 ] 0;
+    absorptivity    absorptivity    [ m^-1 ]       0.01;
+    emissivity      emissivity      [ m^-1 ]       0.01;
+    E               E               [ kg m^-1 s^-3 ]  0;
 }
 
 greyMeanAbsorptionEmissionCoeffs
@@ -46,7 +50,7 @@ greyMeanAbsorptionEmissionCoeffs
 
     CO2
     {
-        Tcommon         300;   //Common Temp
+        Tcommon         200;   //Common Temp
         invTemp         true;   //Is the polynomio using inverse temperature.
         Tlow            200;   //Low Temp
         Thigh           2500;  //High Temp
@@ -74,7 +78,7 @@ greyMeanAbsorptionEmissionCoeffs
 
     H2O
     {
-        Tcommon         300;
+        Tcommon         200;
         invTemp         true;
         Tlow            200;
         Thigh           2500;
@@ -101,7 +105,7 @@ greyMeanAbsorptionEmissionCoeffs
 
     CH4
     {
-        Tcommon         300;
+        Tcommon         200;
         Tlow            200;
         Thigh           2500;
         invTemp         false;
@@ -128,7 +132,7 @@ greyMeanAbsorptionEmissionCoeffs
 
     O2
     {
-        Tcommon         300;
+        Tcommon         200;
         invTemp         true;
         Tlow            200;
         Thigh           2500;
@@ -156,7 +160,7 @@ greyMeanAbsorptionEmissionCoeffs
 
     N2
     {
-        Tcommon         300;
+        Tcommon         200;
         invTemp         true;
         Tlow            200;
         Thigh           2500;

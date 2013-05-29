@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -113,7 +113,8 @@ Foam::radiation::radiativeIntensityRay::radiativeIntensityRay
     phi_(phi),
     omega_(0.0),
     nLambda_(nLambda),
-    ILambda_(nLambda)
+    ILambda_(nLambda),
+    myRayId_(rayId)
 {
     scalar sinTheta = Foam::sin(theta);
     scalar cosTheta = Foam::cos(theta);
@@ -134,7 +135,6 @@ Foam::radiation::radiativeIntensityRay::radiativeIntensityRay
        *Foam::sin(deltaTheta)),
         0.5*deltaPhi*Foam::sin(2.0*theta)*Foam::sin(deltaTheta)
     );
-
 
     autoPtr<volScalarField> IDefaultPtr;
 
@@ -213,29 +213,51 @@ Foam::scalar Foam::radiation::radiativeIntensityRay::correct()
     {
         const volScalarField& k = dom_.aLambda(lambdaI);
 
-        const surfaceScalarField Ji(dAve_ & mesh_.Sf());
+        tmp<fvScalarMatrix> IiEq;
 
-        fvScalarMatrix IiEq
+        if (!dom_.cacheDiv())
+        {
+            const surfaceScalarField Ji(dAve_ & mesh_.Sf());
+
+            IiEq =
+            (
+                fvm::div(Ji, ILambda_[lambdaI], "div(Ji,Ii_h)")
+              + fvm::Sp(k*omega_, ILambda_[lambdaI])
+            ==
+                1.0/constant::mathematical::pi*omega_
+              * (
+                    k*blackBody_.bLambda(lambdaI)
+                  + absorptionEmission_.ECont(lambdaI)/4
+                )
+            );
+        }
+        else
+        {
+            IiEq =
+            (
+               dom_.fvRayDiv(myRayId_, lambdaI)
+             + fvm::Sp(k*omega_, ILambda_[lambdaI])
+           ==
+               1.0/constant::mathematical::pi*omega_
+             * (
+                   k*blackBody_.bLambda(lambdaI)
+                 + absorptionEmission_.ECont(lambdaI)/4
+               )
+            );
+        }
+
+        IiEq().relax();
+
+        const solverPerformance ILambdaSol = solve
         (
-            fvm::div(Ji, ILambda_[lambdaI], "div(Ji,Ii_h)")
-          + fvm::Sp(k*omega_, ILambda_[lambdaI])
-         ==
-            1.0/constant::mathematical::pi*omega_
-           *(
-                k*blackBody_.bLambda(lambdaI)
-              + absorptionEmission_.ECont(lambdaI)/4
-            )
+            IiEq(),
+            mesh_.solver("Ii")
         );
 
-        IiEq.relax();
+        const scalar initialRes =
+            ILambdaSol.initialResidual()*omega_/dom_.omegaMax();
 
-        scalar eqnResidual = solve
-        (
-            IiEq,
-            mesh_.solver("Ii")
-        ).initialResidual();
-
-        maxResidual = max(eqnResidual, maxResidual);
+        maxResidual = max(initialRes, maxResidual);
     }
 
     return maxResidual;

@@ -74,19 +74,22 @@ solvers
     {
         solver              GAMG;
         tolerance           1e-4;
-        relTol              0;
-        smoother            DILU;
+        relTol              0.1;
+        smoother            symGaussSeidel;
         cacheAgglomeration  true;
         nCellsInCoarsestLevel   10;
         agglomerator    faceAreaPair;
-        mergeLevels     1;
+        mergeLevels         1;
+        maxIter             3;
+        nPreSweeps          0;
+        nPostSweeps         1;
     }
 
     G
     {
         solver          PCG;
         preconditioner  DIC;
-        tolerance       1e-06;
+        tolerance       1e-04;
         relTol          0;
     }
 
@@ -107,8 +110,8 @@ relaxationFactors
     }
     equations
     {
-        "(U|k).*"                   1;
-        "(C3H8|O2|H2O|CO2|h).*"    0.9;
+        "(U|k).*"                  1;
+        "(C3H8|O2|H2O|CO2|h).*"    1;
     }
 }
 
