@@ -25,6 +25,7 @@ License
 
 #include "MeshObject.H"
 #include "objectRegistry.H"
+#include "IOstreams.H"
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -59,6 +60,11 @@ const Type& Foam::MeshObject<Mesh, MeshObjectType, Type>::New
     }
     else
     {
+        if (meshObject::debug)
+        {
+            Pout<< "MeshObject::New(const Mesh&) : constructing new "
+                << Type::typeName << endl;
+        }
         return regIOobject::store(new Type(mesh));
     }
 }
@@ -87,6 +93,11 @@ const Type& Foam::MeshObject<Mesh, MeshObjectType, Type>::New
     }
     else
     {
+        if (meshObject::debug)
+        {
+            Pout<< "MeshObject::New(const Mesh&) : constructing new "
+                << Type::typeName << endl;
+        }
         return regIOobject::store(new Type(mesh, d));
     }
 }
@@ -116,6 +127,11 @@ const Type& Foam::MeshObject<Mesh, MeshObjectType, Type>::New
     }
     else
     {
+        if (meshObject::debug)
+        {
+            Pout<< "MeshObject(const Mesh&) : constructing new "
+                << Type::typeName << endl;
+        }
         return regIOobject::store(new Type(mesh, d1, d2));
     }
 }
@@ -146,6 +162,11 @@ const Type& Foam::MeshObject<Mesh, MeshObjectType, Type>::New
     }
     else
     {
+        if (meshObject::debug)
+        {
+            Pout<< "MeshObject(const Mesh&) : constructing new "
+                << Type::typeName << endl;
+        }
         return regIOobject::store(new Type(mesh, d1, d2, d3));
     }
 }
@@ -177,6 +198,11 @@ const Type& Foam::MeshObject<Mesh, MeshObjectType, Type>::New
     }
     else
     {
+        if (meshObject::debug)
+        {
+            Pout<< "MeshObject(const Mesh&) : constructing new "
+                << Type::typeName << endl;
+        }
         return regIOobject::store(new Type(mesh, d1, d2, d3, d4));
     }
 }
@@ -195,6 +221,12 @@ bool Foam::MeshObject<Mesh, MeshObjectType, Type>::Delete(const Mesh& mesh)
         )
     )
     {
+        if (meshObject::debug)
+        {
+            Pout<< "MeshObject::Delete(const Mesh&) : deleting "
+                << Type::typeName << endl;
+        }
+
         return mesh.thisDb().checkOut
         (
             const_cast<Type&>
@@ -237,10 +269,22 @@ void Foam::meshObject::movePoints(objectRegistry& obr)
     {
         if (isA<MoveableMeshObject<Mesh> >(*iter()))
         {
+            if (meshObject::debug)
+            {
+                Pout<< "meshObject::movePoints(objectRegistry&) :"
+                    << " movePoints on "
+                    << iter()->name() << endl;
+            }
             dynamic_cast<MoveableMeshObject<Mesh>*>(iter())->movePoints();
         }
         else
         {
+            if (meshObject::debug)
+            {
+                Pout<< "meshObject::movePoints(objectRegistry&) :"
+                    << " destroying "
+                    << iter()->name() << endl;
+            }
             obr.checkOut(*iter());
         }
     }
@@ -264,10 +308,21 @@ void Foam::meshObject::updateMesh(objectRegistry& obr, const mapPolyMesh& mpm)
     {
         if (isA<UpdateableMeshObject<Mesh> >(*iter()))
         {
+            if (meshObject::debug)
+            {
+                Pout<< "meshObject::updateMesh(objectRegistry&) :"
+                    << " updateMesh on "
+                    << iter()->name() << endl;
+            }
             dynamic_cast<UpdateableMeshObject<Mesh>*>(iter())->updateMesh(mpm);
         }
         else
         {
+            if (meshObject::debug)
+            {
+                Pout<< "meshObject::updateMesh(objectRegistry&) : destroying "
+                    << iter()->name() << endl;
+            }
             obr.checkOut(*iter());
         }
     }
@@ -284,6 +339,11 @@ void Foam::meshObject::clear(objectRegistry& obr)
 
     forAllIter(typename HashTable<MeshObjectType<Mesh>*>, meshObjects, iter)
     {
+        if (meshObject::debug)
+        {
+            Pout<< "meshObject::clear(objectRegistry&) : destroying "
+                << iter()->name() << endl;
+        }
         obr.checkOut(*iter());
     }
 }

@@ -240,7 +240,7 @@ int main(int argc, char *argv[])
     wordHashSet allCloudNames;
     if (Pstream::master())
     {
-        word geomFileName = prepend + "000";
+        word geomFileName = prepend + "0000";
 
         // test pre check variable if there is a moving mesh
         if (meshMoving)
