@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -30,6 +30,7 @@ Description
     directions in a participating media, not including scatter.
 
     Available absorption models:
+        constantAbsorptionEmission
         greyMeanAbsoprtionEmission
         wideBandAbsorptionEmission
 
@@ -37,9 +38,15 @@ Description
     \verbatim
         fvDOMCoeffs
         {
-            nPhi    1;          // azimuthal angles in PI/2 on X-Y.(from Y to X)
-            nTheta  2;          // polar angles in PI (from Z to X-Y plane)
-            convergence 1e-4;   // convergence criteria for radiation iteration
+            nPhi        4;          // azimuthal angles in PI/2 on X-Y.
+                                    //(from Y to X)
+            nTheta      0;          // polar angles in PI (from Z to X-Y plane)
+            convergence 1e-3;       // convergence criteria for radiation
+                                    //iteration
+            maxIter     4;          // maximum number of iterations
+            cacheDiv    true;       // cache the div of the RTE equation.
+            //NOTE: Caching div is "only" accurate if the upwind scheme is used
+            //in div(Ji,Ii_h)
         }
 
         solverFreq   1; // Number of flow iterations per radiation iteration
@@ -61,6 +68,7 @@ SourceFiles
 
 #include "radiativeIntensityRay.H"
 #include "radiationModel.H"
+#include "fvMatrices.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -78,6 +86,7 @@ class fvDOM
     public radiationModel
 {
     // Private data
+
 
         //- Incident radiation  [W/m2]
         volScalarField G_;
@@ -120,6 +129,15 @@ class fvDOM
 
         //- Maximum number of iterations
         scalar maxIter_;
+
+        //- List of cached fvMatrices for rays
+        List<PtrList<fvScalarMatrix> >fvRayDiv_;
+
+        //- Cache convection div matrix
+        bool cacheDiv_;
+
+        //- Maximum omega weight
+        scalar omegaMax_;
 
 
     // Private Member Functions
@@ -229,6 +247,19 @@ public:
 
             //- Const access to black body
             inline const blackBodyEmission& blackBody() const;
+
+            //- Const access to cached fvMatrix
+            inline const fvScalarMatrix& fvRayDiv
+            (
+                const label lambdaI,
+                const label rayId
+            ) const;
+
+            //- Caching div(Ji, Ilamda)
+            inline bool cacheDiv() const;
+
+            //- Return omegaMax
+            inline scalar omegaMax() const;
 };
 
 
