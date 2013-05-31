@@ -182,8 +182,8 @@ void Foam::porosityModels::fixedCoeff::calcForce
     vectorField& force
 ) const
 {
-    scalarField Udiag(U.size());
-    vectorField Usource(U.size());
+    scalarField Udiag(U.size(), 0.0);
+    vectorField Usource(U.size(), vector::zero);
     const scalarField& V = mesh_.V();
     scalar rhoRef = readScalar(coeffs_.lookup("rhoRef"));
 
