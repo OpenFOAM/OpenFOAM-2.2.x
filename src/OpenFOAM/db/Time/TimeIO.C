@@ -618,11 +618,11 @@ bool Foam::Time::writeObject
             )
         );
 
-        timeDict.add("value", value());
+        timeDict.add("value", timeToUserTime(value()));
         timeDict.add("name", string(tmName));
         timeDict.add("index", timeIndex_);
-        timeDict.add("deltaT", deltaT_);
-        timeDict.add("deltaT0", deltaT0_);
+        timeDict.add("deltaT", timeToUserTime(deltaT_));
+        timeDict.add("deltaT0", timeToUserTime(deltaT0_));
 
         timeDict.regIOobject::writeObject(fmt, ver, cmp);
         bool writeOK = objectRegistry::writeObject(fmt, ver, cmp);
