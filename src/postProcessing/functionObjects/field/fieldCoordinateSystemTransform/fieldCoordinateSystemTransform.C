@@ -104,6 +104,12 @@ void Foam::fieldCoordinateSystemTransform::end()
 }
 
 
+void Foam::fieldCoordinateSystemTransform::timeSet()
+{
+    // Do nothing
+}
+
+
 void Foam::fieldCoordinateSystemTransform::write()
 {
     forAll(fieldSet_, fieldI)

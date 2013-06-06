@@ -131,6 +131,11 @@ void Foam::fieldValue::end()
 }
 
 
+void Foam::fieldValue::timeSet()
+{
+    // Do nothing
+}
+
 void Foam::fieldValue::updateMesh(const mapPolyMesh&)
 {
     // Do nothing

@@ -202,6 +202,12 @@ void Foam::fieldValues::fieldValueDelta::end()
 }
 
 
+void Foam::fieldValues::fieldValueDelta::timeSet()
+{
+    // Do nothing
+}
+
+
 void Foam::fieldValues::fieldValueDelta::updateMesh(const mapPolyMesh&)
 {
     // Do nothing

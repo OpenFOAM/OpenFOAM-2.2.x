@@ -66,7 +66,7 @@ Foam::wordList Foam::scalarTransport::boundaryTypes() const
         }
     }
 
-    return bTypes;    
+    return bTypes;
 }
 
 
@@ -228,7 +228,7 @@ void Foam::scalarTransport::execute()
     {
         schemeVar = UName_;
     }
-    
+
     word divScheme("div(phi," + schemeVar + ")");
     word laplacianScheme("laplacian(" + DT.name() + "," + schemeVar + ")");
 
@@ -298,6 +298,11 @@ void Foam::scalarTransport::execute()
 
 
 void Foam::scalarTransport::end()
+{
+    // Do nothing
+}
+
+void Foam::scalarTransport::timeSet()
 {
     // Do nothing
 }
