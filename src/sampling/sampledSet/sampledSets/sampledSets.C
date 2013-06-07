@@ -188,6 +188,12 @@ void Foam::sampledSets::end()
 }
 
 
+void Foam::sampledSets::timeSet()
+{
+    // Do nothing - only valid on write
+}
+
+
 void Foam::sampledSets::write()
 {
     if (size())
