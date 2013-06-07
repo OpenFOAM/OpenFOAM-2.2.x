@@ -31,14 +31,17 @@ License
 #include "rhoConst.H"
 #include "hConstThermo.H"
 #include "hExponentialThermo.H"
+#include "hPolynomialThermo.H"
 #include "constIsoSolidTransport.H"
 #include "constAnIsoSolidTransport.H"
 #include "exponentialSolidTransport.H"
+#include "polynomialSolidTransport.H"
 #include "pureMixture.H"
 #include "sensibleEnthalpy.H"
 #include "sensibleInternalEnergy.H"
 #include "thermo.H"
 
+#include "solidThermoPhysicsTypes.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -81,6 +84,14 @@ makeSolidThermo
     hExponentialThermo,
     rhoConst,
     specie
+);
+
+makeSolidThermoPhysicsType
+(
+    solidThermo,
+    heSolidThermo,
+    pureMixture,
+    hTransportThermoPoly8SolidThermoPhysics
 );
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
