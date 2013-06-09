@@ -243,6 +243,9 @@ public:
         //- Execute at the final time-loop, currently does nothing
         virtual void end();
 
+        //- Called when time was set at the end of the Time::operator++
+        virtual void timeSet();
+
         //- Sample and write
         virtual void write();
 

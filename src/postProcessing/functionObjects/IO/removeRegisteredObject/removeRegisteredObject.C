@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -87,6 +87,11 @@ void Foam::removeRegisteredObject::execute()
 
 
 void Foam::removeRegisteredObject::end()
+{
+    // Do nothing - only valid on execute
+}
+
+void Foam::removeRegisteredObject::timeSet()
 {
     // Do nothing - only valid on execute
 }

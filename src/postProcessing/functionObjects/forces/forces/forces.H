@@ -149,10 +149,10 @@ protected:
         //- Switch to send output to Info as well as to file
         Switch log_;
 
-        //- Pressure and viscous force per bin
+        //- Pressure, viscous and porous force per bin
         List<Field<vector> > force_;
 
-        //- Pressure and viscous pressure per bin
+        //- Pressure, viscous and porous moment per bin
         List<Field<vector> > moment_;
 
 
@@ -188,6 +188,9 @@ protected:
             //- Flag to indicate whether we are using a local co-ordinate sys
             bool localSystem_;
 
+            //- Flag to include porosity effects
+            bool porosity_;
+
 
             // Bin information
 
@@ -202,7 +205,7 @@ protected:
 
                 //- Minimum bin bounds
                 scalar binMin_;
-                
+
                 //- Bin positions along binDir
                 List<point> binPoints_;
 
@@ -221,6 +224,9 @@ protected:
         //- Return the effective viscous stress (laminar + turbulent).
         tmp<volSymmTensorField> devRhoReff() const;
 
+        //- Dynamic viscosity field
+        tmp<volScalarField> mu() const;
+
         //- Return rho if rhoName is specified otherwise rhoRef
         tmp<volScalarField> rho() const;
 
@@ -231,10 +237,11 @@ protected:
         //- Accumulate bin data
         void applyBins
         (
-            const label patchI,
-            const vectorField fN,
-            const vectorField Md,
-            const vectorField fT
+            const vectorField& Md,
+            const vectorField& fN,
+            const vectorField& fT,
+            const vectorField& fP,
+            const vectorField& d
         );
 
         //- Helper function to write bin data
@@ -301,6 +308,9 @@ public:
 
         //- Execute at the final time-loop, currently does nothing
         virtual void end();
+
+        //- Called when time was set at the end of the Time::operator++
+        virtual void timeSet();
 
         //- Write the forces
         virtual void write();

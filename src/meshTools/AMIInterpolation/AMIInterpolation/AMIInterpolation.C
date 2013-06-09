@@ -214,16 +214,16 @@ Foam::label Foam::AMIInterpolation<SourcePatch, TargetPatch>::findTargetFace
     pointIndexHit sample = treePtr_->findNearest(srcPt, 10.0*srcFaceArea);
 
 
-    if (debug)
-    {
-        Pout<< "Source point = " << srcPt << ", Sample point = "
-            << sample.hitPoint() << ", Sample index = " << sample.index()
-            << endl;
-    }
-
     if (sample.hit())
     {
         targetFaceI = sample.index();
+
+        if (debug)
+        {
+            Pout<< "Source point = " << srcPt << ", Sample point = "
+                << sample.hitPoint() << ", Sample index = " << sample.index()
+                << endl;
+        }
     }
 
     return targetFaceI;

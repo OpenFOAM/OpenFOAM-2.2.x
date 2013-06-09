@@ -108,6 +108,12 @@ void Foam::forceCoeffs::end()
 }
 
 
+void Foam::forceCoeffs::timeSet()
+{
+    // Do nothing - only valid on write
+}
+
+
 void Foam::forceCoeffs::write()
 {
     if (active_)
@@ -120,8 +126,8 @@ void Foam::forceCoeffs::write()
 
             scalar pDyn = 0.5*rhoRef_*magUInf_*magUInf_;
 
-            Field<vector> totForce(force_[0] + force_[1]);
-            Field<vector> totMoment(moment_[0] + moment_[1]);
+            Field<vector> totForce(force_[0] + force_[1] + force_[2]);
+            Field<vector> totMoment(moment_[0] + moment_[1] + moment_[2]);
 
             List<Field<scalar> > coeffs(3);
             coeffs[0].setSize(nBin_);

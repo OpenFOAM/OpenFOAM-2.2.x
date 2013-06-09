@@ -367,6 +367,8 @@ $(cellShape)/cellShapeIOList.C
 
 meshes/Identifiers/patch/patchIdentifier.C
 
+meshes/MeshObject/meshObject.C
+
 polyMesh = meshes/polyMesh
 
 polyPatches = $(polyMesh)/polyPatches

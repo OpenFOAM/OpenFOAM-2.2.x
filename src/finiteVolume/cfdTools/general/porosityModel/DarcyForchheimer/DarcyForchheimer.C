@@ -123,6 +123,24 @@ Foam::porosityModels::DarcyForchheimer::~DarcyForchheimer()
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
+void Foam::porosityModels::DarcyForchheimer::calcForce
+(
+    const volVectorField& U,
+    const volScalarField& rho,
+    const volScalarField& mu,
+    vectorField& force
+) const
+{
+    scalarField Udiag(U.size(), 0.0);
+    vectorField Usource(U.size(), vector::zero);
+    const scalarField& V = mesh_.V();
+
+    apply(Udiag, Usource, V, rho, mu, U);
+
+    force = Udiag*U - Usource;
+}
+
+
 void Foam::porosityModels::DarcyForchheimer::correct
 (
     fvVectorMatrix& UEqn
@@ -195,10 +213,12 @@ void Foam::porosityModels::DarcyForchheimer::correct
 }
 
 
-void Foam::porosityModels::DarcyForchheimer::writeData(Ostream& os) const
+bool Foam::porosityModels::DarcyForchheimer::writeData(Ostream& os) const
 {
     os  << indent << name_ << endl;
     dict_.write(os);
+
+    return true;
 }
 
 

@@ -46,6 +46,7 @@ timeVaryingMappedFixedValueFvPatchField
     fieldTableName_(iF.name()),
     setAverage_(false),
     perturb_(0),
+    mapperPtr_(NULL),
     sampleTimes_(0),
     startSampleTime_(-1),
     startSampledValues_(0),
@@ -71,7 +72,7 @@ timeVaryingMappedFixedValueFvPatchField
     fieldTableName_(ptf.fieldTableName_),
     setAverage_(ptf.setAverage_),
     perturb_(ptf.perturb_),
-    mapperPtr_(ptf.mapperPtr_),
+    mapperPtr_(NULL),
     sampleTimes_(0),
     startSampleTime_(-1),
     startSampledValues_(0),
@@ -79,7 +80,12 @@ timeVaryingMappedFixedValueFvPatchField
     endSampleTime_(-1),
     endSampledValues_(0),
     endAverage_(pTraits<Type>::zero),
-    offset_(ptf.offset_().clone().ptr())
+    offset_
+    (
+        ptf.offset_.valid()
+      ? ptf.offset_().clone().ptr()
+      : NULL
+    )
 {}
 
 
@@ -130,7 +136,7 @@ timeVaryingMappedFixedValueFvPatchField
     fieldTableName_(ptf.fieldTableName_),
     setAverage_(ptf.setAverage_),
     perturb_(ptf.perturb_),
-    mapperPtr_(ptf.mapperPtr_),
+    mapperPtr_(NULL),
     sampleTimes_(ptf.sampleTimes_),
     startSampleTime_(ptf.startSampleTime_),
     startSampledValues_(ptf.startSampledValues_),
@@ -138,9 +144,13 @@ timeVaryingMappedFixedValueFvPatchField
     endSampleTime_(ptf.endSampleTime_),
     endSampledValues_(ptf.endSampledValues_),
     endAverage_(ptf.endAverage_),
-    offset_(ptf.offset_().clone().ptr())
+    offset_
+    (
+        ptf.offset_.valid()
+      ? ptf.offset_().clone().ptr()
+      : NULL
+    )
 {}
-
 
 
 template<class Type>
@@ -155,7 +165,7 @@ timeVaryingMappedFixedValueFvPatchField
     fieldTableName_(ptf.fieldTableName_),
     setAverage_(ptf.setAverage_),
     perturb_(ptf.perturb_),
-    mapperPtr_(ptf.mapperPtr_),
+    mapperPtr_(NULL),
     sampleTimes_(ptf.sampleTimes_),
     startSampleTime_(ptf.startSampleTime_),
     startSampledValues_(ptf.startSampledValues_),
@@ -163,7 +173,12 @@ timeVaryingMappedFixedValueFvPatchField
     endSampleTime_(ptf.endSampleTime_),
     endSampledValues_(ptf.endSampledValues_),
     endAverage_(ptf.endAverage_),
-    offset_(ptf.offset_().clone().ptr())
+    offset_
+    (
+        ptf.offset_.valid()
+      ? ptf.offset_().clone().ptr()
+      : NULL
+    )
 {}
 
 

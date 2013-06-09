@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -252,8 +252,8 @@ void Foam::radiation::absorptionEmissionModel::correct
     PtrList<volScalarField>& aj
 ) const
 {
-    a.internalField() = this->a();
-    aj[0].internalField() =  a.internalField();
+    a = this->a();
+    aj[0] =  a;
 }
 
 

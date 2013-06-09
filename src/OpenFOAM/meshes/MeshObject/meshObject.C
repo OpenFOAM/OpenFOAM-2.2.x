@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -23,22 +23,30 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-inline const Foam::word& Foam::porosityModel::name() const
+#include "MeshObject.H"
+
+/* * * * * * * * * * * * * * * Static Member Data  * * * * * * * * * * * * * */
+
+namespace Foam
 {
-    return name_;
+    defineTypeNameAndDebug(meshObject, 0);
 }
 
 
-inline bool Foam::porosityModel::active() const
-{
-    return active_;
-}
+// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-
-inline const Foam::labelList& Foam::porosityModel::cellZoneIDs() const
-{
-    return cellZoneIds_;
-}
+Foam::meshObject::meshObject(const word& typeName, const objectRegistry& obr)
+:
+    regIOobject
+    (
+        IOobject
+        (
+            typeName,
+            obr.instance(),
+            obr
+        )
+    )
+{}
 
 
 // ************************************************************************* //

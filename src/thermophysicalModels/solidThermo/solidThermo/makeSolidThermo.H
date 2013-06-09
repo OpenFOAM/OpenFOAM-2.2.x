@@ -103,6 +103,58 @@ addToRunTimeSelectionTable                                                    \
 );
 
 
+
+#define makeSolidThermoPhysicsType(BaseThermo,Cthermo,Mixture,SolidPhysicsType)\
+                                                                              \
+                                                                              \
+                                                                              \
+typedef                                                                       \
+    heThermo                                                                  \
+    <                                                                         \
+        BaseThermo,                                                           \
+        Mixture<SolidPhysicsType>                                             \
+    > heThermo##Mixture##SolidPhysicsType;                                    \
+                                                                              \
+typedef                                                                       \
+    Cthermo                                                                   \
+    <                                                                         \
+        BaseThermo,                                                           \
+        Mixture<SolidPhysicsType>                                             \
+    > Cthermo##Mixture##SolidPhysicsType;                                     \
+                                                                              \
+                                                                              \
+defineTemplateTypeNameAndDebugWithName                                        \
+(                                                                             \
+    Cthermo##Mixture##SolidPhysicsType,                                       \
+    (                                                                         \
+        #Cthermo"<"#Mixture"<"                                                \
+      + SolidPhysicsType::typeName()                                          \
+      + ">>"                                                                  \
+    ).c_str(),                                                                \
+    0                                                                         \
+);                                                                            \
+                                                                              \
+                                                                              \
+addToRunTimeSelectionTable                                                    \
+(                                                                             \
+    basicThermo,                                                              \
+    Cthermo##Mixture##SolidPhysicsType,                                       \
+    fvMesh                                                                    \
+);                                                                            \
+                                                                              \
+addToRunTimeSelectionTable                                                    \
+(                                                                             \
+    BaseThermo,                                                               \
+    Cthermo##Mixture##SolidPhysicsType,                                       \
+    fvMesh                                                                    \
+);                                                                            \
+                                                                              \
+addToRunTimeSelectionTable                                                    \
+(                                                                             \
+    BaseThermo,                                                               \
+    Cthermo##Mixture##SolidPhysicsType,                                       \
+    dictionary                                                                \
+);
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #endif

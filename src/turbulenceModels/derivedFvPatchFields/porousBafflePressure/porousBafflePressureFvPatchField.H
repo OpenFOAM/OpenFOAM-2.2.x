@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -34,7 +34,7 @@ Description
     The porous baffle introduces a pressure jump defined by:
 
         \f[
-            \Delta p = -(I \mu U + 0.5 D \rho |U|^2 L)
+            \Delta p = -(I \mu U + 0.5 D \rho |U|^2)L
         \f]
 
     where

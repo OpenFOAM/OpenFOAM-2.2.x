@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -102,10 +102,33 @@ inline const Foam::volScalarField& Foam::radiation::fvDOM::Qem() const
     return Qem_;
 }
 
+
 inline const Foam::radiation::blackBodyEmission&
 Foam::radiation::fvDOM::blackBody() const
 {
     return blackBody_;
+}
+
+
+inline const Foam::fvScalarMatrix& Foam::radiation::fvDOM::fvRayDiv
+(
+    const label rayId,
+    const label lambdaI
+) const
+{
+    return fvRayDiv_[lambdaI][rayId];
+}
+
+
+inline bool Foam::radiation::fvDOM::cacheDiv() const
+{
+    return cacheDiv_;
+}
+
+
+inline Foam::scalar Foam::radiation::fvDOM::omegaMax() const
+{
+    return omegaMax_;
 }
 
 

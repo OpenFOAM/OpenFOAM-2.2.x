@@ -164,20 +164,12 @@ class meshObject
 {
 public:
 
+    // Declare name of the class and its debug switch
+    ClassName("meshObject");
+
     // Constructors
 
-        meshObject(const word& typeName, const objectRegistry& obr)
-        :
-            regIOobject
-            (
-                IOobject
-                (
-                    typeName,
-                    obr.instance(),
-                    obr
-                )
-            )
-        {}
+        meshObject(const word& typeName, const objectRegistry& obr);
 
 
     // Static member functions

@@ -203,6 +203,18 @@ bool Foam::OutputFilterFunctionObject<OutputFilter>::end()
 
 
 template<class OutputFilter>
+bool Foam::OutputFilterFunctionObject<OutputFilter>::timeSet()
+{
+    if (active())
+    {
+        ptr_->timeSet();
+    }
+
+    return true;
+}
+
+
+template<class OutputFilter>
 bool Foam::OutputFilterFunctionObject<OutputFilter>::read
 (
     const dictionary& dict
