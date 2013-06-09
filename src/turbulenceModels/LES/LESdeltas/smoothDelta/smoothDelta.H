@@ -80,7 +80,7 @@ public:
             //- Construct null
             inline deltaData();
 
-            //- Construct from origin, yStar, distance
+            //- Construct from delta value
             inline deltaData(const scalar delta);
 
 
