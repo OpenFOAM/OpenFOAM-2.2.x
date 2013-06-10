@@ -61,6 +61,7 @@ void Foam::codedFunctionObject::prepare
     dynCode.setFilterVariable("codeExecute", codeExecute_);
     dynCode.setFilterVariable("codeEnd", codeEnd_);
     dynCode.setFilterVariable("codeData", codeData_);
+    dynCode.setFilterVariable("codeTimeSet", codeTimeSet_);
     //dynCode.setFilterVariable("codeWrite", codeWrite_);
 
     // compile filtered C template
@@ -187,7 +188,8 @@ bool Foam::codedFunctionObject::end()
 
 bool Foam::codedFunctionObject::timeSet()
 {
-    return false;
+    updateLibrary(redirectType_);
+    return redirectFunctionObject().timeSet();
 }
 
 
@@ -263,6 +265,24 @@ bool Foam::codedFunctionObject::read(const dictionary& dict)
         (
             codeEnd_,
             endPtr->startLineNumber(),
+            dict.name()
+        );
+    }
+
+    const entry* timeSetPtr = dict.lookupEntryPtr
+    (
+        "codeTimeSet",
+        false,
+        false
+    );
+    if (timeSetPtr)
+    {
+        codeTimeSet_ = stringOps::trim(timeSetPtr->stream());
+        stringOps::inplaceExpand(codeTimeSet_, dict);
+        dynamicCodeContext::addLineDirective
+        (
+            codeTimeSet_,
+            timeSetPtr->startLineNumber(),
             dict.name()
         );
     }
