@@ -120,6 +120,13 @@ bool Foam::functionObject::end()
 }
 
 
+bool Foam::functionObject::timeSet()
+{
+    return false;
+}
+
+
+
 Foam::autoPtr<Foam::functionObject> Foam::functionObject::iNew::operator()
 (
     const word& name,

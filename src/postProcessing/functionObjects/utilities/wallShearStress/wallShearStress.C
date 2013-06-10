@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -202,6 +202,12 @@ void Foam::wallShearStress::end()
 }
 
 
+void Foam::wallShearStress::timeSet()
+{
+    // Do nothing - only valid on write
+}
+
+
 void Foam::wallShearStress::write()
 {
     typedef compressible::turbulenceModel cmpModel;
@@ -254,7 +260,7 @@ void Foam::wallShearStress::write()
                 << "database" << exit(FatalError);
         }
 
-    
+
         calcShearStress(mesh, Reff(), wallShearStress);
 
         if (log_)

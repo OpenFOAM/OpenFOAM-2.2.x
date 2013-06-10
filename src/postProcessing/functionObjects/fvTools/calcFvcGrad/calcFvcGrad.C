@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -98,6 +98,11 @@ void Foam::calcFvcGrad::execute()
 
 
 void Foam::calcFvcGrad::end()
+{
+    // Do nothing - only valid on write
+}
+
+void Foam::calcFvcGrad::timeSet()
 {
     // Do nothing - only valid on write
 }

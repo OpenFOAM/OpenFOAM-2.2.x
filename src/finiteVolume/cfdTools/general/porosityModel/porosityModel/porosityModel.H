@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -36,6 +36,7 @@ SourceFiles
 #ifndef porosityModel_H
 #define porosityModel_H
 
+#include "MeshObject.H"
 #include "fvMesh.H"
 #include "dictionary.H"
 #include "fvMatricesFwd.H"
@@ -53,6 +54,8 @@ namespace Foam
 \*---------------------------------------------------------------------------*/
 
 class porosityModel
+:
+    public MeshObject<fvMesh, UpdateableMeshObject, porosityModel>
 {
 private:
 
@@ -95,6 +98,15 @@ protected:
 
         //- Adjust negative resistance values to be multiplier of max value
         void adjustNegativeResistance(dimensionedVector& resist);
+
+        //- Calculate the porosity force
+        virtual void calcForce
+        (
+            const volVectorField& U,
+            const volScalarField& rho,
+            const volScalarField& mu,
+            vectorField& force
+        ) const = 0;
 
         virtual void correct(fvVectorMatrix& UEqn) const = 0;
 
@@ -200,6 +212,17 @@ public:
         //- Return const access to the porosity active flag
         inline bool active() const;
 
+        //- Return const access to the cell zone IDs
+        inline const labelList& cellZoneIDs() const;
+
+        //- Return the force over the cell zone(s)
+        virtual tmp<vectorField> force
+        (
+            const volVectorField& U,
+            const volScalarField& rho,
+            const volScalarField& mu
+        ) const;
+
         //- Add resistance
         virtual void addResistance(fvVectorMatrix& UEqn) const;
 
@@ -220,10 +243,19 @@ public:
         ) const;
 
 
+    // Topology change
+
+        //- Move points
+        virtual bool movePoints();
+
+        //- Update on meshUpdate
+        virtual void updateMesh(const mapPolyMesh& mpm);
+
+
     // I-O
 
         //- Write
-        virtual void writeData(Ostream& os) const = 0;
+        virtual bool writeData(Ostream& os) const = 0;
 
         //- Read porosity dictionary
         virtual bool read(const dictionary& dict);

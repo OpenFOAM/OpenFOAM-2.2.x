@@ -105,6 +105,10 @@ void Foam::cloudInfo::end()
     // Do nothing
 }
 
+void Foam::cloudInfo::timeSet()
+{
+    // Do nothing
+}
 
 void Foam::cloudInfo::write()
 {

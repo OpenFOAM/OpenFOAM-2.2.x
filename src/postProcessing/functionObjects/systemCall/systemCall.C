@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -108,6 +108,11 @@ void Foam::systemCall::end()
     {
         Foam::system(endCalls_[callI]);
     }
+}
+
+void Foam::systemCall::timeSet()
+{
+    // Do nothing
 }
 
 

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -37,6 +37,7 @@ SourceFiles
 
 #include "absorptionEmissionModel.H"
 #include "blackBodyEmission.H"
+
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -110,6 +111,9 @@ private:
 
         //- Global ray id - incremented in constructor
         static label rayId;
+
+        //- My ray Id
+        label myRayId_;
 
 
     // Private Member Functions
@@ -209,6 +213,7 @@ public:
 
             //- Return the radiative intensity for a given wavelength
             inline const volScalarField& ILambda(const label lambdaI) const;
+
 };
 
 

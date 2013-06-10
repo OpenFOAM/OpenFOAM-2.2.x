@@ -1220,6 +1220,7 @@ Foam::Time& Foam::Time::operator++()
             writeOnce_ = false;
         }
 
+        functionObjects_.timeSet();
     }
 
     return *this;

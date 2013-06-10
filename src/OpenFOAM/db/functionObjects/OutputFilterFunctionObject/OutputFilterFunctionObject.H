@@ -201,6 +201,8 @@ public:
             //- Called when Time::run() determines that the time-loop exits
             virtual bool end();
 
+            //- Called when time was set at the end of the Time::operator++
+            virtual bool timeSet();
 
             //- Read and set the function object if its data have changed
             virtual bool read(const dictionary&);

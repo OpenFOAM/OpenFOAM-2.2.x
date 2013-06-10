@@ -174,6 +174,25 @@ Foam::porosityModels::fixedCoeff::~fixedCoeff()
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
+void Foam::porosityModels::fixedCoeff::calcForce
+(
+    const volVectorField& U,
+    const volScalarField& rho,
+    const volScalarField& mu,
+    vectorField& force
+) const
+{
+    scalarField Udiag(U.size(), 0.0);
+    vectorField Usource(U.size(), vector::zero);
+    const scalarField& V = mesh_.V();
+    scalar rhoRef = readScalar(coeffs_.lookup("rhoRef"));
+
+    apply(Udiag, Usource, V, U, rhoRef);
+
+    force = Udiag*U - Usource;
+}
+
+
 void Foam::porosityModels::fixedCoeff::correct
 (
     fvVectorMatrix& UEqn
@@ -234,10 +253,12 @@ void Foam::porosityModels::fixedCoeff::correct
 }
 
 
-void Foam::porosityModels::fixedCoeff::writeData(Ostream& os) const
+bool Foam::porosityModels::fixedCoeff::writeData(Ostream& os) const
 {
     os  << indent << name_ << endl;
     dict_.write(os);
+
+    return true;
 }
 
 

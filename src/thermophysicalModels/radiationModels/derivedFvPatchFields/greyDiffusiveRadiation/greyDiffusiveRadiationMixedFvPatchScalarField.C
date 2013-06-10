@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -189,51 +189,40 @@ updateCoeffs()
     }
 
     scalarField& Iw = *this;
-    const vectorField n(patch().Sf()/patch().magSf());
+    const vectorField n(patch().nf());
 
     radiativeIntensityRay& ray =
         const_cast<radiativeIntensityRay&>(dom.IRay(rayId));
 
-    ray.Qr().boundaryField()[patchI] += Iw*(n & ray.dAve());
+    const scalarField nAve(n & ray.dAve());
 
-    scalarField temissivity = emissivity();
+    ray.Qr().boundaryField()[patchI] += Iw*nAve;
+
+    const scalarField temissivity = emissivity();
+
+    scalarField& Qem = ray.Qem().boundaryField()[patchI];
+    scalarField& Qin = ray.Qin().boundaryField()[patchI];
+
+    const vector& myRayId = dom.IRay(rayId).d();
+
+    const scalarField& Ir = dom.Qin();
 
     forAll(Iw, faceI)
     {
-        scalar Ir = 0.0;
-
-        for (label rayI=0; rayI < dom.nRay(); rayI++)
-        {
-            const vector& d = dom.IRay(rayI).d();
-
-            const scalarField& IFace =
-                dom.IRay(rayI).ILambda(lambdaId).boundaryField()[patchI];
-
-            if ((-n[faceI] & d) < 0.0)
-            {
-                // q into the wall
-                const vector& dAve = dom.IRay(rayI).dAve();
-                Ir += IFace[faceI]*mag(n[faceI] & dAve);
-            }
-        }
-
-        const vector& d = dom.IRay(rayId).d();
-
-        if ((-n[faceI] & d) > 0.0)
+        if ((-n[faceI] & myRayId) > 0.0)
         {
             // direction out of the wall
             refGrad()[faceI] = 0.0;
             valueFraction()[faceI] = 1.0;
             refValue()[faceI] =
                 (
-                    Ir*(scalar(1.0) - temissivity[faceI])
+                    Ir[faceI]*(scalar(1.0) - temissivity[faceI])
                   + temissivity[faceI]*physicoChemical::sigma.value()
                   * pow4(Tp[faceI])
                 )/pi;
 
-             // Emmited heat flux from this ray direction
-            ray.Qem().boundaryField()[patchI][faceI] =
-                refValue()[faceI]*(n[faceI] & ray.dAve());
+            // Emmited heat flux from this ray direction
+            Qem[faceI] = refValue()[faceI]*nAve[faceI];
         }
         else
         {
@@ -242,9 +231,8 @@ updateCoeffs()
             refGrad()[faceI] = 0.0;
             refValue()[faceI] = 0.0; //not used
 
-             // Incident heat flux on this ray direction
-            ray.Qin().boundaryField()[patchI][faceI] =
-                Iw[faceI]*(n[faceI] & ray.dAve());
+            // Incident heat flux on this ray direction
+            Qin[faceI] = Iw[faceI]*nAve[faceI];
         }
     }
 

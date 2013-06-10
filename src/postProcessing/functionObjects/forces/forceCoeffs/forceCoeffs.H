@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -128,12 +128,6 @@ class forceCoeffs
             scalar Aref_;
 
 
-        // Bin information
-
-            //- Writer for bin data
-            autoPtr<writer<scalar> > binWriterPtr_;
-
-
     // Private Member Functions
 
         //- Disallow default bitwise copy construct
@@ -182,6 +176,9 @@ public:
 
         //- Execute at the final time-loop, currently does nothing
         virtual void end();
+
+        //- Called when time was set at the end of the Time::operator++
+        virtual void timeSet();
 
         //- Write the forces
         virtual void write();
