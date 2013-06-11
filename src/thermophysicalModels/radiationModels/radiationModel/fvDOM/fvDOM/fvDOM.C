@@ -182,7 +182,7 @@ void Foam::radiation::fvDOM::initialise()
 
             forAll(IRay_, rayId)
             {
-                const surfaceScalarField Ji = IRay_[rayId].dAve() & mesh_.Sf();
+                const surfaceScalarField Ji(IRay_[rayId].dAve() & mesh_.Sf());
                 const volScalarField& iRayLambdaI =
                     IRay_[rayId].ILambda(lambdaI);
 
