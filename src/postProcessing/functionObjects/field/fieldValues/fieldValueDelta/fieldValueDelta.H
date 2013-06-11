@@ -192,6 +192,9 @@ public:
             //- Execute the at the final time-loop, currently does nothing
             virtual void end();
 
+             //- Called when time was set at the end of the Time::operator++
+            virtual void timeSet();
+
             //- Update mesh
             virtual void updateMesh(const mapPolyMesh&);
 

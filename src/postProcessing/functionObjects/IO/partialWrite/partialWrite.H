@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -29,8 +29,8 @@ Group
 
 Description
     This function object allows user-selected fields/registered objects to be
-    written at a custom write interval.  It operates by deleting all entries
-    except those selected after writing.
+    written at a custom write interval. The interval is given in terms of
+    number of overall dumps
 
     Example of function object specification:
     \verbatim
@@ -66,8 +66,9 @@ SourceFiles
 #define partialWrite_H
 
 #include "HashSet.H"
-#include "DynamicList.H"
 #include "runTimeSelectionTables.H"
+#include "volFields.H"
+#include "surfaceFields.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -95,6 +96,18 @@ protected:
 
         const objectRegistry& obr_;
 
+        //- Loaded fields
+        UPtrList<volScalarField> vsf_;
+        UPtrList<volVectorField> vvf_;
+        UPtrList<volSphericalTensorField> vSpheretf_;
+        UPtrList<volSymmTensorField> vSymmtf_;
+        UPtrList<volTensorField> vtf_;
+
+        UPtrList<surfaceScalarField> ssf_;
+        UPtrList<surfaceVectorField> svf_;
+        UPtrList<surfaceSphericalTensorField> sSpheretf_;
+        UPtrList<surfaceSymmTensorField> sSymmtf_;
+        UPtrList<surfaceTensorField> stf_;
 
         // Read from dictionary
 
@@ -103,6 +116,7 @@ protected:
 
             //- Write interval for restart dump
             label writeInterval_;
+
 
 
         //- Current dump instance. If reaches writeInterval do a full write.
@@ -116,6 +130,24 @@ protected:
 
         //- Disallow default bitwise assignment
         void operator=(const partialWrite&);
+
+
+        //- Load objects in the objectNames
+        template<class Type>
+        void loadField
+        (
+            const word&,
+            UPtrList<GeometricField<Type, fvPatchField, volMesh> >&,
+            UPtrList<GeometricField<Type, fvsPatchField, surfaceMesh> >&
+        ) const;
+
+        template<class Type>
+        void changeWriteOptions
+        (
+            UPtrList<GeometricField<Type, fvPatchField, volMesh> >&,
+            UPtrList<GeometricField<Type, fvsPatchField, surfaceMesh> >&,
+            const IOobject::writeOption
+        ) const;
 
 
 public:
@@ -152,11 +184,14 @@ public:
         //- Read the partialWrite data
         virtual void read(const dictionary&);
 
-        //- Execute, currently does nothing
+        //- Execute
         virtual void execute();
 
         //- Execute at the final time-loop, currently does nothing
         virtual void end();
+
+        //- Called when time was set at the end of the Time::operator++
+        virtual void timeSet();
 
         //- Write the partialWrite
         virtual void write();
@@ -174,6 +209,12 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // End namespace Foam
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#ifdef NoRepository
+#   include "partialWriteTemplates.C"
+#endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

@@ -108,6 +108,12 @@ void Foam::forceCoeffs::end()
 }
 
 
+void Foam::forceCoeffs::timeSet()
+{
+    // Do nothing - only valid on write
+}
+
+
 void Foam::forceCoeffs::write()
 {
     if (active_)

@@ -293,6 +293,12 @@ void Foam::probes::end()
 }
 
 
+void Foam::probes::timeSet()
+{
+    // Do nothing - only valid on write
+}
+
+
 void Foam::probes::write()
 {
     if (size() && prepare())

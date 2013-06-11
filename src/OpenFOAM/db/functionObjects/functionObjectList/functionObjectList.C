@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -183,6 +183,27 @@ bool Foam::functionObjectList::end()
         forAll(*this, objectI)
         {
             ok = operator[](objectI).end() && ok;
+        }
+    }
+
+    return ok;
+}
+
+
+bool Foam::functionObjectList::timeSet()
+{
+    bool ok = true;
+
+    if (execution_)
+    {
+        if (!updated_)
+        {
+            read();
+        }
+
+        forAll(*this, objectI)
+        {
+            ok = operator[](objectI).timeSet() && ok;
         }
     }
 

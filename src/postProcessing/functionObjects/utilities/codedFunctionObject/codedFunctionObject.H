@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -30,6 +30,39 @@ Group
 Description
     This function object provides a general interface to enable dynamic code
     compilation.
+
+    The entries are
+        code        : c++; upon functionObject::write()
+        codeInclude : include files
+        codeOptions : include paths; inserted into EXE_INC in Make/options
+        codeLibs    : link line; inserted into LIB_LIBS in Make/options
+
+        codeExecute : c++;upon functionObject::execute();
+        codeRead    : c++; upon functionObject::read();
+        codeEnd     : c++; upon functionObject::end();
+        codeData    : c++; local member data (null constructed);
+        codeTimeSet : c++; upon functionObject::timeSet();
+        localCode   : c++; local static functions
+
+    Example of function object specification:
+    \verbatim
+    difference
+    {
+        functionObjectLibs ("libutilityFunctionObjects.so");
+
+        type coded;
+        // Name of on-the-fly generated functionObject
+        redirectType writeMagU;
+        code
+        #{
+            // Lookup U
+            const volVectorField& U = mesh().lookupObject<volVectorField>("U");
+            // Write
+            mag(U).write();
+        }
+    }
+    \endverbatim
+
 
 SeeAlso
     Foam::functionObject
@@ -77,6 +110,7 @@ protected:
         string codeRead_;
         string codeExecute_;
         string codeEnd_;
+        string codeTimeSet_;
 
         //- Underlying functionObject
         mutable autoPtr<functionObject> redirectFunctionObjectPtr_;
@@ -147,6 +181,9 @@ public:
         //- Called when Time::run() determines that the time-loop exits.
         //  By default it simply calls execute().
         virtual bool end();
+
+        //- Called when time was set at the end of the Time::operator++
+        virtual bool timeSet();
 
         //- Read and set the function object if its data have changed
         virtual bool read(const dictionary&);

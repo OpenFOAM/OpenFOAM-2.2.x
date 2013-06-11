@@ -143,6 +143,12 @@ void Foam::sampledSurfaces::end()
 }
 
 
+void Foam::sampledSurfaces::timeSet()
+{
+    // Do nothing - only valid on write
+}
+
+
 void Foam::sampledSurfaces::write()
 {
     if (size())

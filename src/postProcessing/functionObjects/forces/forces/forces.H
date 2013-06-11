@@ -205,7 +205,7 @@ protected:
 
                 //- Minimum bin bounds
                 scalar binMin_;
-                
+
                 //- Bin positions along binDir
                 List<point> binPoints_;
 
@@ -308,6 +308,9 @@ public:
 
         //- Execute at the final time-loop, currently does nothing
         virtual void end();
+
+        //- Called when time was set at the end of the Time::operator++
+        virtual void timeSet();
 
         //- Write the forces
         virtual void write();

@@ -73,6 +73,26 @@ const Foam::NamedEnum<Foam::distributedTriSurfaceMesh::distributionType, 3>
 // Read my additional data from the dictionary
 bool Foam::distributedTriSurfaceMesh::read()
 {
+
+    if
+    (
+        Pstream::parRun()
+     &&
+     (
+        regIOobject::fileModificationChecking == timeStampMaster
+     || regIOobject::fileModificationChecking == inotifyMaster
+     )
+    )
+    {
+        FatalErrorIn("Foam::distributedTriSurfaceMesh::read()")
+            << "    distributedTriSurfaceMesh is being constructed\n"
+            << "    using 'timeStampMaster' or 'inotifyMaster.'\n"
+            << "    Modify the entry fileModificationChecking\n"
+            << "    in the etc/controlDict.\n"
+            << "    Use 'timeStamp' instead."
+            << exit(FatalError);
+    }
+
     // Get bb of all domains.
     procBb_.setSize(Pstream::nProcs());
 
@@ -182,10 +202,6 @@ void Foam::distributedTriSurfaceMesh::distributeSegment
     List<DynamicList<label> >& sendMap
 ) const
 {
-    // Work points
-    point clipPt;
-
-
     // 1. Fully local already handled outside. Note: retest is cheap.
     if (isLocal(procBb_[Pstream::myProcNo()], start, end))
     {
@@ -225,6 +241,9 @@ void Foam::distributedTriSurfaceMesh::distributeSegment
 
             // Scheme a: any processor that intersects the segment gets
             // the segment.
+
+            // Intersection point
+            point clipPt;
 
             if (bb.intersects(start, end, clipPt))
             {
@@ -1416,6 +1435,7 @@ Foam::distributedTriSurfaceMesh::distributedTriSurfaceMesh
         )
     )
 {
+
     read();
 
     reduce(bounds().min(), minOp<point>());

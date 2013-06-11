@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -61,6 +61,7 @@ void Foam::codedFunctionObject::prepare
     dynCode.setFilterVariable("codeExecute", codeExecute_);
     dynCode.setFilterVariable("codeEnd", codeEnd_);
     dynCode.setFilterVariable("codeData", codeData_);
+    dynCode.setFilterVariable("codeTimeSet", codeTimeSet_);
     //dynCode.setFilterVariable("codeWrite", codeWrite_);
 
     // compile filtered C template
@@ -185,6 +186,13 @@ bool Foam::codedFunctionObject::end()
 }
 
 
+bool Foam::codedFunctionObject::timeSet()
+{
+    updateLibrary(redirectType_);
+    return redirectFunctionObject().timeSet();
+}
+
+
 bool Foam::codedFunctionObject::read(const dictionary& dict)
 {
     dict.lookup("redirectType") >> redirectType_;
@@ -257,6 +265,24 @@ bool Foam::codedFunctionObject::read(const dictionary& dict)
         (
             codeEnd_,
             endPtr->startLineNumber(),
+            dict.name()
+        );
+    }
+
+    const entry* timeSetPtr = dict.lookupEntryPtr
+    (
+        "codeTimeSet",
+        false,
+        false
+    );
+    if (timeSetPtr)
+    {
+        codeTimeSet_ = stringOps::trim(timeSetPtr->stream());
+        stringOps::inplaceExpand(codeTimeSet_, dict);
+        dynamicCodeContext::addLineDirective
+        (
+            codeTimeSet_,
+            timeSetPtr->startLineNumber(),
             dict.name()
         );
     }

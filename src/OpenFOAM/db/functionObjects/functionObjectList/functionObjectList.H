@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -151,17 +151,19 @@ public:
         //- Return the execution status (on/off) of the function objects
         virtual bool status() const;
 
-
         //- Called at the start of the time-loop
         virtual bool start();
 
-        //- Called at each ++ or += of the time-loop. forceWrite overrides
+        //- Called at the start of the time-loop. forceWrite overrides
         //  the usual outputControl behaviour and forces writing always
         //  (used in postprocessing mode)
         virtual bool execute(const bool forceWrite = false);
 
         //- Called when Time::run() determines that the time-loop exits
         virtual bool end();
+
+        //- Called when time was set at the end of the Time::operator++
+        virtual bool timeSet();
 
         //- Read and set the function objects if their data have changed
         virtual bool read();
