@@ -1,3 +1,5 @@
+#include "resetPhiPatches.H"
+
 volScalarField rAU(1.0/UEqn().A());
 surfaceScalarField rAUf("Dp", fvc::interpolate(rAU));
 
