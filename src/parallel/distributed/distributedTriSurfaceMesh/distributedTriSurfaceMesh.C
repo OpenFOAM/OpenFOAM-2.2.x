@@ -73,6 +73,26 @@ const Foam::NamedEnum<Foam::distributedTriSurfaceMesh::distributionType, 3>
 // Read my additional data from the dictionary
 bool Foam::distributedTriSurfaceMesh::read()
 {
+
+    if
+    (
+        Pstream::parRun()
+     &&
+     (
+        regIOobject::fileModificationChecking == timeStampMaster
+     || regIOobject::fileModificationChecking == inotifyMaster
+     )
+    )
+    {
+        FatalErrorIn("Foam::distributedTriSurfaceMesh::read()")
+            << "    distributedTriSurfaceMesh is being constructed\n"
+            << "    using 'timeStampMaster' or 'inotifyMaster.'\n"
+            << "    Modify the entry fileModificationChecking\n"
+            << "    in the etc/controlDict.\n"
+            << "    Use 'timeStamp' instead."
+            << exit(FatalError);
+    }
+
     // Get bb of all domains.
     procBb_.setSize(Pstream::nProcs());
 
@@ -1415,6 +1435,7 @@ Foam::distributedTriSurfaceMesh::distributedTriSurfaceMesh
         )
     )
 {
+
     read();
 
     reduce(bounds().min(), minOp<point>());

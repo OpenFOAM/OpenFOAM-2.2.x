@@ -77,7 +77,17 @@ Foam::porosityModel::porosityModel
     const word& cellZoneName
 )
 :
-    MeshObject<fvMesh, Foam::UpdateableMeshObject, porosityModel>(mesh),
+    regIOobject
+    (
+        IOobject
+        (
+            name,
+            mesh.time().timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        )
+    ),
     name_(name),
     mesh_(mesh),
     dict_(dict),
