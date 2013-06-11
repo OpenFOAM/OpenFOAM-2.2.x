@@ -36,7 +36,6 @@ SourceFiles
 #ifndef porosityModel_H
 #define porosityModel_H
 
-#include "MeshObject.H"
 #include "fvMesh.H"
 #include "dictionary.H"
 #include "fvMatricesFwd.H"
@@ -55,7 +54,7 @@ namespace Foam
 
 class porosityModel
 :
-    public MeshObject<fvMesh, UpdateableMeshObject, porosityModel>
+    public regIOobject
 {
 private:
 
