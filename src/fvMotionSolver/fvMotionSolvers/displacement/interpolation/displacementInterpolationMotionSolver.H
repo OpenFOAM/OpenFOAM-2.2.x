@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -35,9 +35,6 @@ Description
       faceZone motion.
 
     Tables are in the \a constant/tables directory.
-
-Note
-    could be a motionSolver - does not use any fvMesh structure.
 
 SourceFiles
     displacementInterpolationMotionSolver.C
