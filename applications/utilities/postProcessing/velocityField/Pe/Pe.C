@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -130,7 +130,7 @@ void Foam::calc(const argList& args, const Time& runTime, const fvMesh& mesh)
                             mesh.magSf()
                           * mesh.surfaceInterpolation::deltaCoeffs()
                           * fvc::interpolate(RASModel->nuEff())
-                         )
+                        )
                     )
                 );
             }
@@ -192,8 +192,12 @@ void Foam::calc(const argList& args, const Time& runTime, const fvMesh& mesh)
                             mesh,
                             IOobject::NO_READ
                         ),
-                        mesh.surfaceInterpolation::deltaCoeffs()
-                      * (mag(phi)/mesh.magSf())*(runTime.deltaT()/nu)
+                        mag(phi)
+                       /(
+                            mesh.magSf()
+                          * mesh.surfaceInterpolation::deltaCoeffs()
+                          * nu
+                        )
                     )
                 );
             }
@@ -317,8 +321,12 @@ void Foam::calc(const argList& args, const Time& runTime, const fvMesh& mesh)
                             mesh,
                             IOobject::NO_READ
                         ),
-                        mesh.surfaceInterpolation::deltaCoeffs()
-                      * (mag(phi)/(mesh.magSf()))*(runTime.deltaT()/mu)
+                        mag(phi)
+                       /(
+                            mesh.magSf()
+                          * mesh.surfaceInterpolation::deltaCoeffs()
+                          * mu
+                        )
                     )
                 );
             }
@@ -329,26 +337,6 @@ void Foam::calc(const argList& args, const Time& runTime, const fvMesh& mesh)
                 << "Incorrect dimensions of phi: " << phi.dimensions()
                     << abort(FatalError);
         }
-
-
-        // can also check how many cells exceed a particular Pe limit
-        /*
-        {
-            label count = 0;
-            label PeLimit = 200;
-            forAll(PePtr(), i)
-            {
-                if (PePtr()[i] > PeLimit)
-                {
-                    count++;
-                }
-
-            }
-
-            Info<< "Fraction > " << PeLimit << " = "
-                << scalar(count)/Pe.size() << endl;
-        }
-        */
 
         Info<< "Pe max : " << max(PePtr()).value() << endl;
 
