@@ -43,7 +43,9 @@ void Foam::patchProbes::sampleAndWrite
         unsigned int w = IOstream::defaultPrecision() + 7;
         OFstream& probeStream = *probeFilePtrs_[vField.name()];
 
-        probeStream << setw(w) << vField.time().value();
+        probeStream
+            << setw(w)
+            << vField.time().timeToUserTime(vField.time().value());
 
         forAll(values, probeI)
         {
@@ -67,7 +69,9 @@ void Foam::patchProbes::sampleAndWrite
         unsigned int w = IOstream::defaultPrecision() + 7;
         OFstream& probeStream = *probeFilePtrs_[sField.name()];
 
-        probeStream << setw(w) << sField.time().value();
+        probeStream
+            << setw(w)
+            << sField.time().timeToUserTime(sField.time().value());
 
         forAll(values, probeI)
         {
