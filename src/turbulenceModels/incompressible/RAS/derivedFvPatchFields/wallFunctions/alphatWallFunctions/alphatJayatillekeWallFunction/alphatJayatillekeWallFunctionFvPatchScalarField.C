@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -23,7 +23,7 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "kappatJayatillekeWallFunctionFvPatchScalarField.H"
+#include "alphatJayatillekeWallFunctionFvPatchScalarField.H"
 #include "incompressible/turbulenceModel/turbulenceModel.H"
 #include "fvPatchFieldMapper.H"
 #include "volFields.H"
@@ -39,18 +39,18 @@ namespace incompressible
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
-scalar kappatJayatillekeWallFunctionFvPatchScalarField::tolerance_ = 0.01;
-label kappatJayatillekeWallFunctionFvPatchScalarField::maxIters_ = 10;
+scalar alphatJayatillekeWallFunctionFvPatchScalarField::tolerance_ = 0.01;
+label alphatJayatillekeWallFunctionFvPatchScalarField::maxIters_ = 10;
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
-void kappatJayatillekeWallFunctionFvPatchScalarField::checkType()
+void alphatJayatillekeWallFunctionFvPatchScalarField::checkType()
 {
     if (!isA<wallFvPatch>(patch()))
     {
         FatalErrorIn
         (
-            "kappatJayatillekeWallFunctionFvPatchScalarField::checkType()"
+            "alphatJayatillekeWallFunctionFvPatchScalarField::checkType()"
         )   << "Invalid wall function specification" << nl
             << "    Patch type for patch " << patch().name()
             << " must be wall" << nl
@@ -60,7 +60,7 @@ void kappatJayatillekeWallFunctionFvPatchScalarField::checkType()
 }
 
 
-scalar kappatJayatillekeWallFunctionFvPatchScalarField::Psmooth
+scalar alphatJayatillekeWallFunctionFvPatchScalarField::Psmooth
 (
     const scalar Prat
 ) const
@@ -69,7 +69,7 @@ scalar kappatJayatillekeWallFunctionFvPatchScalarField::Psmooth
 }
 
 
-scalar kappatJayatillekeWallFunctionFvPatchScalarField::yPlusTherm
+scalar alphatJayatillekeWallFunctionFvPatchScalarField::yPlusTherm
 (
     const scalar P,
     const scalar Prat
@@ -103,8 +103,8 @@ scalar kappatJayatillekeWallFunctionFvPatchScalarField::yPlusTherm
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-kappatJayatillekeWallFunctionFvPatchScalarField::
-kappatJayatillekeWallFunctionFvPatchScalarField
+alphatJayatillekeWallFunctionFvPatchScalarField::
+alphatJayatillekeWallFunctionFvPatchScalarField
 (
     const fvPatch& p,
     const DimensionedField<scalar, volMesh>& iF
@@ -120,10 +120,10 @@ kappatJayatillekeWallFunctionFvPatchScalarField
 }
 
 
-kappatJayatillekeWallFunctionFvPatchScalarField::
-kappatJayatillekeWallFunctionFvPatchScalarField
+alphatJayatillekeWallFunctionFvPatchScalarField::
+alphatJayatillekeWallFunctionFvPatchScalarField
 (
-    const kappatJayatillekeWallFunctionFvPatchScalarField& ptf,
+    const alphatJayatillekeWallFunctionFvPatchScalarField& ptf,
     const fvPatch& p,
     const DimensionedField<scalar, volMesh>& iF,
     const fvPatchFieldMapper& mapper
@@ -139,8 +139,8 @@ kappatJayatillekeWallFunctionFvPatchScalarField
 }
 
 
-kappatJayatillekeWallFunctionFvPatchScalarField::
-kappatJayatillekeWallFunctionFvPatchScalarField
+alphatJayatillekeWallFunctionFvPatchScalarField::
+alphatJayatillekeWallFunctionFvPatchScalarField
 (
     const fvPatch& p,
     const DimensionedField<scalar, volMesh>& iF,
@@ -157,10 +157,10 @@ kappatJayatillekeWallFunctionFvPatchScalarField
 }
 
 
-kappatJayatillekeWallFunctionFvPatchScalarField::
-kappatJayatillekeWallFunctionFvPatchScalarField
+alphatJayatillekeWallFunctionFvPatchScalarField::
+alphatJayatillekeWallFunctionFvPatchScalarField
 (
-    const kappatJayatillekeWallFunctionFvPatchScalarField& wfpsf
+    const alphatJayatillekeWallFunctionFvPatchScalarField& wfpsf
 )
 :
     fixedValueFvPatchScalarField(wfpsf),
@@ -173,10 +173,10 @@ kappatJayatillekeWallFunctionFvPatchScalarField
 }
 
 
-kappatJayatillekeWallFunctionFvPatchScalarField::
-kappatJayatillekeWallFunctionFvPatchScalarField
+alphatJayatillekeWallFunctionFvPatchScalarField::
+alphatJayatillekeWallFunctionFvPatchScalarField
 (
-    const kappatJayatillekeWallFunctionFvPatchScalarField& wfpsf,
+    const alphatJayatillekeWallFunctionFvPatchScalarField& wfpsf,
     const DimensionedField<scalar, volMesh>& iF
 )
 :
@@ -192,7 +192,7 @@ kappatJayatillekeWallFunctionFvPatchScalarField
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void kappatJayatillekeWallFunctionFvPatchScalarField::updateCoeffs()
+void alphatJayatillekeWallFunctionFvPatchScalarField::updateCoeffs()
 {
     if (updated())
     {
@@ -217,8 +217,8 @@ void kappatJayatillekeWallFunctionFvPatchScalarField::updateCoeffs()
         Pr(dimensionedScalar(turbModel.transport().lookup("Pr")).value());
 
     // Populate boundary values
-    scalarField& kappatw = *this;
-    forAll(kappatw, faceI)
+    scalarField& alphatw = *this;
+    forAll(alphatw, faceI)
     {
         label faceCellI = patch().faceCells()[faceI];
 
@@ -237,11 +237,11 @@ void kappatJayatillekeWallFunctionFvPatchScalarField::updateCoeffs()
         {
             scalar nu = nuw[faceI];
             scalar kt = nu*(yPlus/(Prt_*(log(E_*yPlus)/kappa_ + P)) - 1/Pr);
-            kappatw[faceI] = max(0.0, kt);
+            alphatw[faceI] = max(0.0, kt);
         }
         else
         {
-            kappatw[faceI] = 0.0;
+            alphatw[faceI] = 0.0;
         }
     }
 
@@ -249,7 +249,7 @@ void kappatJayatillekeWallFunctionFvPatchScalarField::updateCoeffs()
 }
 
 
-void kappatJayatillekeWallFunctionFvPatchScalarField::write(Ostream& os) const
+void alphatJayatillekeWallFunctionFvPatchScalarField::write(Ostream& os) const
 {
     fvPatchField<scalar>::write(os);
     os.writeKeyword("Prt") << Prt_ << token::END_STATEMENT << nl;
@@ -265,7 +265,7 @@ void kappatJayatillekeWallFunctionFvPatchScalarField::write(Ostream& os) const
 makePatchTypeField
 (
     fvPatchScalarField,
-    kappatJayatillekeWallFunctionFvPatchScalarField
+    alphatJayatillekeWallFunctionFvPatchScalarField
 );
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

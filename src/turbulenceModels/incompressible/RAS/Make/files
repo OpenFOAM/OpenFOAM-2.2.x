@@ -49,8 +49,8 @@ kqRWallFunctions = $(wallFunctions)/kqRWallFunctions
 $(kqRWallFunctions)/kqRWallFunction/kqRWallFunctionFvPatchFields.C
 $(kqRWallFunctions)/kLowReWallFunction/kLowReWallFunctionFvPatchScalarField.C
 
-kappatWallFunctions = $(wallFunctions)/kappatWallFunctions
-$(kappatWallFunctions)/kappatJayatillekeWallFunction/kappatJayatillekeWallFunctionFvPatchScalarField.C
+alphatWallFunctions = $(wallFunctions)/alphatWallFunctions
+$(alphatWallFunctions)/alphatJayatillekeWallFunction/alphatJayatillekeWallFunctionFvPatchScalarField.C
 
 v2WallFunctions = $(wallFunctions)/v2WallFunctions
 $(v2WallFunctions)/v2WallFunction/v2WallFunctionFvPatchScalarField.C
