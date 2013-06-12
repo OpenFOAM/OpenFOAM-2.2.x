@@ -76,7 +76,7 @@ void Foam::probes::sampleAndWrite
         unsigned int w = IOstream::defaultPrecision() + 7;
         OFstream& os = *probeFilePtrs_[vField.name()];
 
-        os  << setw(w) << vField.time().value();
+        os  << setw(w) << vField.time().timeToUserTime(vField.time().value());
 
         forAll(values, probeI)
         {
@@ -90,17 +90,17 @@ void Foam::probes::sampleAndWrite
 template<class Type>
 void Foam::probes::sampleAndWrite
 (
-    const GeometricField<Type, fvsPatchField, surfaceMesh>& vField
+    const GeometricField<Type, fvsPatchField, surfaceMesh>& sField
 )
 {
-    Field<Type> values(sample(vField));
+    Field<Type> values(sample(sField));
 
     if (Pstream::master())
     {
         unsigned int w = IOstream::defaultPrecision() + 7;
-        OFstream& os = *probeFilePtrs_[vField.name()];
+        OFstream& os = *probeFilePtrs_[sField.name()];
 
-        os  << setw(w) << vField.time().value();
+        os  << setw(w) << sField.time().timeToUserTime(sField.time().value());
 
         forAll(values, probeI)
         {
@@ -259,7 +259,7 @@ template<class Type>
 Foam::tmp<Foam::Field<Type> >
 Foam::probes::sample
 (
-    const GeometricField<Type, fvsPatchField, surfaceMesh>& vField
+    const GeometricField<Type, fvsPatchField, surfaceMesh>& sField
 ) const
 {
     const Type unsetVal(-VGREAT*pTraits<Type>::one);
@@ -275,7 +275,7 @@ Foam::probes::sample
     {
         if (faceList_[probeI] >= 0)
         {
-            values[probeI] = vField[faceList_[probeI]];
+            values[probeI] = sField[faceList_[probeI]];
         }
     }
 
