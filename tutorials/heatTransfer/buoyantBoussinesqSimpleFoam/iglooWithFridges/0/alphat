@@ -11,7 +11,7 @@ FoamFile
     format      ascii;
     class       volScalarField;
     location    "0";
-    object      kappat;
+    object      alphat;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -21,21 +21,12 @@ internalField   uniform 0;
 
 boundaryField
 {
-    floor
+    //- Set patchGroups for constraint patches
+    #include "${WM_PROJECT_DIR}/etc/caseDicts/setConstraintTypes"
+
+    wall
     {
-        type            kappatJayatillekeWallFunction;
-        Prt             0.85;
-        value           uniform 0;
-    }
-    ceiling
-    {
-        type            kappatJayatillekeWallFunction;
-        Prt             0.85;
-        value           uniform 0;
-    }
-    fixedWalls
-    {
-        type            kappatJayatillekeWallFunction;
+        type            alphatJayatillekeWallFunction;
         Prt             0.85;
         value           uniform 0;
     }
