@@ -207,7 +207,17 @@ bool Foam::OutputFilterFunctionObject<OutputFilter>::timeSet()
 {
     if (active())
     {
+        if (!storeFilter_)
+        {
+            allocateFilter();
+        }
+
         ptr_->timeSet();
+
+        if (!storeFilter_)
+        {
+            destroyFilter();
+        }
     }
 
     return true;
