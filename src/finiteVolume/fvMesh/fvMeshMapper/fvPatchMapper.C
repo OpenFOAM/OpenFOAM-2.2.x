@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -82,7 +82,8 @@ void Foam::fvPatchMapper::calcAddressing() const
             }
             else
             {
-                addr[faceI] = 0;
+                //addr[faceI] = 0;
+                addr[faceI] = -1;
             }
         }
 
@@ -90,12 +91,14 @@ void Foam::fvPatchMapper::calcAddressing() const
         {
             if (min(addr) < 0)
             {
-                FatalErrorIn
+                //FatalErrorIn
+                WarningIn
                 (
                     "void fvPatchMapper::calcAddressing() const"
-                )   << "Error in patch mapping for patch "
+                )   << "Unmapped entry in patch mapping for patch "
                     << patch_.index() << " named " << patch_.name()
-                    << abort(FatalError);
+                    //<< abort(FatalError);
+                    << endl;
             }
         }
     }
@@ -156,19 +159,22 @@ void Foam::fvPatchMapper::calcAddressing() const
                     }
                 }
 
-                // Cater for bad mapping
-                if (nActive == 0)
-                {
-                    newAddr[nActive] = 0;
-                    newWeights[nActive] = 1;
-                    nActive++;
-                }
+                //// Cater for bad mapping
+                //if (nActive == 0)
+                //{
+                //    newAddr[nActive] = 0;
+                //    newWeights[nActive] = 1;
+                //    nActive++;
+                //}
 
                 newAddr.setSize(nActive);
                 newWeights.setSize(nActive);
 
                 // Re-scale the weights
-                newWeights /= sum(newWeights);
+                if (nActive > 0)
+                {
+                    newWeights /= sum(newWeights);
+                }
 
                 // Reset addressing and weights
                 curAddr = newAddr;
