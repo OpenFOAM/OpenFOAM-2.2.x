@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -98,7 +98,7 @@ mappedFixedValueFvPatchField<Type>::mappedFixedValueFvPatchField
     fixedValueFvPatchField<Type>(p, iF, dict),
     fieldName_(dict.lookupOrDefault<word>("fieldName", iF.name())),
     setAverage_(readBool(dict.lookup("setAverage"))),
-    average_(pTraits<Type>(dict.lookup("average"))),
+    average_(pTraits<Type>::zero),
     interpolationScheme_(interpolationCell<Type>::typeName)
 {
     if (!isA<mappedPatchBase>(this->patch().patch()))
@@ -118,6 +118,11 @@ mappedFixedValueFvPatchField<Type>::mappedFixedValueFvPatchField
             << " of field " << this->dimensionedInternalField().name()
             << " in file " << this->dimensionedInternalField().objectPath()
             << exit(FatalError);
+    }
+
+    if (setAverage_)
+    {
+        dict.lookup("average") >> average_;
     }
 
     const mappedPatchBase& mpp = refCast<const mappedPatchBase>
@@ -381,7 +386,10 @@ void mappedFixedValueFvPatchField<Type>::write(Ostream& os) const
     fvPatchField<Type>::write(os);
     os.writeKeyword("fieldName") << fieldName_ << token::END_STATEMENT << nl;
     os.writeKeyword("setAverage") << setAverage_ << token::END_STATEMENT << nl;
-    os.writeKeyword("average") << average_ << token::END_STATEMENT << nl;
+    if (setAverage_)
+    {
+        os.writeKeyword("average") << average_ << token::END_STATEMENT << nl;
+    }
     os.writeKeyword("interpolationScheme") << interpolationScheme_
         << token::END_STATEMENT << nl;
     this->writeEntry("value", os);
