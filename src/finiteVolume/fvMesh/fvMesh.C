@@ -682,7 +682,7 @@ bool Foam::fvMesh::write() const
     bool ok = true;
     if (phiPtr_)
     {
-        ok = phiPtr_.write();
+        ok = phiPtr_->write();
     }
 
     return ok && polyMesh::write();
