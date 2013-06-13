@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -677,7 +677,6 @@ template<class Type>
 template<class Form, class Cmpt, int nCmpt>
 void Foam::Field<Type>::operator=(const VectorSpace<Form,Cmpt,nCmpt>& vs)
 {
-    typedef VectorSpace<Form,Cmpt,nCmpt> VSType;
     TFOR_ALL_F_OP_S(Type, *this, =, VSType, vs)
 }
 

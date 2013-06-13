@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -29,6 +29,7 @@ Description
 
 \*---------------------------------------------------------------------------*/
 
+#include "fvMatrix.H"
 #include "fvCFD.H"
 #include "LduMatrix.H"
 #include "diagTensorField.H"
@@ -86,7 +87,7 @@ int main(int argc, char *argv[])
                     IStringStream
                     (
                         "{"
-                        "    solver           PBiCG;"
+                        "    solver           PBiCCCG;"
                         "    preconditioner   DILU;"
                         "    tolerance        (1e-5 1e-5 1);"
                         "    relTol           (0 0 0);"

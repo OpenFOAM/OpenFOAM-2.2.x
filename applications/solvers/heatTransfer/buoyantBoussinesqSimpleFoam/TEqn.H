@@ -8,10 +8,17 @@
     (
         fvm::div(phi, T)
       - fvm::laplacian(kappaEff, T)
+     ==
+        fvOptions(T)
     );
 
     TEqn.relax();
+
+    fvOptions.constrain(TEqn);
+
     TEqn.solve();
+
+    fvOptions.correct(T);
 
     rhok = 1.0 - beta*(T - TRef);
 }

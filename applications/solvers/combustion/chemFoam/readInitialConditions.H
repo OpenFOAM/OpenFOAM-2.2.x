@@ -87,7 +87,7 @@
     forAll(Y, i)
     {
         Y[i] = Y0[i];
-        h0 += Y0[i]*specieData[i].Hs(p[i], T0);
+        h0 += Y0[i]*specieData[i].Hs(p[0], T0);
     }
 
     thermo.he() = dimensionedScalar("h", dimEnergy/dimMass, h0);

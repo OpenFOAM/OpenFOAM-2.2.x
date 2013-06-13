@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -494,6 +494,7 @@ void Foam::triSurface::write
         (
             "triSurface::write(const fileName&, const word&, const bool)"
         )   << "unknown file extension " << ext
+            << " for file " << name
             << ". Supported extensions are '.ftr', '.stl', '.stlb', "
             << "'.gts', '.obj', '.vtk'"
             << ", '.off', '.dx', '.smesh', '.ac' and '.tri'"
