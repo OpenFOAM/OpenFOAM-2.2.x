@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -28,11 +28,6 @@ Description
     Mesh motion solver for an (multi-block) extruded fvMesh. Gets given the
     structure of the mesh blocks and boundary conditions on these blocks.
 
-    Note: should not be an fvMotionSolver but just a motionSolver. Only here
-    so we can reuse displacementFvMotionSolver functionality (e.g. surface
-    following boundary conditions)
-
-
     The displacementLayeredMotionCoeffs subdict of dynamicMeshDict specifies
     per region (=cellZone) the boundary conditions on two opposing patches
     (=faceZones). It then interpolates the boundary values using topological
@@ -43,6 +38,9 @@ Description
     follow: the faceZone follows the overall mesh displacement.
             Use this for faceZones on boundary faces (so it uses the
             proper boundary conditions on the pointDisplacement).
+
+    uniformFollow: like 'follow' but takes the average value of
+            a specified 'patch' (which is not necessarily colocated)
 
     fixedValue: fixed value.
 
