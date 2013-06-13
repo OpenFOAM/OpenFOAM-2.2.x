@@ -171,7 +171,8 @@ Foam::fvMesh::fvMesh(const IOobject& io)
                 time().timeName(),
                 *this,
                 IOobject::MUST_READ,
-                IOobject::NO_WRITE
+                IOobject::NO_WRITE,
+                false
             ),
             *this
         );
@@ -191,7 +192,8 @@ Foam::fvMesh::fvMesh(const IOobject& io)
                 time().timeName(),
                 *this,
                 IOobject::MUST_READ,
-                IOobject::AUTO_WRITE
+                IOobject::NO_WRITE,
+                false
             ),
             *this
         );
@@ -564,7 +566,8 @@ Foam::tmp<Foam::scalarField> Foam::fvMesh::movePoints(const pointField& p)
                     time().timeName(),
                     *this,
                     IOobject::NO_READ,
-                    IOobject::NO_WRITE
+                    IOobject::NO_WRITE,
+                    false
                 ),
                 V()
             );
@@ -585,7 +588,8 @@ Foam::tmp<Foam::scalarField> Foam::fvMesh::movePoints(const pointField& p)
                 this->time().timeName(),
                 *this,
                 IOobject::NO_READ,
-                IOobject::AUTO_WRITE
+                IOobject::NO_WRITE,
+                false
             ),
             *this,
             dimVolume/dimTime
@@ -675,7 +679,13 @@ bool Foam::fvMesh::writeObjects
 //- Write mesh using IO settings from the time
 bool Foam::fvMesh::write() const
 {
-    return polyMesh::write();
+    bool ok = true;
+    if (phiPtr_)
+    {
+        ok = phiPtr_.write();
+    }
+
+    return ok && polyMesh::write();
 }
 
 
