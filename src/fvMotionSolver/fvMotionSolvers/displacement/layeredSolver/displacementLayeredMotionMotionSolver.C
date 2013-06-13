@@ -259,8 +259,10 @@ Foam::displacementLayeredMotionMotionSolver::faceZoneEvaluate
         // patch. That becomes the value of fld.
         const word patchName(dict.lookup("patch"));
         label patchID = mesh().boundaryMesh().findPatchID(patchName);
-        pointField pdf =
-            pointDisplacement_.boundaryField()[patchID].patchInternalField();
+        pointField pdf
+        (
+            pointDisplacement_.boundaryField()[patchID].patchInternalField()
+        );
         fld = gAverage(pdf);
     }
     else
