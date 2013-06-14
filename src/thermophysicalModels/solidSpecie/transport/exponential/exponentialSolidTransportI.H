@@ -25,30 +25,30 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template<class thermo>
-inline Foam::exponentialSolidTransport<thermo>::exponentialSolidTransport
+template<class Thermo>
+inline Foam::exponentialSolidTransport<Thermo>::exponentialSolidTransport
 (
-    const thermo& t,
+    const Thermo& t,
     const scalar kappa0,
     const scalar n0,
     const scalar Tref
 )
 :
-    thermo(t),
+    Thermo(t),
     kappa0_(kappa0),
     n0_(n0),
     Tref_(Tref)
 {}
 
 
-template<class thermo>
-inline Foam::exponentialSolidTransport<thermo>::exponentialSolidTransport
+template<class Thermo>
+inline Foam::exponentialSolidTransport<Thermo>::exponentialSolidTransport
 (
     const word& name,
     const exponentialSolidTransport& ct
 )
 :
-    thermo(name, ct),
+    Thermo(name, ct),
     kappa0_(ct.kappa0_),
     n0_(ct.n0_),
     Tref_(ct.Tref_)
@@ -70,8 +70,8 @@ Foam::exponentialSolidTransport<Thermo>::New
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-template<class thermo>
-inline Foam::scalar Foam::exponentialSolidTransport<thermo>::kappa
+template<class Thermo>
+inline Foam::scalar Foam::exponentialSolidTransport<Thermo>::kappa
 (
     const scalar p, const scalar T
 ) const
@@ -80,8 +80,8 @@ inline Foam::scalar Foam::exponentialSolidTransport<thermo>::kappa
 }
 
 
-template<class thermo>
-inline Foam::vector Foam::exponentialSolidTransport<thermo>::Kappa
+template<class Thermo>
+inline Foam::vector Foam::exponentialSolidTransport<Thermo>::Kappa
 (
     const scalar p, const scalar T
 ) const
@@ -91,13 +91,13 @@ inline Foam::vector Foam::exponentialSolidTransport<thermo>::Kappa
 }
 
 
-template<class thermo>
-inline Foam::scalar Foam::exponentialSolidTransport<thermo>::
+template<class Thermo>
+inline Foam::scalar Foam::exponentialSolidTransport<Thermo>::
 mu(const scalar p, const scalar T) const
 {
     notImplemented
     (
-        "Foam::scalar Foam::exponentialSolidTransport<thermo>mu::"
+        "Foam::scalar Foam::exponentialSolidTransport<Thermo>mu::"
         "("
         "    const scalar p, const scalar T"
         ") const"
@@ -106,8 +106,8 @@ mu(const scalar p, const scalar T) const
 }
 
 
-template<class thermo>
-inline Foam::scalar Foam::exponentialSolidTransport<thermo>::
+template<class Thermo>
+inline Foam::scalar Foam::exponentialSolidTransport<Thermo>::
 alphah(const scalar p, const scalar T) const
 {
     return kappa(p, T)/this->Cpv(p, T);
@@ -116,15 +116,13 @@ alphah(const scalar p, const scalar T) const
 // * * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * //
 
 
-template<class thermo>
-inline Foam::exponentialSolidTransport<thermo>&
-Foam::exponentialSolidTransport<thermo>::operator=
+template<class Thermo>
+inline Foam::exponentialSolidTransport<Thermo>&
+Foam::exponentialSolidTransport<Thermo>::operator=
 (
-    const exponentialSolidTransport<thermo>& ct
+    const exponentialSolidTransport<Thermo>& ct
 )
 {
-    //thermo::operator=(ct);
-
     kappa0_ = ct.kappa0_;
     n0_ = ct.n0_;
     Tref_ = ct.Tref_;
@@ -133,15 +131,13 @@ Foam::exponentialSolidTransport<thermo>::operator=
 }
 
 
-template<class thermo>
-inline void Foam::exponentialSolidTransport<thermo>::operator+=
+template<class Thermo>
+inline void Foam::exponentialSolidTransport<Thermo>::operator+=
 (
-    const exponentialSolidTransport<thermo>& ct
+    const exponentialSolidTransport<Thermo>& ct
 )
 {
     scalar molr1 = this->nMoles();
-
-    //thermo::operator+=(ct);
 
     molr1 /= this->nMoles();
     scalar molr2 = ct.nMoles()/this->nMoles();
@@ -152,15 +148,13 @@ inline void Foam::exponentialSolidTransport<thermo>::operator+=
 }
 
 
-template<class thermo>
-inline void Foam::exponentialSolidTransport<thermo>::operator-=
+template<class Thermo>
+inline void Foam::exponentialSolidTransport<Thermo>::operator-=
 (
-    const exponentialSolidTransport<thermo>& ct
+    const exponentialSolidTransport<Thermo>& ct
 )
 {
     scalar molr1 = this->nMoles();
-
-    //thermo::operator-=(ct);
 
     molr1 /= this->nMoles();
     scalar molr2 = ct.nMoles()/this->nMoles();
@@ -173,16 +167,16 @@ inline void Foam::exponentialSolidTransport<thermo>::operator-=
 
 // * * * * * * * * * * * * * * * Friend Operators  * * * * * * * * * * * * * //
 
-template<class thermo>
-inline Foam::exponentialSolidTransport<thermo> Foam::operator*
+template<class Thermo>
+inline Foam::exponentialSolidTransport<Thermo> Foam::operator*
 (
     const scalar s,
-    const exponentialSolidTransport<thermo>& ct
+    const exponentialSolidTransport<Thermo>& ct
 )
 {
-    return exponentialSolidTransport<thermo>
+    return exponentialSolidTransport<Thermo>
     (
-        s*static_cast<const thermo&>(ct),
+        s*static_cast<const Thermo&>(ct),
         ct.kappa0_,
         ct.n0_,
         ct.Tref_

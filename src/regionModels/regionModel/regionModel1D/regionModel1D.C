@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -122,6 +122,7 @@ void Foam::regionModels::regionModel1D::initialise()
 
     surfaceScalarField& nMagSf = nMagSfPtr_();
 
+    localPyrolysisFaceI = 0;
     forAll(intCoupledPatchIDs_, i)
     {
         const label patchI = intCoupledPatchIDs_[i];
@@ -132,7 +133,7 @@ void Foam::regionModels::regionModel1D::initialise()
         forAll(pNormals, localFaceI)
         {
             const vector& n = pNormals[localFaceI];
-            const labelList& faces = boundaryFaceFaces_[localFaceI];
+            const labelList& faces = boundaryFaceFaces_[localPyrolysisFaceI++];
             forAll (faces, faceI)
             {
                 const label faceID = faces[faceI];
