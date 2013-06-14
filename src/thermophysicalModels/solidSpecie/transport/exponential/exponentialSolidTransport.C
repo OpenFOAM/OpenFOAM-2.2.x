@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -28,13 +28,13 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template<class thermo>
-Foam::exponentialSolidTransport<thermo>::exponentialSolidTransport
+template<class Thermo>
+Foam::exponentialSolidTransport<Thermo>::exponentialSolidTransport
 (
     const dictionary& dict
 )
 :
-    thermo(dict),
+    Thermo(dict),
     kappa0_(0.0),
     n0_(0.0),
     Tref_(0.0)
@@ -48,13 +48,13 @@ Foam::exponentialSolidTransport<thermo>::exponentialSolidTransport
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-template<class thermo>
-void Foam::exponentialSolidTransport<thermo>::exponentialSolidTransport::write
+template<class Thermo>
+void Foam::exponentialSolidTransport<Thermo>::exponentialSolidTransport::write
 (
     Ostream& os
 ) const
 {
-    thermo::write(os);
+    Thermo::write(os);
 
     dictionary dict("transport");
     dict.add("kappa0", kappa0_);
@@ -66,13 +66,13 @@ void Foam::exponentialSolidTransport<thermo>::exponentialSolidTransport::write
 
 // * * * * * * * * * * * * * * * IOstream Operators  * * * * * * * * * * * * //
 
-template<class thermo>
+template<class Thermo>
 Foam::Ostream& Foam::operator<<
 (
-    Ostream& os, const exponentialSolidTransport<thermo>& et
+    Ostream& os, const exponentialSolidTransport<Thermo>& et
 )
 {
-    operator<<(os, static_cast<const thermo&>(et));
+    operator<<(os, static_cast<const Thermo&>(et));
     os << tab << et.kappa0_  << tab << et.n0_ << tab << et.Tref_;
 
     os.check
