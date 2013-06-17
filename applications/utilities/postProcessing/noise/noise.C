@@ -60,12 +60,18 @@ Description
         nw          | Number of sampling windows    | no        | 100
         fl          | Lower frequency band          | no        | 25
         fU          | Upper frequency band          | no        | 10000
-        graphFormat | Output grapch format          | no        | raw
+        graphFormat | Output graph format           | no        | raw
     \endtable
 
+    Current graph outputs include:
+    - FFT of the pressure data
+    - narrow-band PFL (pressure-fluctuation level) spectrum
+    - one-third-octave-band PFL spectrum
+    - one-third-octave-band pressure spectrum
 
 SeeAlso
     CSV.H
+    noiseFFT.H
 
 \*---------------------------------------------------------------------------*/
 
