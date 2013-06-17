@@ -38,7 +38,7 @@ boundaryField
     }
     outlet
     {
-        type            fixedFluxPressure;
+        type            fixedValue;
         value           $internalField;
     }
     fixedWalls

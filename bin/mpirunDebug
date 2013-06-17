@@ -3,7 +3,7 @@
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
 #  \\    /   O peration     |
-#   \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+#   \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
 #    \\/     M anipulation  |
 #-------------------------------------------------------------------------------
 # License
@@ -196,7 +196,7 @@ do
         echo "${node}xterm -font fixed -title 'processor'$proc $geom -e $procCmdFile" >> $PWD/mpirun.schema
         ;;
     5)
-        echo "$sourceFoam; cd $PWD; valgrind $exec $args; read dummy" >> $procCmdFile
+        echo "$sourceFoam; cd $PWD; valgrind --leak-check=full --show-reachable=yes $exec $args 2>&1 | tee $procLog; read dummy" >> $procCmdFile
         echo "${node}xterm -font fixed -title 'processor'$proc $geom -e $procCmdFile" >> $PWD/mpirun.schema
         ;;
     6)
