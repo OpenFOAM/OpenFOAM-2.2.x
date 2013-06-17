@@ -11,7 +11,7 @@ FoamFile
     format      ascii;
     class       dictionary;
     location    "constant";
-    object      reactingCloud1Properties;
+    object      kinematicCloudProperties;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -40,8 +40,6 @@ constantProperties
     rho0            964;
     youngsModulus   6e8;
     poissonsRatio   0.35;
-
-    constantVolume  false;
 }
 
 subModels
@@ -76,15 +74,11 @@ subModels
 
     dispersionModel none;
 
-    patchInteractionModel standardWallInteraction;
-
-    heatTransferModel none;
+    patchInteractionModel none;
 
     surfaceFilmModel none;
 
     collisionModel pairCollision;
-
-    radiation off;
 
     pairCollisionCoeffs
     {
@@ -130,11 +124,6 @@ subModels
                 cohesionEnergyDensity 0;
             }
         };
-    }
-
-    standardWallInteractionCoeffs
-    {
-        type            rebound;
     }
 }
 

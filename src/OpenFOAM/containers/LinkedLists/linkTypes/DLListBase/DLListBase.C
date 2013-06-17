@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -37,6 +37,12 @@ Foam::DLListBase::iterator Foam::DLListBase::endIter_
 );
 
 Foam::DLListBase::const_iterator Foam::DLListBase::endConstIter_
+(
+    static_cast<const DLListBase&>(DLListBase()),
+    reinterpret_cast<const link*>(0)
+);
+
+Foam::DLListBase::const_reverse_iterator Foam::DLListBase::endConstRevIter_
 (
     static_cast<const DLListBase&>(DLListBase()),
     reinterpret_cast<const link*>(0)

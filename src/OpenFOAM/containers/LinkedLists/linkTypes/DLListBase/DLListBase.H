@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -99,6 +99,9 @@ public:
 
         class const_iterator;
         friend class const_iterator;
+
+        class const_reverse_iterator;
+        friend class const_reverse_iterator;
 
 
     // Constructors
@@ -260,6 +263,43 @@ public:
         inline const_iterator begin() const;
         inline const const_iterator& end() const;
 
+    // STL const_reverse_iterator
+
+        //- An STL-conforming const_reverse_iterator
+        class const_reverse_iterator
+        {
+            // Private data
+
+                //- Reference to the list this is an reverse_iterator for
+                const DLListBase& curList_;
+
+                //- Current element
+                const link* curElmt_;
+
+        public:
+
+            //- Construct for a given DLListBase and link
+            inline const_reverse_iterator(const DLListBase&, const link*);
+
+            // Member operators
+
+                inline void operator=(const const_reverse_iterator&);
+
+                inline bool operator==(const const_reverse_iterator&) const;
+                inline bool operator!=(const const_reverse_iterator&) const;
+
+                inline const link& operator*();
+
+                inline const_reverse_iterator& operator++();
+                inline const_reverse_iterator operator++(int);
+        };
+
+        inline const_reverse_iterator crbegin() const;
+        inline const const_reverse_iterator& crend() const;
+
+        inline const_reverse_iterator rbegin() const;
+        inline const const_reverse_iterator& rend() const;
+
 private:
 
         //- iterator returned by end()
@@ -267,6 +307,9 @@ private:
 
         //- const_iterator returned by end()
         static const_iterator endConstIter_;
+
+        //- const_reverse_iterator returned by end()
+        static const_reverse_iterator endConstRevIter_;
 
 };
 
