@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -49,21 +49,17 @@ readField
             << endl;
     }
 
-    // Patch or patch-groups. (using non-wild card entries of dictionaries)
+
+    // 1. Handle explicit patch names. Note that there can be only one explicit
+    //    patch name since is key of dictionary.
     forAllConstIter(dictionary, dict, iter)
     {
         if (iter().isDict() && !iter().keyword().isPattern())
         {
-            const labelList patchIDs = bmesh_.findIndices
-            (
-                iter().keyword(),
-                true
-            );
+            label patchi = bmesh_.findPatchID(iter().keyword());
 
-            forAll(patchIDs, i)
+            if (patchi != -1)
             {
-                label patchi = patchIDs[i];
-
                 this->set
                 (
                     patchi,
@@ -78,7 +74,55 @@ readField
         }
     }
 
-    // Check for wildcard patch overrides
+
+    // 2. Patch-groups. (using non-wild card entries of dictionaries)
+    // (patchnames already matched above)
+    // Note: in reverse order of entries in the dictionary (last
+    // patchGroups wins). This is so is consistent with dictionary wildcard
+    // behaviour
+    if (dict.size())
+    {
+        for
+        (
+            IDLList<entry>::const_reverse_iterator iter = dict.rbegin();
+            iter != dict.rend();
+            ++iter
+        )
+        {
+            const entry& e = iter();
+
+            if (e.isDict() && !e.keyword().isPattern())
+            {
+                const labelList patchIDs = bmesh_.findIndices
+                (
+                    e.keyword(),
+                    true                    // use patchGroups
+                );
+
+                forAll(patchIDs, i)
+                {
+                    label patchi = patchIDs[i];
+
+                    if (!this->set(patchi))
+                    {
+                        this->set
+                        (
+                            patchi,
+                            PatchField<Type>::New
+                            (
+                                bmesh_[patchi],
+                                field,
+                                e.dict()
+                            )
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+
+    // 3. Wildcard patch overrides
     forAll(bmesh_, patchi)
     {
         if (!this->set(patchi))

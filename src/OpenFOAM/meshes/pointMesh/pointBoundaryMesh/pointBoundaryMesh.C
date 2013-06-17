@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -57,6 +57,12 @@ Foam::pointBoundaryMesh::pointBoundaryMesh
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
+
+Foam::label Foam::pointBoundaryMesh::findPatchID(const word& patchName) const
+{
+    return mesh()().boundaryMesh().findPatchID(patchName);
+}
+
 
 Foam::labelList Foam::pointBoundaryMesh::findIndices
 (
