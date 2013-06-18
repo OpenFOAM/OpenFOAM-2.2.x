@@ -16,7 +16,6 @@ near
 
     // Output every
     outputControl   outputTime;
-    //outputInterval  1;
 
     // Fields to be sampled. Per field original name and mapped field to
     // create.
@@ -42,7 +41,6 @@ wallBoundedStreamLines
 
     // Output every
     outputControl   outputTime;
-    // outputInterval 10;
 
     setFormat       vtk; //gnuplot; //xmgr; //raw; //jplot;
 
