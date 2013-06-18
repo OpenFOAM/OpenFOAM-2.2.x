@@ -16,7 +16,7 @@ forceCoeffs1
 
     log         yes;
 
-    patches     ( "motorBike.*" );
+    patches     ( motorBikeGroup );
     pName       p;
     UName       U;
     rhoName     rhoInf;      // Indicates incompressible
