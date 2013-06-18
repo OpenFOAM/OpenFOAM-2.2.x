@@ -40,7 +40,7 @@ boundaryField
         value           $internalField;
     }
 
-    "motorBike_.*"
+    motorBikeGroup
     {
         type            omegaWallFunction;
         value           $internalField;

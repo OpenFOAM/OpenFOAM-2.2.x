@@ -16,7 +16,6 @@ near
 
     // Output every
     outputControl   outputTime;
-    //outputInterval  1;
 
     // Fields to be sampled. Per field original name and mapped field to
     // create.
@@ -27,7 +26,7 @@ near
     );
 
     // Patches/groups to sample (regular expressions)
-    patches (motorBike);
+    patches (motorBikeGroup);
 
     // Distance to sample
     distance 0.001;
@@ -42,7 +41,6 @@ wallBoundedStreamLines
 
     // Output every
     outputControl   outputTime;
-    // outputInterval 10;
 
     setFormat       vtk; //gnuplot; //xmgr; //raw; //jplot;
 
@@ -87,7 +85,7 @@ wallBoundedStreamLines
     patchSeedCoeffs
     {
         type        patchSeed;
-        patches     (motorBike);
+        patches     (motorBikeGroup);
         axis        x;  //distance;
         maxPoints   20000;
     }
