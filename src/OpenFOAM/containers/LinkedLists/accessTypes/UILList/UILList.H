@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -78,6 +78,9 @@ public:
 
         class const_iterator;
         friend class const_iterator;
+
+        class const_reverse_iterator;
+        friend class const_reverse_iterator;
 
 
     // Constructors
@@ -249,6 +252,48 @@ public:
                 const_iterator& operator++()
                 {
                     LListBase_const_iterator::operator++();
+                    return *this;
+                }
+        };
+
+
+    // STL const_reverse_iterator
+
+        typedef typename LListBase::const_reverse_iterator
+            LListBase_const_reverse_iterator;
+
+        //- An STL-conforming const_reverse_iterator
+        class const_reverse_iterator
+        :
+            public LListBase_const_reverse_iterator
+        {
+
+        public:
+
+            //- Construct from base const_reverse_iterator
+            const_reverse_iterator(LListBase_const_reverse_iterator baseIter)
+            :
+                LListBase_const_reverse_iterator(baseIter)
+            {}
+
+
+            // Member operators
+
+                const T& operator*()
+                {
+                    return
+                        static_cast<const T&>
+                        (LListBase_const_reverse_iterator::operator*());
+                }
+
+                const T& operator()()
+                {
+                    return operator*();
+                }
+
+                const_reverse_iterator& operator++()
+                {
+                    LListBase_const_reverse_iterator::operator++();
                     return *this;
                 }
         };

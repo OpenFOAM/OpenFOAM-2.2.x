@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -380,6 +380,113 @@ inline const Foam::DLListBase::const_iterator&
 Foam::DLListBase::end() const
 {
     return endConstIter_;
+}
+
+
+// * * * * * * * * * * STL const_reverse_iterator  * * * * * * * * * * * * * //
+
+inline Foam::DLListBase::const_reverse_iterator::const_reverse_iterator
+(
+    const DLListBase& s,
+    const link* elmt
+)
+:
+    curList_(s),
+    curElmt_(elmt)
+{}
+
+
+inline void Foam::DLListBase::const_reverse_iterator::operator=
+(
+    const const_reverse_iterator& iter
+)
+{
+    curElmt_ = iter.curElmt_;
+}
+
+
+inline bool Foam::DLListBase::const_reverse_iterator::operator==
+(
+    const const_reverse_iterator& iter
+) const
+{
+    return curElmt_ == iter.curElmt_;
+}
+
+
+inline bool Foam::DLListBase::const_reverse_iterator::operator!=
+(
+    const const_reverse_iterator& iter
+) const
+{
+    return curElmt_ != iter.curElmt_;
+}
+
+
+inline const Foam::DLListBase::link&
+Foam::DLListBase::const_reverse_iterator::operator*()
+{
+    return *curElmt_;
+}
+
+
+inline Foam::DLListBase::const_reverse_iterator&
+Foam::DLListBase::const_reverse_iterator::operator++()
+{
+    if (curElmt_ == curList_.first_)
+    {
+        curElmt_ = 0;
+    }
+    else
+    {
+        curElmt_ = curElmt_->prev_;
+    }
+
+    return *this;
+}
+
+
+inline Foam::DLListBase::const_reverse_iterator
+Foam::DLListBase::const_reverse_iterator::operator++(int)
+{
+    const_reverse_iterator tmp = *this;
+    ++*this;
+    return tmp;
+}
+
+
+inline Foam::DLListBase::const_reverse_iterator
+Foam::DLListBase::crbegin() const
+{
+    if (size())
+    {
+        return const_reverse_iterator(*this, last());
+    }
+    else
+    {
+        return endConstRevIter_;
+    }
+}
+
+
+inline const Foam::DLListBase::const_reverse_iterator&
+Foam::DLListBase::crend() const
+{
+    return endConstRevIter_;
+}
+
+
+inline Foam::DLListBase::const_reverse_iterator
+Foam::DLListBase::rbegin() const
+{
+    return this->crbegin();
+}
+
+
+inline const Foam::DLListBase::const_reverse_iterator&
+Foam::DLListBase::rend() const
+{
+    return endConstRevIter_;
 }
 
 

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -95,6 +95,9 @@ public:
         {
             return mesh_;
         }
+
+        //- Find patch index given a name
+        label findPatchID(const word& patchName) const;
 
         //- Find patch indices given a name
         labelList findIndices(const keyType&, const bool useGroups) const;

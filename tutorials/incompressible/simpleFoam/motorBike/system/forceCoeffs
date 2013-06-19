@@ -12,12 +12,11 @@ forceCoeffs1
 
     functionObjectLibs ( "libforces.so" );
 
-    outputControl   timeStep;
-    outputInterval  1;
+    outputControl   outputTime;
 
     log         yes;
 
-    patches     ( "motorBike.*" );
+    patches     ( motorBikeGroup );
     pName       p;
     UName       U;
     rhoName     rhoInf;      // Indicates incompressible
@@ -31,6 +30,7 @@ forceCoeffs1
     lRef        1.42;        // Wheelbase length
     Aref        0.75;        // Estimated
 
+/* - Uncomment to have forceCoeffs calculated in 20 bins
     binData
     {
         nBin        20;          // output data into 20 bins
@@ -38,6 +38,7 @@ forceCoeffs1
         format      gnuplot;
         cumulative  yes;
     }
+*/
 }
 
 
