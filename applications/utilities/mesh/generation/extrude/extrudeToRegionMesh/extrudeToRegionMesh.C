@@ -840,7 +840,11 @@ void addCouplingPatches
                 << '\t' << newPatches[interRegionBottomPatch[zoneI]]->type()
                 << nl;
         }
+
     }
+    Info << "interRegionTopPatch " << interRegionTopPatch << endl;
+    Info << "interRegionBottomPatch " << interRegionBottomPatch << endl;
+
     Pout<< "Added " << newPatches.size()-nOldPatches
         << " inter-region patches." << nl
         << endl;
@@ -1783,7 +1787,7 @@ int main(int argc, char *argv[])
                 {
                     extrudeMeshShadowFaces[nShadowFaces] = fz[j];
                     zoneShadowFlipMap[nShadowFaces] = fz.flipMap()[j];
-                    zoneShadowID[nShadowFaces] = zoneShadowIDs[i];
+                    zoneShadowID[nShadowFaces] = i;
                     nShadowFaces++;
                 }
             }
@@ -2349,7 +2353,6 @@ int main(int argc, char *argv[])
     }
 
 
-
     // For debugging: dump hedgehog plot of normals
     if (false)
     {
@@ -2398,7 +2401,6 @@ int main(int argc, char *argv[])
     }
 
 
-
     // Create a new mesh
     // ~~~~~~~~~~~~~~~~~
 
@@ -2408,7 +2410,6 @@ int main(int argc, char *argv[])
         pointLocalRegions,
         localRegionPoints
     );
-
 
     autoPtr<mapPolyMesh> shellMap;
     fvMesh regionMesh
@@ -2428,7 +2429,6 @@ int main(int argc, char *argv[])
         xferCopy(labelList()),
         false
     );
-
     // Add the new patches
     forAll(regionPatches, patchI)
     {
@@ -2721,7 +2721,7 @@ int main(int argc, char *argv[])
                 );
             }
         }
-
+Info << "here 15" << endl;
         if (zoneShadowNames.size() > 0) //if there is a top faceZone specified
         {
             forAll(extrudeMeshFaces, zoneFaceI)
@@ -2730,6 +2730,13 @@ int main(int argc, char *argv[])
                 label zoneI = zoneShadowID[zoneFaceI];
                 bool flip = zoneShadowFlipMap[zoneFaceI];
                 const face& f = mesh.faces()[meshFaceI];
+Info << "here 16" << endl;
+Info << "meshFaceI " << meshFaceI << endl;
+Info << "zoneI " << zoneI << endl;
+Info << "flip " << flip << endl;
+Info << "f " << f << endl;
+Info << "patch i " << mesh.boundaryMesh().whichPatch(meshFaceI) << endl;
+Info << "interMeshTopPatch[zoneI] " << interMeshTopPatch[zoneI] << endl;
 
                 if (!flip)
                 {
@@ -2760,7 +2767,7 @@ int main(int argc, char *argv[])
                     );
                 }
             }
-
+Info << "here 17" << endl;
         }
         else
         {
