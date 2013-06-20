@@ -46,7 +46,16 @@ solids
 {
     C
     {
-        defaultCoeffs   yes;
+        defaultCoeffs   no;
+        // if  defaultCoeffs no properties should be :
+        CCoeffs
+        {
+            rho             2010;
+            Cp              710;
+            K               0.04;
+            Hf              0;
+            emissivity      1.0;
+        }
     }
     ash
     {
