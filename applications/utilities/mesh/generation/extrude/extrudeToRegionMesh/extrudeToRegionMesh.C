@@ -842,9 +842,6 @@ void addCouplingPatches
         }
 
     }
-    Info << "interRegionTopPatch " << interRegionTopPatch << endl;
-    Info << "interRegionBottomPatch " << interRegionBottomPatch << endl;
-
     Pout<< "Added " << newPatches.size()-nOldPatches
         << " inter-region patches." << nl
         << endl;
@@ -2721,7 +2718,7 @@ int main(int argc, char *argv[])
                 );
             }
         }
-Info << "here 15" << endl;
+
         if (zoneShadowNames.size() > 0) //if there is a top faceZone specified
         {
             forAll(extrudeMeshFaces, zoneFaceI)
@@ -2730,13 +2727,6 @@ Info << "here 15" << endl;
                 label zoneI = zoneShadowID[zoneFaceI];
                 bool flip = zoneShadowFlipMap[zoneFaceI];
                 const face& f = mesh.faces()[meshFaceI];
-Info << "here 16" << endl;
-Info << "meshFaceI " << meshFaceI << endl;
-Info << "zoneI " << zoneI << endl;
-Info << "flip " << flip << endl;
-Info << "f " << f << endl;
-Info << "patch i " << mesh.boundaryMesh().whichPatch(meshFaceI) << endl;
-Info << "interMeshTopPatch[zoneI] " << interMeshTopPatch[zoneI] << endl;
 
                 if (!flip)
                 {
@@ -2767,7 +2757,6 @@ Info << "interMeshTopPatch[zoneI] " << interMeshTopPatch[zoneI] << endl;
                     );
                 }
             }
-Info << "here 17" << endl;
         }
         else
         {
