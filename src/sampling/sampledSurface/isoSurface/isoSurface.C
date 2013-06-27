@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -1077,7 +1077,7 @@ Foam::triSurface Foam::isoSurface::stitchTriPoints
             {
                 // There is no (higher numbered) duplicate triangle
                 label newTriI = newToOldTri.size();
-                newToOldTri.append(triI);
+                newToOldTri.append(triMap[triI]);
                 tris[newTriI] = tris[triI];
             }
         }
