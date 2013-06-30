@@ -203,7 +203,7 @@ export FOAM_UTILITIES=$FOAM_APP/utilities
 export FOAM_SOLVERS=$FOAM_APP/solvers
 export FOAM_RUN=$WM_PROJECT_USER_DIR/run
 
-# add wmake to the path - not required for runtime only environment
+# add wmake to the path - not required for runtime-only environment
 [ -d "$WM_DIR" ] && PATH=$WM_DIR:$PATH
 # add OpenFOAM scripts to the path
 export PATH=$WM_PROJECT_DIR/bin:$PATH
@@ -371,9 +371,9 @@ export CGAL_ARCH_PATH=$WM_THIRD_PARTY_DIR/platforms/$WM_ARCH$WM_COMPILER/$cgal_v
 # enabled if CGAL is available
 if [ "$FOAM_VERBOSE" -a "$PS1" ]
 then
-    echo "Checking for"
-    echo "    $cgal_version at $CGAL_ARCH_PATH"
-    echo "    $boost_version at $BOOST_ARCH_PATH"
+    echo "Checking for" 1>&2
+    echo "    $cgal_version at $CGAL_ARCH_PATH" 1>&2
+    echo "    $boost_version at $BOOST_ARCH_PATH" 1>&2
 fi
 
 if [ -d "$CGAL_ARCH_PATH" ]
