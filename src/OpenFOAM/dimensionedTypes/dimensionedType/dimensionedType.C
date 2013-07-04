@@ -445,7 +445,7 @@ Foam::dimensioned<Type> Foam::cmptMultiply
     return dimensioned<Type>
     (
         "cmptMultiply(" + dt1.name() + ',' + dt2.name() + ')',
-        dt1.dimensions()*dt2.dimensions(),
+        cmptMultiply(dt1.dimensions(), dt2.dimensions()),
         cmptMultiply(dt1.value(), dt2.value())
     );
 }
@@ -460,7 +460,7 @@ Foam::dimensioned<Type> Foam::cmptDivide
     return dimensioned<Type>
     (
         "cmptDivide(" + dt1.name() + ',' + dt2.name() + ')',
-        dt1.dimensions()/dt2.dimensions(),
+        cmptDivide(dt1.dimensions(), dt2.dimensions()),
         cmptDivide(dt1.value(), dt2.value())
     );
 }
