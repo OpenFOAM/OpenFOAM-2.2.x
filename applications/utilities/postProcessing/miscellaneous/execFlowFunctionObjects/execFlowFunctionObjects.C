@@ -56,47 +56,12 @@ using namespace Foam;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-void execFunctionObjects
-(
-    const argList& args,
-    const Time& runTime,
-    autoPtr<functionObjectList>& folPtr
-)
-{
-    if (folPtr.empty())
-    {
-        if (args.optionFound("dict"))
-        {
-            IOdictionary dict
-            (
-                IOobject
-                (
-                    args["dict"],
-                    runTime,
-                    IOobject::MUST_READ_IF_MODIFIED
-                )
-            );
-
-            folPtr.reset(new functionObjectList(runTime, dict));
-        }
-        else
-        {
-            folPtr.reset(new functionObjectList(runTime));
-        }
-
-        folPtr->start();
-    }
-
-    folPtr->execute(true);
-}
-
-
 void calc
 (
     const argList& args,
     const Time& runTime,
     const fvMesh& mesh,
-    autoPtr<functionObjectList>& folPtr
+    functionObjectList& fol
 )
 {
     if (args.optionFound("noFlow"))
@@ -159,7 +124,7 @@ void calc
         PtrList<pointTensorField> ptFlds;
         ReadFields(pMesh, objects, ptFlds);
 
-        execFunctionObjects(args, runTime, folPtr);
+        fol.execute(true);
     }
     else
     {
@@ -240,7 +205,7 @@ void calc
                     )
                 );
 
-                execFunctionObjects(args, runTime, folPtr);
+                fol.execute(true);
             }
             else if (LESPropertiesHeader.headerOk())
             {
@@ -253,7 +218,7 @@ void calc
                     incompressible::LESModel::New(U, phi, laminarTransport)
                 );
 
-                execFunctionObjects(args, runTime, folPtr);
+                fol.execute(true);
             }
             else
             {
@@ -269,7 +234,7 @@ void calc
                     )
                 );
 
-                execFunctionObjects(args, runTime, folPtr);
+                fol.execute(true);
             }
         }
         else if (phi.dimensions() == dimMass/dimTime)
@@ -322,7 +287,7 @@ void calc
                     )
                 );
 
-                execFunctionObjects(args, runTime, folPtr);
+                fol.execute(true);
             }
             else if (LESPropertiesHeader.headerOk())
             {
@@ -333,7 +298,7 @@ void calc
                     compressible::LESModel::New(rho, U, phi, thermo())
                 );
 
-                execFunctionObjects(args, runTime, folPtr);
+                fol.execute(true);
             }
             else
             {
@@ -349,7 +314,7 @@ void calc
                     )
                 );
 
-                execFunctionObjects(args, runTime, folPtr);
+                fol.execute(true);
             }
         }
         else
@@ -378,7 +343,31 @@ int main(int argc, char *argv[])
     Foam::instantList timeDirs = Foam::timeSelector::select0(runTime, args);
     #include "createNamedMesh.H"
 
+    // Construct functionObjectList
+
     autoPtr<functionObjectList> folPtr;
+    // Externally stored dictionary for if fol constructed not from runTime
+    dictionary folDict;
+
+    if (args.optionFound("dict"))
+    {
+        folDict = IOdictionary
+        (
+            IOobject
+            (
+                args["dict"],
+                runTime,
+                IOobject::MUST_READ_IF_MODIFIED
+            )
+        );
+        folPtr.reset(new functionObjectList(runTime, folDict));
+    }
+    else
+    {
+        folPtr.reset(new functionObjectList(runTime));
+    }
+    folPtr->start();
+
 
     forAll(timeDirs, timeI)
     {
@@ -392,7 +381,7 @@ int main(int argc, char *argv[])
 
         try
         {
-            calc(args, runTime, mesh, folPtr);
+            calc(args, runTime, mesh, folPtr());
         }
         catch (IOerror& err)
         {
