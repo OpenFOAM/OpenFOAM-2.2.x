@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -26,6 +26,11 @@ Class
 
 Description
     Wrapper around POSIX extended regular expressions.
+
+Note
+    The normal POSIX regular expressions are extended slightly to support a
+    leading '(?i)' to compile the regular expression as being
+    case-insensitive. This syntax is as per java.util.regex.Pattern and PCRE.
 
 SeeAlso
     The manpage regex(7) for more information about POSIX regular expressions.

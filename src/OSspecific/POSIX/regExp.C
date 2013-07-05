@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -24,6 +24,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include <sys/types.h>
+#include <cstring>
 
 #include "regExp.H"
 #include "label.H"
@@ -72,15 +73,31 @@ void Foam::regExp::set(const char* pattern, const bool ignoreCase) const
     // avoid NULL pointer and zero-length patterns
     if (pattern && *pattern)
     {
-        preg_ = new regex_t;
-
         int cflags = REG_EXTENDED;
         if (ignoreCase)
         {
             cflags |= REG_ICASE;
         }
 
-        int err = regcomp(preg_, pattern, cflags);
+        const char* pat = pattern;
+
+        // check for embedded prefix for ignore-case
+        // this is the only embedded prefix we support
+        // - a simple check is sufficient
+        if (!strncmp(pattern, "(?i)", 4))
+        {
+            cflags |= REG_ICASE;
+            pat += 4;
+
+            // avoid zero-length patterns
+            if (!*pat)
+            {
+                return;
+            }
+        }
+
+        preg_ = new regex_t;
+        int err = regcomp(preg_, pat, cflags);
 
         if (err != 0)
         {
