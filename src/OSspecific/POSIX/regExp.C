@@ -32,6 +32,57 @@ License
 #include "List.H"
 #include "IOstreams.H"
 
+
+template<class StringType>
+bool Foam::regExp::matchGrouping
+(
+    const std::string& str,
+    List<StringType>& groups
+) const
+{
+    if (preg_ && str.size())
+    {
+        size_t nmatch = ngroups() + 1;
+        regmatch_t pmatch[nmatch];
+
+        // also verify that the entire string was matched
+        // pmatch[0] is the entire match
+        // pmatch[1..] are the (...) sub-groups
+        if
+        (
+            regexec(preg_, str.c_str(), nmatch, pmatch, 0) == 0
+         && (pmatch[0].rm_so == 0 && pmatch[0].rm_eo == label(str.size()))
+        )
+        {
+            groups.setSize(ngroups());
+            label groupI = 0;
+
+            for (size_t matchI = 1; matchI < nmatch; matchI++)
+            {
+                if (pmatch[matchI].rm_so != -1 && pmatch[matchI].rm_eo != -1)
+                {
+                    groups[groupI] = str.substr
+                    (
+                        pmatch[matchI].rm_so,
+                        pmatch[matchI].rm_eo - pmatch[matchI].rm_so
+                    );
+                }
+                else
+                {
+                    groups[groupI].clear();
+                }
+                groupI++;
+            }
+
+            return true;
+        }
+    }
+
+    groups.clear();
+    return false;
+}
+
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::regExp::regExp()
@@ -176,48 +227,15 @@ bool Foam::regExp::match(const std::string& str) const
 }
 
 
-bool Foam::regExp::match(const string& str, List<string>& groups) const
+bool Foam::regExp::match(const std::string& str, List<std::string>& groups) const
 {
-    if (preg_ && str.size())
-    {
-        size_t nmatch = ngroups() + 1;
-        regmatch_t pmatch[nmatch];
+    return matchGrouping(str, groups);
+}
 
-        // also verify that the entire string was matched
-        // pmatch[0] is the entire match
-        // pmatch[1..] are the (...) sub-groups
-        if
-        (
-            regexec(preg_, str.c_str(), nmatch, pmatch, 0) == 0
-         && (pmatch[0].rm_so == 0 && pmatch[0].rm_eo == label(str.size()))
-        )
-        {
-            groups.setSize(ngroups());
-            label groupI = 0;
 
-            for (size_t matchI = 1; matchI < nmatch; matchI++)
-            {
-                if (pmatch[matchI].rm_so != -1 && pmatch[matchI].rm_eo != -1)
-                {
-                    groups[groupI] = str.substr
-                    (
-                        pmatch[matchI].rm_so,
-                        pmatch[matchI].rm_eo - pmatch[matchI].rm_so
-                    );
-                }
-                else
-                {
-                    groups[groupI].clear();
-                }
-                groupI++;
-            }
-
-            return true;
-        }
-    }
-
-    groups.clear();
-    return false;
+bool Foam::regExp::match(const std::string& str, List<Foam::string>& groups) const
+{
+    return matchGrouping(str, groups);
 }
 
 

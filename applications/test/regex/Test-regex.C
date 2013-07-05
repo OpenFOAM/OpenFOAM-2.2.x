@@ -45,6 +45,7 @@ int main(int argc, char *argv[])
     Info<< "input list:" << rawList << endl;
     IOobject::writeDivider(Info) << endl;
 
+    // List<std::string> groups;
     List<string> groups;
 
     // report matches:

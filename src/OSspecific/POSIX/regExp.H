@@ -76,6 +76,14 @@ class regExp
         //- Disallow default bitwise assignment
         void operator=(const regExp&);
 
+        //- Return true if it matches and sets the sub-groups matched
+        template<class StringType>
+        bool matchGrouping
+        (
+            const std::string&,
+            List<StringType>& groups
+        ) const;
+
 public:
 
     // Static Member Functions
@@ -166,7 +174,11 @@ public:
 
             //- Return true if it matches and sets the sub-groups matched
             //  The begin-of-line (^) and end-of-line ($) anchors are implicit
-            bool match(const string&, List<string>& groups) const;
+            bool match(const std::string&, List<std::string>& groups) const;
+
+            //- Return true if it matches and sets the sub-groups matched
+            //  The begin-of-line (^) and end-of-line ($) anchors are implicit
+            bool match(const std::string&, List<string>& groups) const;
 
             //- Return true if the regex was found within string
             bool search(const std::string& str) const
