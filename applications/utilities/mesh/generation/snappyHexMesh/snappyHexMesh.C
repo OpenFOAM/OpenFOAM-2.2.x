@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -96,6 +96,7 @@ void writeMesh
 (
     const string& msg,
     const meshRefinement& meshRefiner,
+    const bool writeLevel,
     const label debug
 )
 {
@@ -104,19 +105,19 @@ void writeMesh
     meshRefiner.printMeshInfo(debug, msg);
     Info<< "Writing mesh to time " << meshRefiner.timeName() << endl;
 
-    meshRefiner.write(meshRefinement::MESH|meshRefinement::SCALARLEVELS, "");
+    label flag = meshRefinement::MESH;
+    if (writeLevel)
+    {
+        flag |= meshRefinement::SCALARLEVELS;
+    }
     if (debug & meshRefinement::OBJINTERSECTIONS)
     {
-        meshRefiner.write
-        (
-            meshRefinement::OBJINTERSECTIONS,
-            mesh.time().path()/meshRefiner.timeName()
-        );
+        flag |= meshRefinement::OBJINTERSECTIONS;
     }
+    meshRefiner.write(flag, mesh.time().path()/meshRefiner.timeName());
     Info<< "Wrote mesh in = "
         << mesh.time().cpuTimeIncrement() << " s." << endl;
 }
-
 
 
 int main(int argc, char *argv[])
@@ -126,6 +127,11 @@ int main(int argc, char *argv[])
     (
         "checkGeometry",
         "check all surface geometry for quality"
+    );
+    Foam::argList::addBoolOption
+    (
+        "writeLevel",
+        "write pointLevel and cellLevel postprocessing files"
     );
 
 #   include "setRootCase.H"
@@ -138,6 +144,7 @@ int main(int argc, char *argv[])
 
     const bool overwrite = args.optionFound("overwrite");
     const bool checkGeometry = args.optionFound("checkGeometry");
+    const bool writeLevel = args.optionFound("writeLevel");
 
     // Check patches and faceZones are synchronised
     mesh.boundaryMesh().checkParallelSync(true);
@@ -576,6 +583,7 @@ int main(int argc, char *argv[])
         (
             "Refined mesh",
             meshRefiner,
+            writeLevel,
             debug
         );
 
@@ -614,6 +622,7 @@ int main(int argc, char *argv[])
         (
             "Snapped mesh",
             meshRefiner,
+            writeLevel,
             debug
         );
 
@@ -667,6 +676,7 @@ int main(int argc, char *argv[])
         (
             "Layer mesh",
             meshRefiner,
+            writeLevel,
             debug
         );
 

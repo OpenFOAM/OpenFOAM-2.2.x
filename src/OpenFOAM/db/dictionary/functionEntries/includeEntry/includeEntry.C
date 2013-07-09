@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -90,6 +90,30 @@ Foam::fileName Foam::functionEntries::includeEntry::includeFileName
 }
 
 
+Foam::fileName Foam::functionEntries::includeEntry::includeFileName
+(
+    const fileName& dir,
+    const fileName& f,
+    const dictionary& dict
+)
+{
+    fileName fName(f);
+    // Substitute dictionary and environment variables. Allow empty
+    // substitutions.
+    stringOps::inplaceExpand(fName, dict, true, true);
+
+    if (fName.empty() || fName.isAbsolute())
+    {
+        return fName;
+    }
+    else
+    {
+        // relative name
+        return dir/fName;
+    }
+}
+
+
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 bool Foam::functionEntries::includeEntry::execute
@@ -98,7 +122,11 @@ bool Foam::functionEntries::includeEntry::execute
     Istream& is
 )
 {
-    const fileName fName(includeFileName(is, parentDict));
+    const fileName rawFName(is);
+    const fileName fName
+    (
+        includeFileName(is.name().path(), rawFName, parentDict)
+    );
     IFstream ifs(fName);
 
     if (ifs)
@@ -117,7 +145,8 @@ bool Foam::functionEntries::includeEntry::execute
             "functionEntries::includeEntry::includeEntry"
             "(dictionary& parentDict, Istream&)",
             is
-        )   << "Cannot open include file " << ifs.name()
+        )   << "Cannot open include file "
+            << (ifs.name().size() ? ifs.name() : rawFName)
             << " while reading dictionary " << parentDict.name()
             << exit(FatalIOError);
 
@@ -133,7 +162,11 @@ bool Foam::functionEntries::includeEntry::execute
     Istream& is
 )
 {
-    const fileName fName(includeFileName(is, parentDict));
+    const fileName rawFName(is);
+    const fileName fName
+    (
+        includeFileName(is.name().path(), rawFName, parentDict)
+    );
     IFstream ifs(fName);
 
     if (ifs)
@@ -152,7 +185,8 @@ bool Foam::functionEntries::includeEntry::execute
             "functionEntries::includeEntry::includeEntry"
             "(dictionary& parentDict, primitiveEntry&, Istream&)",
             is
-        )   << "Cannot open include file " << ifs.name()
+        )   << "Cannot open include file "
+            << (ifs.name().size() ? ifs.name() : rawFName)
             << " while reading dictionary " << parentDict.name()
             << exit(FatalIOError);
 

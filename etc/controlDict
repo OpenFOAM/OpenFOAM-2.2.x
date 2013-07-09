@@ -266,6 +266,7 @@ DebugSwitches
     SingleKineticRateDevolatilisation 0;
     SingleMixtureFraction   0;
     Smagorinsky         0;
+    SolverPerformance   1;
     SpalartAllmaras     0;
     SpalartAllmarasDDES 0;
     SpalartAllmarasIDDES    0;

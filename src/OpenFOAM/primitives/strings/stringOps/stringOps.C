@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -458,6 +458,55 @@ Foam::string& Foam::stringOps::inplaceExpand
             ++begVar;
         }
     }
+
+    if (!s.empty())
+    {
+        if (s[0] == '~')
+        {
+            // Expand initial ~
+            //   ~/        => home directory
+            //   ~OpenFOAM => site/user OpenFOAM configuration directory
+            //   ~user     => home directory for specified user
+
+            string user;
+            fileName file;
+
+            if ((begVar = s.find('/')) != string::npos)
+            {
+                user = s.substr(1, begVar - 1);
+                file = s.substr(begVar + 1);
+            }
+            else
+            {
+                user = s.substr(1);
+            }
+
+            // NB: be a bit lazy and expand ~unknownUser as an
+            // empty string rather than leaving it untouched.
+            // otherwise add extra test
+            if (user == "OpenFOAM")
+            {
+                s = findEtcFile(file);
+            }
+            else
+            {
+                s = home(user)/file;
+            }
+        }
+        else if (s[0] == '.')
+        {
+            // Expand a lone '.' and an initial './' into cwd
+            if (s.size() == 1)
+            {
+                s = cwd();
+            }
+            else if (s[1] == '/')
+            {
+                s.std::string::replace(0, 1, cwd());
+            }
+        }
+    }
+
     return s;
 }
 
