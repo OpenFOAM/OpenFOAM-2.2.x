@@ -92,6 +92,9 @@ class AMIInterpolation
         //  that the orientation of the target patch should be reversed
         const bool reverseTarget_;
 
+        //- Flag to restart uncovered source faces
+        const bool restartUncoveredSourceFace_;
+
         //- Index of processor that holds all of both sides. -1 in all other
         //  cases
         label singlePatchProc_;
@@ -352,7 +355,8 @@ public:
             const SourcePatch& srcPatch,
             const TargetPatch& tgtPatch,
             const faceAreaIntersect::triangulationMode& triMode,
-            const bool reverseTarget = false
+            const bool reverseTarget = false,
+            const bool restartUncoveredSourceFace = true
         );
 
         //- Construct from components, with projection surface
@@ -362,7 +366,8 @@ public:
             const TargetPatch& tgtPatch,
             const autoPtr<searchableSurface>& surf,
             const faceAreaIntersect::triangulationMode& triMode,
-            const bool reverseTarget = false
+            const bool reverseTarget = false,
+            const bool restartUncoveredSourceFace = true
         );
 
         //- Construct from agglomeration of AMIInterpolation. Agglomeration
