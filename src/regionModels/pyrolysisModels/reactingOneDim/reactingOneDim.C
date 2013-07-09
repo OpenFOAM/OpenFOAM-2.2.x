@@ -205,10 +205,7 @@ void reactingOneDim::updateFields()
         updateQr();
     }
 
-    if (gasHSource_)
-    {
-        updatePhiGas();
-    }
+    updatePhiGas();
 }
 
 
@@ -318,10 +315,6 @@ void reactingOneDim::solveEnergy()
         Info<< "reactingOneDim::solveEnergy()" << endl;
     }
 
-    const surfaceScalarField phiQr(fvc::interpolate(Qr_)*nMagSf());
-
-    const surfaceScalarField phiGas(fvc::interpolate(phiHsGas_));
-
     tmp<volScalarField> alpha(solidThermo_.alpha());
 
     fvScalarMatrix hEqn
@@ -334,12 +327,14 @@ void reactingOneDim::solveEnergy()
 
     if (gasHSource_)
     {
+        const surfaceScalarField phiGas(fvc::interpolate(phiHsGas_));
         hEqn += fvc::div(phiGas);
     }
 
     if (QrHSource_)
     {
-         hEqn += fvc::div(phiQr);
+        const surfaceScalarField phiQr(fvc::interpolate(Qr_)*nMagSf());
+        hEqn += fvc::div(phiQr);
     }
 
     if (regionMesh().moving())
