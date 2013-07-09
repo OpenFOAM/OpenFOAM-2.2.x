@@ -21,40 +21,40 @@ internalField   uniform 0;
 
 boundaryField
 {
-    ".*"
+   fRight_zone_top
     {
-        type            zeroGradient;
+        type           zeroGradient;
     }
-
     fRight_zone_side
     {
         type            wedge;
     }
-
+    fLeft_zone_top
+    {
+        type           zeroGradient;
+    }
     fLeft_zone_side
     {
         type            wedge;
     }
-
-    region0_to_panelRegion_left_face
+    region0_to_panelRegion_fLeft_zone
     {
         type            mappedField;
         sampleRegion    region0;
         sampleMode      nearestPatchFace;
-        samplePatch     region0_to_panelRegion_left_face;
+        samplePatch     region0_to_panelRegion_fLeft_zone;
         offset          (0 0 0);
         fieldName       Qr;
         setAverage      no;
         average         0;
         value           uniform 0;
     }
-
-    region0_to_panelRegion_right_face
+    region0_to_panelRegion_fRight_zone
     {
         type            mappedField;
         sampleRegion    region0;
         sampleMode      nearestPatchFace;
-        samplePatch     region0_to_panelRegion_right_face;
+        samplePatch     region0_to_panelRegion_fRight_zone;
         offset          (0 0 0);
         fieldName       Qr;
         setAverage      no;

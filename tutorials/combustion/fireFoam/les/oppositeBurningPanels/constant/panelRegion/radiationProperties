@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.2.0                                 |
+|  \\    /   O peration     | Version:  2.2.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -23,15 +23,15 @@ absorptionEmissionModel greyMeanSolidAbsorptionEmission;
 
 greyMeanSolidAbsorptionEmissionCoeffs
 {
-    v
+    wood
     {
-        absorptivity    0.0;  //opaque
+        absorptivity    0.17;
         emissivity      0.17;
     }
 
     char
     {
-        absorptivity    0.0;
+        absorptivity    0.85;
         emissivity      0.85;
     }
 }
