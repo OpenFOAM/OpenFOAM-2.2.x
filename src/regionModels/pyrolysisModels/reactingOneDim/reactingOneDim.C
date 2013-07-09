@@ -440,20 +440,7 @@ reactingOneDim::reactingOneDim(const word& modelType, const fvMesh& mesh)
         regionMesh(),
         dimensionedScalar("zero", dimEnergy/dimTime/dimVolume, 0.0)
     ),
-/*
-    QrCoupled_
-    (
-        IOobject
-        (
-            "Qr",
-            time().timeName(),
-            regionMesh(),
-            IOobject::MUST_READ,
-            IOobject::AUTO_WRITE
-        ),
-        regionMesh()
-    ),
-*/
+
     Qr_
     (
         IOobject
@@ -553,20 +540,7 @@ reactingOneDim::reactingOneDim
         regionMesh(),
         dimensionedScalar("zero", dimEnergy/dimTime/dimVolume, 0.0)
     ),
-/*
-    QrCoupled_
-    (
-        IOobject
-        (
-            "Qr",
-            time().timeName(),
-            regionMesh(),
-            IOobject::MUST_READ,
-            IOobject::NO_WRITE
-        ),
-        regionMesh()
-    ),
-*/
+
     Qr_
     (
         IOobject
