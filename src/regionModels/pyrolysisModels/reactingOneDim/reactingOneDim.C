@@ -57,8 +57,10 @@ void reactingOneDim::readReactingOneDimControls()
     solution.lookup("nNonOrthCorr") >> nNonOrthCorr_;
     time().controlDict().lookup("maxDi") >> maxDiff_;
 
-    coeffs().lookup("radFluxName") >> primaryRadFluxName_;
     coeffs().lookup("minimumDelta") >> minimumDelta_;
+
+    coeffs().lookup("gasHSource") >> gasHSource_;
+    coeffs().lookup("QrHSource") >> QrHSource_;
 }
 
 
@@ -90,6 +92,58 @@ bool reactingOneDim::read(const dictionary& dict)
 }
 
 
+void reactingOneDim::updateQr()
+{
+    // Update local Qr from coupled Qr field
+    Qr_ == dimensionedScalar("zero", Qr_.dimensions(), 0.0);
+
+    // Retrieve field from coupled region using mapped boundary conditions
+    Qr_.correctBoundaryConditions();
+
+    forAll(intCoupledPatchIDs_, i)
+    {
+        const label patchI = intCoupledPatchIDs_[i];
+
+        scalarField& Qrp = Qr_.boundaryField()[patchI];
+
+        // Qr is positive going in the solid
+        // If the surface is emitting the radiative flux is set to zero
+        Qrp = max(Qrp, scalar(0.0));
+    }
+
+    const vectorField& cellC = regionMesh().cellCentres();
+
+    tmp<volScalarField> kappa = kappaRad();
+
+    // Propagate Qr through 1-D regions
+    label localPyrolysisFaceI = 0;
+    forAll(intCoupledPatchIDs_, i)
+    {
+        const label patchI = intCoupledPatchIDs_[i];
+
+        const scalarField& Qrp = Qr_.boundaryField()[patchI];
+        const vectorField& Cf = regionMesh().Cf().boundaryField()[patchI];
+
+        forAll(Qrp, faceI)
+        {
+            const scalar Qr0 = Qrp[faceI];
+            point Cf0 = Cf[faceI];
+            const labelList& cells = boundaryFaceCells_[localPyrolysisFaceI++];
+            scalar kappaInt = 0.0;
+            forAll(cells, k)
+            {
+                const label cellI = cells[k];
+                const point& Cf1 = cellC[cellI];
+                const scalar delta = mag(Cf1 - Cf0);
+                kappaInt += kappa()[cellI]*delta;
+                Qr_[cellI] = Qr0*exp(-kappaInt);
+                Cf0 = Cf1;
+            }
+        }
+    }
+}
+
+
 void reactingOneDim::updatePhiGas()
 {
     phiHsGas_ ==  dimensionedScalar("zero", phiHsGas_.dimensions(), 0.0);
@@ -112,20 +166,21 @@ void reactingOneDim::updatePhiGas()
         {
             const label patchI = intCoupledPatchIDs_[i];
 
-            const scalarField& phiGasp = phiHsGas_.boundaryField()[patchI];
+            scalarField& phiGasp = phiGas_.boundaryField()[patchI];
+            const scalarField& cellVol = regionMesh().V();
 
             forAll(phiGasp, faceI)
             {
-                const labelList& cells = boundaryFaceCells_[totalFaceId];
+                const labelList& cells = boundaryFaceCells_[totalFaceId++];
                 scalar massInt = 0.0;
                 forAllReverse(cells, k)
                 {
                     const label cellI = cells[k];
-                    massInt += RRiGas[cellI]*regionMesh().V()[cellI];
+                    massInt += RRiGas[cellI]*cellVol[cellI];
                     phiHsGas_[cellI] += massInt*HsiGas[cellI];
                 }
 
-                phiGas_.boundaryField()[patchI][faceI] += massInt;
+                phiGasp[faceI] += massInt;
 
                 if (debug)
                 {
@@ -136,7 +191,6 @@ void reactingOneDim::updatePhiGas()
                         << " is : " << massInt
                         << " [kg/s] " << endl;
                 }
-                totalFaceId ++;
             }
         }
         tHsiGas().clear();
@@ -146,7 +200,15 @@ void reactingOneDim::updatePhiGas()
 
 void reactingOneDim::updateFields()
 {
-    updatePhiGas();
+    if (QrHSource_)
+    {
+        updateQr();
+    }
+
+    if (gasHSource_)
+    {
+        updatePhiGas();
+    }
 }
 
 
@@ -183,22 +245,28 @@ void reactingOneDim::solveContinuity()
         Info<< "reactingOneDim::solveContinuity()" << endl;
     }
 
-    if (moveMesh_)
-    {
-        const scalarField mass0 = rho_*regionMesh().V();
+    const scalarField mass0 = rho_*regionMesh().V();
 
-        fvScalarMatrix rhoEqn
+    fvScalarMatrix rhoEqn
+    (
+        fvm::ddt(rho_)
+        ==
+      - solidChemistry_->RRg()
+    );
+
+    if (regionMesh().moving())
+    {
+        surfaceScalarField phiRhoMesh
         (
-            fvm::ddt(rho_)
-         ==
-          - solidChemistry_->RRg()
+            fvc::interpolate(rho_)*regionMesh().phi()
         );
 
-        rhoEqn.solve();
-
-        updateMesh(mass0);
-
+        rhoEqn += fvc::div(phiRhoMesh);
     }
+
+    rhoEqn.solve();
+
+    updateMesh(mass0);
 }
 
 
@@ -239,6 +307,7 @@ void reactingOneDim::solveSpeciesMass()
     }
 
     Ys_[Ys_.size() - 1] = 1.0 - Yt;
+
 }
 
 
@@ -249,6 +318,10 @@ void reactingOneDim::solveEnergy()
         Info<< "reactingOneDim::solveEnergy()" << endl;
     }
 
+    const surfaceScalarField phiQr(fvc::interpolate(Qr_)*nMagSf());
+
+    const surfaceScalarField phiGas(fvc::interpolate(phiHsGas_));
+
     tmp<volScalarField> alpha(solidThermo_.alpha());
 
     fvScalarMatrix hEqn
@@ -258,6 +331,16 @@ void reactingOneDim::solveEnergy()
      ==
         chemistrySh_
     );
+
+    if (gasHSource_)
+    {
+        hEqn += fvc::div(phiGas);
+    }
+
+    if (QrHSource_)
+    {
+         hEqn += fvc::div(phiQr);
+    }
 
     if (regionMesh().moving())
     {
@@ -271,9 +354,6 @@ void reactingOneDim::solveEnergy()
 
     hEqn.relax();
     hEqn.solve();
-
-    Info<< "pyrolysis min/max(T) = " << min(solidThermo_.T()) << ", "
-        << max(solidThermo_.T()) << endl;
 }
 
 
@@ -365,11 +445,41 @@ reactingOneDim::reactingOneDim(const word& modelType, const fvMesh& mesh)
         regionMesh(),
         dimensionedScalar("zero", dimEnergy/dimTime/dimVolume, 0.0)
     ),
+/*
+    QrCoupled_
+    (
+        IOobject
+        (
+            "Qr",
+            time().timeName(),
+            regionMesh(),
+            IOobject::MUST_READ,
+            IOobject::AUTO_WRITE
+        ),
+        regionMesh()
+    ),
+*/
+    Qr_
+    (
+        IOobject
+        (
+            "Qr",
+            time().timeName(),
+            regionMesh(),
+            IOobject::MUST_READ,
+            IOobject::AUTO_WRITE
+        ),
+        regionMesh()
+        //dimensionedScalar("zero", dimEnergy/dimArea/dimTime, 0.0),
+        //zeroGradientFvPatchVectorField::typeName
+    ),
 
     lostSolidMass_(dimensionedScalar("zero", dimMass, 0.0)),
     addedGasMass_(dimensionedScalar("zero", dimMass, 0.0)),
     totalGasMassFlux_(0.0),
-    totalHeatRR_(dimensionedScalar("zero", dimEnergy/dimTime, 0.0))
+    totalHeatRR_(dimensionedScalar("zero", dimEnergy/dimTime, 0.0)),
+    gasHSource_(false),
+    QrHSource_(false)
 {
     if (active_)
     {
@@ -448,11 +558,39 @@ reactingOneDim::reactingOneDim
         regionMesh(),
         dimensionedScalar("zero", dimEnergy/dimTime/dimVolume, 0.0)
     ),
+/*
+    QrCoupled_
+    (
+        IOobject
+        (
+            "Qr",
+            time().timeName(),
+            regionMesh(),
+            IOobject::MUST_READ,
+            IOobject::NO_WRITE
+        ),
+        regionMesh()
+    ),
+*/
+    Qr_
+    (
+        IOobject
+        (
+            "Qr",
+            time().timeName(),
+            regionMesh(),
+            IOobject::MUST_READ,
+            IOobject::AUTO_WRITE
+        ),
+        regionMesh()
+    ),
 
     lostSolidMass_(dimensionedScalar("zero", dimMass, 0.0)),
     addedGasMass_(dimensionedScalar("zero", dimMass, 0.0)),
     totalGasMassFlux_(0.0),
-    totalHeatRR_(dimensionedScalar("zero", dimEnergy/dimTime, 0.0))
+    totalHeatRR_(dimensionedScalar("zero", dimEnergy/dimTime, 0.0)),
+    gasHSource_(false),
+    QrHSource_(false)
 {
     if (active_)
     {
@@ -579,8 +717,6 @@ void reactingOneDim::evolveRegion()
         time().deltaTValue()
     );
 
-    calculateMassTransfer();
-
     solveContinuity();
 
     chemistrySh_ = solidChemistry_->Sh()();
@@ -594,9 +730,15 @@ void reactingOneDim::evolveRegion()
         solveEnergy();
     }
 
+    calculateMassTransfer();
+
     solidThermo_.correct();
 
-    rho_ = solidThermo_.rho();
+    Info<< "pyrolysis min/max(T) = "
+        << min(solidThermo_.T().internalField())
+        << ", "
+        << max(solidThermo_.T().internalField())
+        << endl;
 }
 
 

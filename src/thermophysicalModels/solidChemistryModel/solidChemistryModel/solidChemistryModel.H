@@ -43,6 +43,7 @@ SourceFiles
 #include "ODE.H"
 #include "volFieldsFwd.H"
 #include "DimensionedField.H"
+#include "simpleMatrix.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -63,6 +64,9 @@ class solidChemistryModel
     public ODE
 {
     // Private Member Functions
+
+        //- Disallow copy constructor
+        solidChemistryModel(const solidChemistryModel&);
 
         //- Disallow default bitwise assignment
         void operator=(const solidChemistryModel&);
@@ -150,8 +154,53 @@ public:
             label& rRef
         ) const = 0;
 
+
+        //- Return the reaction rate for iReaction and the reference
+        //  species and charateristic times
+        virtual scalar omegaI
+        (
+            label iReaction,
+            const scalarField& c,
+            const scalar T,
+            const scalar p,
+            scalar& pf,
+            scalar& cf,
+            label& lRef,
+            scalar& pr,
+            scalar& cr,
+            label& rRef
+        ) const = 0;
+
         //- Calculates the reaction rates
         virtual void calculate() = 0;
+
+
+        //- Update concentrations in reaction i given dt and reaction rate
+        // omega used by sequential solver
+        virtual void updateConcsInReactionI
+        (
+            const label i,
+            const scalar dt,
+            const scalar omega,
+            const scalar p,
+            const scalar T,
+            scalarField& c
+        ) const = 0;
+
+
+        //- Update matrix RR for reaction i. Used by EulerImplicit
+        virtual void updateRRInReactionI
+        (
+            const label i,
+            const scalar pr,
+            const scalar pf,
+            const scalar corr,
+            const label lRef,
+            const label rRef,
+            const scalar p,
+            const scalar T,
+            simpleMatrix<scalar>& RR
+        ) const = 0;
 
 
         // Chemistry model functions

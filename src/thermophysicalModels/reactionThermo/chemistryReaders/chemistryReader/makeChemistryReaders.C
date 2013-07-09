@@ -76,13 +76,15 @@ makeChemistryReaderType(foamChemistryReader, incompressibleGasEThermoPhysics);
 makeChemistryReaderType(foamChemistryReader, icoPoly8EThermoPhysics);
 
 
-// Solid chemistry readers for solids based on sensibleInternalEnergy
+// Solid chemistry readers for solids based on sensible Enthaly
 
 makeChemistryReader(hConstSolidThermoPhysics);
 makeChemistryReader(hExponentialSolidThermoPhysics);
+makeChemistryReader(hExpKappaConstSolidThermoPhysics);
 
 makeChemistryReaderType(foamChemistryReader, hConstSolidThermoPhysics);
 makeChemistryReaderType(foamChemistryReader, hExponentialSolidThermoPhysics);
+makeChemistryReaderType(foamChemistryReader, hExpKappaConstSolidThermoPhysics);
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

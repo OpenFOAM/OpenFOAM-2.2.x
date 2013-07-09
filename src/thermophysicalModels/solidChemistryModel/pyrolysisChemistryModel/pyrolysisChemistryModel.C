@@ -275,6 +275,29 @@ Foam::pyrolysisChemistryModel<CompType, SolidThermo, GasThermo>::omega
 
 
 template<class CompType, class SolidThermo, class GasThermo>
+Foam::scalar Foam::pyrolysisChemistryModel<CompType, SolidThermo, GasThermo>::
+omegaI
+(
+    const label index,
+    const scalarField& c,
+    const scalar T,
+    const scalar p,
+    scalar& pf,
+    scalar& cf,
+    label& lRef,
+    scalar& pr,
+    scalar& cr,
+    label& rRef
+) const
+{
+
+    const Reaction<SolidThermo>& R = this->reactions_[index];
+    scalar w = omega(R, c, T, p, pf, cf, lRef, pr, cr, rRef);
+    return(w);
+}
+
+
+template<class CompType, class SolidThermo, class GasThermo>
 void Foam::pyrolysisChemistryModel<CompType, SolidThermo, GasThermo>::
 derivatives
 (
@@ -485,6 +508,76 @@ calculate()
                 RRg_[i][celli] = dcdt[this->nSolids_ + i]/delta;
             }
         }
+    }
+}
+
+
+template<class CompType, class SolidThermo, class GasThermo>
+void Foam::pyrolysisChemistryModel<CompType, SolidThermo, GasThermo>::
+updateConcsInReactionI
+(
+    const label index,
+    const scalar dt,
+    const scalar omeg,
+    const scalar p,
+    const scalar T,
+    scalarField& c
+) const
+{
+     // update species
+    const Reaction<SolidThermo>& R = this->reactions_[index];
+    scalar rhoL = 0.0;
+    forAll(R.lhs(), s)
+    {
+        label si = R.lhs()[s].index;
+        rhoL = this->solidThermo_[si].rho(p, T);
+        c[si] -= dt*omeg;
+        c[si] = max(0.0, c[si]);
+    }
+
+    forAll(R.rhs(), s)
+    {
+        label si = R.rhs()[s].index;
+        const scalar rhoR = this->solidThermo_[si].rho(p, T);
+        const scalar sr = rhoR/rhoL;
+        c[si] += dt*sr*omeg;
+        c[si] = max(0.0, c[si]);
+    }
+}
+
+
+template<class CompType, class SolidThermo, class GasThermo>
+void Foam::pyrolysisChemistryModel<CompType, SolidThermo, GasThermo>::
+updateRRInReactionI
+(
+    const label index,
+    const scalar pr,
+    const scalar pf,
+    const scalar corr,
+    const label lRef,
+    const label rRef,
+    const scalar p,
+    const scalar T,
+    simpleMatrix<scalar>& RR
+) const
+{
+    const Reaction<SolidThermo>& R = this->reactions_[index];
+    scalar rhoL = 0.0;
+    forAll(R.lhs(), s)
+    {
+        label si = R.lhs()[s].index;
+        rhoL = this->solidThermo_[si].rho(p, T);
+        RR[si][rRef] -= pr*corr;
+        RR[si][lRef] += pf*corr;
+    }
+
+    forAll(R.rhs(), s)
+    {
+        label si = R.rhs()[s].index;
+        const scalar rhoR = this->solidThermo_[si].rho(p, T);
+        const scalar sr = rhoR/rhoL;
+        RR[si][lRef] -= sr*pf*corr;
+        RR[si][rRef] += sr*pr*corr;
     }
 }
 
