@@ -37,7 +37,7 @@ boundaryField
     }
     WALL10
     {
-        type            alphatWallFunction;
+        type            compressible::alphatWallFunction;
         Prt             0.85;
         value           uniform 0;
     }

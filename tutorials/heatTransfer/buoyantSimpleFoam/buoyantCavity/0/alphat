@@ -23,25 +23,25 @@ boundaryField
 {
     frontAndBack
     {
-        type            alphatWallFunction;
+        type            compressible::alphatWallFunction;
         Prt             0.85;
         value           uniform 0;
     }
     topAndBottom
     {
-        type            alphatWallFunction;
+        type            compressible::alphatWallFunction;
         Prt             0.85;
         value           uniform 0;
     }
     hot
     {
-        type            alphatWallFunction;
+        type            compressible::alphatWallFunction;
         Prt             0.85;
         value           uniform 0;
     }
     cold
     {
-        type            alphatWallFunction;
+        type            compressible::alphatWallFunction;
         Prt             0.85;
         value           uniform 0;
     }

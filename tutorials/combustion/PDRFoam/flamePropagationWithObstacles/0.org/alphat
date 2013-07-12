@@ -28,19 +28,19 @@ boundaryField
     }
     ground
     {
-        type            alphatWallFunction;
+        type            compressible::alphatWallFunction;
         Prt             0.85;
         value           uniform 0;
     }
     blockedFaces
     {
-        type            alphatWallFunction;
+        type            compressible::alphatWallFunction;
         Prt             0.85;
         value           nonuniform 0();
     }
     baffleWall
     {
-        type            alphatWallFunction;
+        type            compressible::alphatWallFunction;
         Prt             0.85;
         value           nonuniform 0();
     }

@@ -23,7 +23,7 @@ boundaryField
 {
     ground
     {
-        type        alphatWallFunction;
+        type        compressible::alphatWallFunction;
         mut         muSgs;
         value       uniform 0;
     }
@@ -45,7 +45,7 @@ boundaryField
 
     "(region0_to.*)"
     {
-        type        alphatWallFunction;
+        type        compressible::alphatWallFunction;
         mut         muSgs;
         value       uniform 0;
     }

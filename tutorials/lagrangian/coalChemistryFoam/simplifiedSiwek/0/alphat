@@ -23,17 +23,17 @@ boundaryField
 {
     top
     {
-        type            alphatWallFunction;
+        type            compressible::alphatWallFunction;
         value           uniform 0;
     }
     bottom
     {
-        type            alphatWallFunction;
+        type            compressible::alphatWallFunction;
         value           uniform 0;
     }
     walls
     {
-        type            alphatWallFunction;
+        type            compressible::alphatWallFunction;
         value           uniform 0;
     }
     symmetry
