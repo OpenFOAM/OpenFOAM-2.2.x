@@ -23,22 +23,22 @@ boundaryField
 {
     front
     {
-        type            alphatWallFunction;
+        type            compressible::alphatWallFunction;
         value           uniform 0;
     }
     back
     {
-        type            alphatWallFunction;
+        type            compressible::alphatWallFunction;
         value           uniform 0;
     }
     wall
     {
-        type            alphatWallFunction;
+        type            compressible::alphatWallFunction;
         value           uniform 0;
     }
     porosityWall
     {
-        type            alphatWallFunction;
+        type            compressible::alphatWallFunction;
         value           uniform 0;
     }
     inlet
