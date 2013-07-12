@@ -31,5 +31,10 @@ odeCoeffs
     eps             0.05;
 }
 
+sequentialCoeffs
+{
+    cTauChem              0.001;
+    equilibriumRateLimiter off;
+}
 
 // ************************************************************************* //

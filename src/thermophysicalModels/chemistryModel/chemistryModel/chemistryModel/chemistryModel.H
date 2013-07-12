@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -182,6 +182,8 @@ public:
             const label i,
             const scalar dt,
             const scalar omega,
+            const scalar p,
+            const scalar T,
             scalarField& c
         ) const;
 
@@ -194,6 +196,8 @@ public:
             const scalar corr,
             const label lRef,
             const label rRef,
+            const scalar p,
+            const scalar T,
             simpleMatrix<scalar>& RR
         ) const;
 

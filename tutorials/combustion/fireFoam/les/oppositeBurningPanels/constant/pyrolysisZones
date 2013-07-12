@@ -27,8 +27,8 @@ FoamFile
 
         reactingOneDimCoeffs
         {
-            radFluxName     Qr;
-
+            gasHSource      no; //Energy source term due to pyrolysis gas
+            QrHSource       no; //Energy source term due in depht radiation
             minimumDelta    1e-12;
 
             reactionDeltaMin 1e-12;

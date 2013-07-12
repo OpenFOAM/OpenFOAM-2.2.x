@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -29,6 +29,21 @@ License
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template<class equationOfState>
+Foam::hExponentialThermo<equationOfState>::hExponentialThermo(Istream& is)
+:
+    equationOfState(is),
+    n0_(readScalar(is)),
+    Tref_(readScalar(is)),
+    Hf_(readScalar(is))
+{
+    is.check("hExponentialThermo::hExponentialThermo(Istream& is)");
+
+    c0_ *= this->W();
+    Hf_ *= this->W();
+}
+
+
+template<class equationOfState>
 Foam::hExponentialThermo<equationOfState>::hExponentialThermo
 (
     const dictionary& dict
@@ -39,7 +54,10 @@ Foam::hExponentialThermo<equationOfState>::hExponentialThermo
     n0_(readScalar(dict.subDict("thermodynamics").lookup("n0"))),
     Tref_(readScalar(dict.subDict("thermodynamics").lookup("Tref"))),
     Hf_(readScalar(dict.subDict("thermodynamics").lookup("Hf")))
-{}
+{
+    c0_ *= this->W();
+    Hf_ *= this->W();
+}
 
 
 // * * * * * * * * * * * * * * * Ostream Operator  * * * * * * * * * * * * * //

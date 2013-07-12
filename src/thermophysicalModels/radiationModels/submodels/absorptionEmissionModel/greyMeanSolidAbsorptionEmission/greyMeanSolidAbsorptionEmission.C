@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -121,6 +121,21 @@ greyMeanSolidAbsorptionEmission
             continue;
         }
         const word& key = iter().keyword();
+        if (!mixture_.contains(key))
+        {
+            WarningIn
+            (
+                "greyMeanSolidAbsorptionEmission::"
+                "greyMeanSolidAbsorptionEmission "
+                "("
+                "   const dictionary& dict,"
+                "   const fvMesh& mesh"
+                ")"
+            )   << " specie: " << key << " is not found in the solid mixture"
+                << nl
+                << " specie is the mixture are:" << mixture_.species() << nl
+                << nl << endl;
+        }
         speciesNames_.insert(key, nFunc);
         const dictionary& dict = iter().dict();
         dict.lookup("absorptivity") >> solidData_[nFunc][absorptivity];

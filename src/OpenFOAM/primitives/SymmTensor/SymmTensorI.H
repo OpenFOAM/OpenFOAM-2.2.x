@@ -529,7 +529,7 @@ class innerProduct<SymmTensor<Cmpt>, SymmTensor<Cmpt> >
 {
 public:
 
-    typedef SymmTensor<Cmpt> type;
+    typedef Tensor<Cmpt> type;
 };
 
 template<class Cmpt>

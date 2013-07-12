@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -55,13 +55,10 @@ inline Foam::scalar Foam::hExponentialThermo<equationOfState>::integrateCp
 {
     return
     (
-        c0_*pow(T, n0_ + 1.0)
-       /(pow(Tref_, n0_)*(n0_ + 1.0))
+        c0_*pow(T, n0_ + 1.0)/(pow(Tref_, n0_)*(n0_ + 1.0))
     );
 }
 
-
-// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template<class equationOfState>
 inline Foam::hExponentialThermo<equationOfState>::hExponentialThermo
@@ -77,6 +74,8 @@ inline Foam::hExponentialThermo<equationOfState>::hExponentialThermo
     Hf_(jt.Hf_)
 {}
 
+
+// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template<class equationOfState>
 inline Foam::hExponentialThermo<equationOfState>::hExponentialThermo
@@ -94,6 +93,39 @@ inline Foam::hExponentialThermo<equationOfState>::hExponentialThermo
     Tref_(Tref),
     Hf_(Hf)
 {}
+
+
+template<class equationOfState>
+inline Foam::autoPtr<Foam::hExponentialThermo<equationOfState> >
+Foam::hExponentialThermo<equationOfState>::clone() const
+{
+    return autoPtr<hExponentialThermo<equationOfState> >
+    (
+        new hExponentialThermo<equationOfState>(*this)
+    );
+}
+
+
+template<class equationOfState>
+inline Foam::autoPtr<Foam::hExponentialThermo<equationOfState> >
+Foam::hExponentialThermo<equationOfState>::New(Istream& is)
+{
+    return autoPtr<hExponentialThermo<equationOfState> >
+    (
+        new hExponentialThermo<equationOfState>(is)
+    );
+}
+
+
+template<class equationOfState>
+inline Foam::autoPtr<Foam::hExponentialThermo<equationOfState> >
+Foam::hExponentialThermo<equationOfState>::New(const dictionary& dict)
+{
+    return autoPtr<hExponentialThermo<equationOfState> >
+    (
+        new hExponentialThermo<equationOfState>(dict)
+    );
+}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
@@ -114,7 +146,7 @@ inline Foam::scalar Foam::hExponentialThermo<equationOfState>::cp
     const scalar p, const scalar T
 ) const
 {
-    return c0_*pow(T/Tref_, n0_)*this->W();
+    return c0_*pow(T/Tref_, n0_);
 }
 
 
@@ -128,7 +160,7 @@ inline Foam::scalar Foam::hExponentialThermo<equationOfState>::ha
 
     return
     (
-        (integrateCp(T) + Hf_ - hOffset)*this->W()
+        (integrateCp(T) + Hf_ - hOffset)
     );
 }
 
@@ -140,14 +172,14 @@ inline Foam::scalar Foam::hExponentialThermo<equationOfState>::hs
 ) const
 {
     scalar hOffset = integrateCp(specie::Tstd);
-    return (integrateCp(T) - hOffset)*this->W();
+    return (integrateCp(T) - hOffset);
 }
 
 
 template<class equationOfState>
 inline Foam::scalar Foam::hExponentialThermo<equationOfState>::hc() const
 {
-    return Hf_*this->W();
+    return Hf_;
 }
 
 
@@ -167,25 +199,6 @@ inline Foam::scalar Foam::hExponentialThermo<equationOfState>::s
 
 // * * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * //
 
-
-template<class equationOfState>
-inline Foam::hExponentialThermo<equationOfState>&
-Foam::hExponentialThermo<equationOfState>::operator=
-(
-    const hExponentialThermo<equationOfState>& ct
-)
-{
-    equationOfState::operator=(ct);
-
-    Hf_ = ct.Hf_;
-    c0_ = ct.c0_;
-    n0_ = ct.n0_;
-    Tref_ = ct.Tref_;
-
-    return *this;
-}
-
-
 template<class equationOfState>
 inline void Foam::hExponentialThermo<equationOfState>::operator+=
 (
@@ -195,14 +208,13 @@ inline void Foam::hExponentialThermo<equationOfState>::operator+=
     scalar molr1 = this->nMoles();
 
     equationOfState::operator+=(ct);
-
     molr1 /= this->nMoles();
     scalar molr2 = ct.nMoles()/this->nMoles();
 
     Hf_ = molr1*Hf_ + molr2*ct.Hf_;
     c0_ = molr1*c0_ + molr2*ct.c0_;
-    n0_ = (molr1*n0_ + molr2*ct.n0_);
-    Tref_ = (molr1*Tref_ + molr2*ct.Tref_);
+    n0_ = molr1*n0_ + molr2*ct.n0_;
+    Tref_ = molr1*Tref_ + molr2*ct.Tref_;
 }
 
 
@@ -229,6 +241,62 @@ inline void Foam::hExponentialThermo<equationOfState>::operator-=
 // * * * * * * * * * * * * * * * Friend Operators  * * * * * * * * * * * * * //
 
 template<class equationOfState>
+inline Foam::hExponentialThermo<equationOfState> Foam::operator+
+(
+    const hExponentialThermo<equationOfState>& ct1,
+    const hExponentialThermo<equationOfState>& ct2
+)
+{
+    equationOfState eofs
+    (
+        static_cast<const equationOfState&>(ct1)
+      + static_cast<const equationOfState&>(ct2)
+    );
+
+    return hExponentialThermo<equationOfState>
+    (
+        eofs,
+        ct1.nMoles()/eofs.nMoles()*ct1.c0_
+      + ct2.nMoles()/eofs.nMoles()*ct2.c0_,
+        ct1.nMoles()/eofs.nMoles()*ct1.n0_
+      + ct2.nMoles()/eofs.nMoles()*ct2.n0_,
+        ct1.nMoles()/eofs.nMoles()*ct1.Tref_
+      + ct2.nMoles()/eofs.nMoles()*ct2.Tref_,
+        ct1.nMoles()/eofs.nMoles()*ct1.Hf_
+      + ct2.nMoles()/eofs.nMoles()*ct2.Hf_
+    );
+}
+
+
+template<class equationOfState>
+inline Foam::hExponentialThermo<equationOfState> Foam::operator-
+(
+    const hExponentialThermo<equationOfState>& ct1,
+    const hExponentialThermo<equationOfState>& ct2
+)
+{
+    equationOfState eofs
+    (
+        static_cast<const equationOfState&>(ct1)
+      + static_cast<const equationOfState&>(ct2)
+    );
+
+    return hExponentialThermo<equationOfState>
+    (
+        eofs,
+        ct1.nMoles()/eofs.nMoles()*ct1.c0_
+      - ct2.nMoles()/eofs.nMoles()*ct2.c0_,
+        ct1.nMoles()/eofs.nMoles()*ct1.n0_
+      - ct2.nMoles()/eofs.nMoles()*ct2.n0_,
+        ct1.nMoles()/eofs.nMoles()*ct1.Tref_
+      - ct2.nMoles()/eofs.nMoles()*ct2.Tref_,
+        ct1.nMoles()/eofs.nMoles()*ct1.Hf_
+      - ct2.nMoles()/eofs.nMoles()*ct2.Hf_
+    );
+}
+
+
+template<class equationOfState>
 inline Foam::hExponentialThermo<equationOfState> Foam::operator*
 (
     const scalar s,
@@ -238,11 +306,22 @@ inline Foam::hExponentialThermo<equationOfState> Foam::operator*
     return hExponentialThermo<equationOfState>
     (
         s*static_cast<const equationOfState&>(ct),
-        ct.Hf_,
         ct.c0_,
         ct.n0_,
-        ct.Tref_
+        ct.Tref_,
+        ct.Hf_
     );
+}
+
+
+template<class equationOfState>
+inline Foam::hExponentialThermo<equationOfState> Foam::operator==
+(
+    const hExponentialThermo<equationOfState>& ct1,
+    const hExponentialThermo<equationOfState>& ct2
+)
+{
+    return ct2 - ct1;
 }
 
 

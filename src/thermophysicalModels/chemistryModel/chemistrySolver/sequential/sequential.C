@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -83,7 +83,7 @@ Foam::scalar Foam::sequential<ChemistryModel>::solve
 
         tChemInv = max(tChemInv, mag(omega));
 
-        this->updateConcsInReactionI(i, dt, omega, c);
+        this->updateConcsInReactionI(i, dt, omega, p, T, c);
     }
 
     return cTauChem_/tChemInv;

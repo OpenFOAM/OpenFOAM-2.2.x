@@ -813,7 +813,7 @@ void Foam::AMIInterpolation<SourcePatch, TargetPatch>::calcAddressing
 
 
     // Check for badly covered faces
-    if (debug)
+    if (restartUncoveredSourceFace_)
     {
         restartUncoveredSourceFace
         (
@@ -1153,10 +1153,12 @@ Foam::AMIInterpolation<SourcePatch, TargetPatch>::AMIInterpolation
     const SourcePatch& srcPatch,
     const TargetPatch& tgtPatch,
     const faceAreaIntersect::triangulationMode& triMode,
-    const bool reverseTarget
+    const bool reverseTarget,
+    const bool restartUncoveredSourceFace
 )
 :
     reverseTarget_(reverseTarget),
+    restartUncoveredSourceFace_(restartUncoveredSourceFace),
     singlePatchProc_(-999),
     srcAddress_(),
     srcWeights_(),
@@ -1188,10 +1190,12 @@ Foam::AMIInterpolation<SourcePatch, TargetPatch>::AMIInterpolation
     const TargetPatch& tgtPatch,
     const autoPtr<searchableSurface>& surfPtr,
     const faceAreaIntersect::triangulationMode& triMode,
-    const bool reverseTarget
+    const bool reverseTarget,
+    const bool restartUncoveredSourceFace
 )
 :
     reverseTarget_(reverseTarget),
+    restartUncoveredSourceFace_(restartUncoveredSourceFace),
     singlePatchProc_(-999),
     srcAddress_(),
     srcWeights_(),
@@ -1282,6 +1286,7 @@ Foam::AMIInterpolation<SourcePatch, TargetPatch>::AMIInterpolation
 )
 :
     reverseTarget_(fineAMI.reverseTarget_),
+    restartUncoveredSourceFace_(fineAMI.restartUncoveredSourceFace_),
     singlePatchProc_(fineAMI.singlePatchProc_),
     srcAddress_(),
     srcWeights_(),

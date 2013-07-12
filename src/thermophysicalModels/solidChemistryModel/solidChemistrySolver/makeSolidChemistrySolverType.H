@@ -32,6 +32,11 @@ Description
 
 #include "addToRunTimeSelectionTable.H"
 
+#include "noChemistrySolver.H"
+#include "EulerImplicit.H"
+#include "ode.H"
+#include "sequential.H"
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
@@ -59,6 +64,44 @@ namespace Foam
         fvMesh                                                                \
     );
 
+
+#define makeSolidChemistrySolverTypes(SolidChem, Comp, SThermo, GThermo)      \
+                                                                              \
+    makeSolidChemistrySolverType                                              \
+    (                                                                         \
+        noChemistrySolver,                                                    \
+        SolidChem,                                                            \
+        Comp,                                                                 \
+        SThermo,                                                              \
+        GThermo                                                               \
+    );                                                                        \
+                                                                              \
+    makeSolidChemistrySolverType                                              \
+    (                                                                         \
+        EulerImplicit,                                                        \
+        SolidChem,                                                            \
+        Comp,                                                                 \
+        SThermo,                                                              \
+        GThermo                                                               \
+    );                                                                        \
+                                                                              \
+    makeSolidChemistrySolverType                                              \
+    (                                                                         \
+        ode,                                                                  \
+        SolidChem,                                                            \
+        Comp,                                                                 \
+        SThermo,                                                              \
+        GThermo                                                               \
+    );                                                                        \
+                                                                              \
+    makeSolidChemistrySolverType                                              \
+    (                                                                         \
+        sequential,                                                           \
+        SolidChem,                                                            \
+        Comp,                                                                 \
+        SThermo,                                                              \
+        GThermo                                                               \
+    );
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

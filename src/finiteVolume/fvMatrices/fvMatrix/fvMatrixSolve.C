@@ -198,7 +198,10 @@ Foam::solverPerformance Foam::fvMatrix<Type>::solveSegregated
             solverControls
         )->solve(psiCmpt, sourceCmpt, cmpt);
 
-        solverPerf.print(Info);
+        if (solverPerformance::debug)
+        {
+            solverPerf.print(Info);
+        }
 
         solverPerfVec = max(solverPerfVec, solverPerf);
         solverPerfVec.solverName() = solverPerf.solverName();
@@ -261,7 +264,10 @@ Foam::solverPerformance Foam::fvMatrix<Type>::solveCoupled
         coupledMatrixSolver->solve(psi)
     );
 
-    solverPerf.print(Info);
+    if (SolverPerformance<Type>::debug)
+    {
+        solverPerf.print(Info);
+    }
 
     psi.correctBoundaryConditions();
 

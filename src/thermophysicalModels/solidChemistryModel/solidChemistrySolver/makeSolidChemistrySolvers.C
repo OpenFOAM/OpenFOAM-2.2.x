@@ -30,30 +30,33 @@ License
 #include "pyrolysisChemistryModel.H"
 #include "basicSolidChemistryModel.H"
 
-#include "ode.H"
-
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-    makeSolidChemistrySolverType
+    makeSolidChemistrySolverTypes
     (
-        ode,
         pyrolysisChemistryModel,
         basicSolidChemistryModel,
         hConstSolidThermoPhysics,
         gasHThermoPhysics
     )
 
-    makeSolidChemistrySolverType
+    makeSolidChemistrySolverTypes
     (
-        ode,
         pyrolysisChemistryModel,
         basicSolidChemistryModel,
         hExponentialSolidThermoPhysics,
         gasHThermoPhysics
     )
 
+    makeSolidChemistrySolverTypes
+    (
+        pyrolysisChemistryModel,
+        basicSolidChemistryModel,
+        hExpKappaConstSolidThermoPhysics,
+        gasHThermoPhysics
+    )
 }
 
 

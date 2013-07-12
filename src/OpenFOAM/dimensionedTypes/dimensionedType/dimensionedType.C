@@ -27,15 +27,10 @@ License
 #include "pTraits.H"
 #include "dictionary.H"
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-namespace Foam
-{
-
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
 template<class Type>
-dimensioned<Type> dimensioned<Type>::lookupOrDefault
+Foam::dimensioned<Type> Foam::dimensioned<Type>::lookupOrDefault
 (
     const word& name,
     const dictionary& dict,
@@ -49,7 +44,7 @@ dimensioned<Type> dimensioned<Type>::lookupOrDefault
 
 
 template<class Type>
-dimensioned<Type> dimensioned<Type>::lookupOrAddToDict
+Foam::dimensioned<Type> Foam::dimensioned<Type>::lookupOrAddToDict
 (
     const word& name,
     dictionary& dict,
@@ -65,7 +60,7 @@ dimensioned<Type> dimensioned<Type>::lookupOrAddToDict
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template<class Type>
-dimensioned<Type>::dimensioned
+Foam::dimensioned<Type>::dimensioned
 (
     const word& name,
     const dimensionSet& dimSet,
@@ -79,7 +74,7 @@ dimensioned<Type>::dimensioned
 
 
 template<class Type>
-dimensioned<Type>::dimensioned
+Foam::dimensioned<Type>::dimensioned
 (
     const word& name,
     const dimensioned<Type>& dt
@@ -92,7 +87,7 @@ dimensioned<Type>::dimensioned
 
 
 template<class Type>
-dimensioned<Type>::dimensioned
+Foam::dimensioned<Type>::dimensioned
 (
     Istream& is
 )
@@ -104,7 +99,7 @@ dimensioned<Type>::dimensioned
 
 
 template<class Type>
-dimensioned<Type>::dimensioned
+Foam::dimensioned<Type>::dimensioned
 (
     const word& name,
     Istream& is
@@ -121,7 +116,7 @@ dimensioned<Type>::dimensioned
 
 
 template<class Type>
-dimensioned<Type>::dimensioned
+Foam::dimensioned<Type>::dimensioned
 (
     const word& name,
     const dimensionSet& dimSet,
@@ -172,7 +167,7 @@ dimensioned<Type>::dimensioned
 
 
 template<class Type>
-dimensioned<Type>::dimensioned
+Foam::dimensioned<Type>::dimensioned
 ()
 :
     name_("undefined"),
@@ -184,46 +179,47 @@ dimensioned<Type>::dimensioned
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 template<class Type>
-const word& dimensioned<Type>::name() const
+const Foam::word& Foam::dimensioned<Type>::name() const
 {
     return name_;
 }
 
 template<class Type>
-word& dimensioned<Type>::name()
+Foam::word& Foam::dimensioned<Type>::name()
 {
     return name_;
 }
 
 
 template<class Type>
-const dimensionSet& dimensioned<Type>::dimensions() const
+const Foam::dimensionSet& Foam::dimensioned<Type>::dimensions() const
 {
     return dimensions_;
 }
 
 template<class Type>
-dimensionSet& dimensioned<Type>::dimensions()
+Foam::dimensionSet& Foam::dimensioned<Type>::dimensions()
 {
     return dimensions_;
 }
 
 
 template<class Type>
-const Type& dimensioned<Type>::value() const
+const Type& Foam::dimensioned<Type>::value() const
 {
     return value_;
 }
 
 template<class Type>
-Type& dimensioned<Type>::value()
+Type& Foam::dimensioned<Type>::value()
 {
     return value_;
 }
 
 
 template<class Type>
-dimensioned<typename dimensioned<Type>::cmptType> dimensioned<Type>::component
+Foam::dimensioned<typename Foam::dimensioned<Type>::cmptType>
+Foam::dimensioned<Type>::component
 (
     const direction d
 ) const
@@ -238,7 +234,7 @@ dimensioned<typename dimensioned<Type>::cmptType> dimensioned<Type>::component
 
 
 template<class Type>
-void dimensioned<Type>::replace
+void Foam::dimensioned<Type>::replace
 (
     const direction d,
     const dimensioned<typename dimensioned<Type>::cmptType>& dc
@@ -250,14 +246,15 @@ void dimensioned<Type>::replace
 
 
 template<class Type>
-bool dimensioned<Type>::readIfPresent(const dictionary& dict)
+bool Foam::dimensioned<Type>::readIfPresent(const dictionary& dict)
 {
     return dict.readIfPresent(name_, value_);
 }
 
 
 template<class Type>
-Foam::Istream& dimensioned<Type>::read(Istream& is, const dictionary& readSet)
+Foam::Istream&
+Foam::dimensioned<Type>::read(Istream& is, const dictionary& readSet)
 {
     // Read name
     is >> name_;
@@ -281,7 +278,7 @@ Foam::Istream& dimensioned<Type>::read(Istream& is, const dictionary& readSet)
 
 
 template<class Type>
-Foam::Istream& dimensioned<Type>::read
+Foam::Istream& Foam::dimensioned<Type>::read
 (
     Istream& is,
     const HashTable<dimensionedScalar>& readSet
@@ -310,7 +307,7 @@ Foam::Istream& dimensioned<Type>::read
 
 
 template<class Type>
-Foam::Istream& dimensioned<Type>::read(Istream& is)
+Foam::Istream& Foam::dimensioned<Type>::read(Istream& is)
 {
     // Read name
     is >> name_;
@@ -336,7 +333,8 @@ Foam::Istream& dimensioned<Type>::read(Istream& is)
 // * * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * //
 
 template<class Type>
-dimensioned<typename dimensioned<Type>::cmptType> dimensioned<Type>::operator[]
+Foam::dimensioned<typename Foam::dimensioned<Type>::cmptType>
+Foam::dimensioned<Type>::operator[]
 (
     const direction d
 ) const
@@ -346,7 +344,7 @@ dimensioned<typename dimensioned<Type>::cmptType> dimensioned<Type>::operator[]
 
 
 template<class Type>
-void dimensioned<Type>::operator+=
+void Foam::dimensioned<Type>::operator+=
 (
     const dimensioned<Type>& dt
 )
@@ -357,7 +355,7 @@ void dimensioned<Type>::operator+=
 
 
 template<class Type>
-void dimensioned<Type>::operator-=
+void Foam::dimensioned<Type>::operator-=
 (
     const dimensioned<Type>& dt
 )
@@ -368,7 +366,7 @@ void dimensioned<Type>::operator-=
 
 
 template<class Type>
-void dimensioned<Type>::operator*=
+void Foam::dimensioned<Type>::operator*=
 (
     const scalar s
 )
@@ -378,7 +376,7 @@ void dimensioned<Type>::operator*=
 
 
 template<class Type>
-void dimensioned<Type>::operator/=
+void Foam::dimensioned<Type>::operator/=
 (
     const scalar s
 )
@@ -390,8 +388,8 @@ void dimensioned<Type>::operator/=
 // * * * * * * * * * * * * * * * Friend Functions  * * * * * * * * * * * * * //
 
 template<class Type, int r>
-dimensioned<typename powProduct<Type, r>::type>
-pow(const dimensioned<Type>& dt, typename powProduct<Type, r>::type)
+Foam::dimensioned<typename Foam::powProduct<Type, r>::type>
+Foam::pow(const dimensioned<Type>& dt, typename powProduct<Type, r>::type)
 {
     return dimensioned<typename powProduct<Type, r>::type>
     (
@@ -401,9 +399,10 @@ pow(const dimensioned<Type>& dt, typename powProduct<Type, r>::type)
     );
 }
 
+
 template<class Type>
-dimensioned<typename outerProduct<Type, Type>::type>
-sqr(const dimensioned<Type>& dt)
+Foam::dimensioned<typename Foam::outerProduct<Type, Type>::type>
+Foam::sqr(const dimensioned<Type>& dt)
 {
     return dimensioned<typename outerProduct<Type, Type>::type>
     (
@@ -414,7 +413,7 @@ sqr(const dimensioned<Type>& dt)
 }
 
 template<class Type>
-dimensioned<scalar> magSqr(const dimensioned<Type>& dt)
+Foam::dimensioned<Foam::scalar> Foam::magSqr(const dimensioned<Type>& dt)
 {
     return dimensioned<scalar>
     (
@@ -425,7 +424,7 @@ dimensioned<scalar> magSqr(const dimensioned<Type>& dt)
 }
 
 template<class Type>
-dimensioned<scalar> mag(const dimensioned<Type>& dt)
+Foam::dimensioned<Foam::scalar> Foam::mag(const dimensioned<Type>& dt)
 {
     return dimensioned<scalar>
     (
@@ -437,7 +436,38 @@ dimensioned<scalar> mag(const dimensioned<Type>& dt)
 
 
 template<class Type>
-dimensioned<Type> max
+Foam::dimensioned<Type> Foam::cmptMultiply
+(
+    const dimensioned<Type>& dt1,
+    const dimensioned<Type>& dt2
+)
+{
+    return dimensioned<Type>
+    (
+        "cmptMultiply(" + dt1.name() + ',' + dt2.name() + ')',
+        cmptMultiply(dt1.dimensions(), dt2.dimensions()),
+        cmptMultiply(dt1.value(), dt2.value())
+    );
+}
+
+template<class Type>
+Foam::dimensioned<Type> Foam::cmptDivide
+(
+    const dimensioned<Type>& dt1,
+    const dimensioned<Type>& dt2
+)
+{
+    return dimensioned<Type>
+    (
+        "cmptDivide(" + dt1.name() + ',' + dt2.name() + ')',
+        cmptDivide(dt1.dimensions(), dt2.dimensions()),
+        cmptDivide(dt1.value(), dt2.value())
+    );
+}
+
+
+template<class Type>
+Foam::dimensioned<Type> Foam::max
 (
     const dimensioned<Type>& dt1,
     const dimensioned<Type>& dt2
@@ -460,7 +490,7 @@ dimensioned<Type> max
 
 
 template<class Type>
-dimensioned<Type> min
+Foam::dimensioned<Type> Foam::min
 (
     const dimensioned<Type>& dt1,
     const dimensioned<Type>& dt2
@@ -485,7 +515,7 @@ dimensioned<Type> min
 // * * * * * * * * * * * * * * * IOstream Operators  * * * * * * * * * * * * //
 
 template<class Type>
-Istream& operator>>(Istream& is, dimensioned<Type>& dt)
+Foam::Istream& Foam::operator>>(Istream& is, dimensioned<Type>& dt)
 {
     token nextToken(is);
     is.putBack(nextToken);
@@ -518,7 +548,7 @@ Istream& operator>>(Istream& is, dimensioned<Type>& dt)
 
 
 template<class Type>
-Ostream& operator<<(Ostream& os, const dimensioned<Type>& dt)
+Foam::Ostream& Foam::operator<<(Ostream& os, const dimensioned<Type>& dt)
 {
     // Write the name
     os << dt.name() << token::SPACE;
@@ -542,7 +572,7 @@ Ostream& operator<<(Ostream& os, const dimensioned<Type>& dt)
 // * * * * * * * * * * * * * * * Global Operators  * * * * * * * * * * * * * //
 
 template<class Type>
-bool operator>
+bool Foam::operator>
 (
     const dimensioned<Type>& dt1,
     const dimensioned<Type>& dt2
@@ -553,7 +583,7 @@ bool operator>
 
 
 template<class Type>
-bool operator<
+bool Foam::operator<
 (
     const dimensioned<Type>& dt1,
     const dimensioned<Type>& dt2
@@ -564,7 +594,7 @@ bool operator<
 
 
 template<class Type>
-dimensioned<Type> operator+
+Foam::dimensioned<Type> Foam::operator+
 (
     const dimensioned<Type>& dt1,
     const dimensioned<Type>& dt2
@@ -580,7 +610,7 @@ dimensioned<Type> operator+
 
 
 template<class Type>
-dimensioned<Type> operator-(const dimensioned<Type>& dt)
+Foam::dimensioned<Type> Foam::operator-(const dimensioned<Type>& dt)
 {
     return dimensioned<Type>
     (
@@ -592,7 +622,7 @@ dimensioned<Type> operator-(const dimensioned<Type>& dt)
 
 
 template<class Type>
-dimensioned<Type> operator-
+Foam::dimensioned<Type> Foam::operator-
 (
     const dimensioned<Type>& dt1,
     const dimensioned<Type>& dt2
@@ -608,7 +638,7 @@ dimensioned<Type> operator-
 
 
 template<class Type>
-dimensioned<Type> operator*
+Foam::dimensioned<Type> Foam::operator*
 (
     const dimensioned<scalar>& ds,
     const dimensioned<Type>& dt
@@ -624,7 +654,7 @@ dimensioned<Type> operator*
 
 
 template<class Type>
-dimensioned<Type> operator/
+Foam::dimensioned<Type> Foam::operator/
 (
     const dimensioned<Type>& dt,
     const dimensioned<scalar>& ds
@@ -645,8 +675,12 @@ dimensioned<Type> operator/
 #define PRODUCT_OPERATOR(product, op, opFunc)                                 \
                                                                               \
 template<class Type1, class Type2>                                            \
-dimensioned<typename product<Type1, Type2>::type>                             \
-operator op(const dimensioned<Type1>& dt1, const dimensioned<Type2>& dt2)     \
+Foam::dimensioned<typename Foam::product<Type1, Type2>::type>                 \
+Foam::operator op                                                             \
+(                                                                             \
+    const dimensioned<Type1>& dt1,                                            \
+    const dimensioned<Type2>& dt2                                             \
+)                                                                             \
 {                                                                             \
     return dimensioned<typename product<Type1, Type2>::type>                  \
     (                                                                         \
@@ -657,8 +691,8 @@ operator op(const dimensioned<Type1>& dt1, const dimensioned<Type2>& dt2)     \
 }                                                                             \
                                                                               \
 template<class Type, class Form, class Cmpt, int nCmpt>                       \
-dimensioned<typename product<Type, Form>::type>                               \
-operator op                                                                   \
+Foam::dimensioned<typename Foam::product<Type, Form>::type>                   \
+Foam::operator op                                                             \
 (                                                                             \
     const dimensioned<Type>& dt1,                                             \
     const VectorSpace<Form,Cmpt,nCmpt>& t2                                    \
@@ -673,8 +707,8 @@ operator op                                                                   \
 }                                                                             \
                                                                               \
 template<class Type, class Form, class Cmpt, int nCmpt>                       \
-dimensioned<typename product<Form, Type>::type>                               \
-operator op                                                                   \
+Foam::dimensioned<typename Foam::product<Form, Type>::type>                   \
+Foam::operator op                                                             \
 (                                                                             \
     const VectorSpace<Form,Cmpt,nCmpt>& t1,                                   \
     const dimensioned<Type>& dt2                                              \
@@ -696,9 +730,5 @@ PRODUCT_OPERATOR(scalarProduct, &&, dotdot)
 
 #undef PRODUCT_OPERATOR
 
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-} // End namespace Foam
 
 // ************************************************************************* //

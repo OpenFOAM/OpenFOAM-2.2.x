@@ -59,6 +59,15 @@ namespace Foam
         hExponentialSolidThermoPhysics,
         gasHThermoPhysics
     );
+
+    makeSolidChemistryModel
+    (
+        solidChemistryModel,
+        pyrolysisChemistryModel,
+        basicSolidChemistryModel,
+        hExpKappaConstSolidThermoPhysics,
+        gasHThermoPhysics
+    );
 }
 
 // ************************************************************************* //

@@ -840,6 +840,7 @@ void addCouplingPatches
                 << '\t' << newPatches[interRegionBottomPatch[zoneI]]->type()
                 << nl;
         }
+
     }
     Pout<< "Added " << newPatches.size()-nOldPatches
         << " inter-region patches." << nl
@@ -1783,7 +1784,7 @@ int main(int argc, char *argv[])
                 {
                     extrudeMeshShadowFaces[nShadowFaces] = fz[j];
                     zoneShadowFlipMap[nShadowFaces] = fz.flipMap()[j];
-                    zoneShadowID[nShadowFaces] = zoneShadowIDs[i];
+                    zoneShadowID[nShadowFaces] = i;
                     nShadowFaces++;
                 }
             }
@@ -2349,7 +2350,6 @@ int main(int argc, char *argv[])
     }
 
 
-
     // For debugging: dump hedgehog plot of normals
     if (false)
     {
@@ -2398,7 +2398,6 @@ int main(int argc, char *argv[])
     }
 
 
-
     // Create a new mesh
     // ~~~~~~~~~~~~~~~~~
 
@@ -2408,7 +2407,6 @@ int main(int argc, char *argv[])
         pointLocalRegions,
         localRegionPoints
     );
-
 
     autoPtr<mapPolyMesh> shellMap;
     fvMesh regionMesh
@@ -2428,7 +2426,6 @@ int main(int argc, char *argv[])
         xferCopy(labelList()),
         false
     );
-
     // Add the new patches
     forAll(regionPatches, patchI)
     {
@@ -2760,7 +2757,6 @@ int main(int argc, char *argv[])
                     );
                 }
             }
-
         }
         else
         {

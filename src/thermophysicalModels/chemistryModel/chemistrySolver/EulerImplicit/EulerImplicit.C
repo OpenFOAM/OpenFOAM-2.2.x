@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -94,7 +94,7 @@ Foam::scalar Foam::EulerImplicit<ChemistryModel>::solve
             }
         }
 
-        this->updateRRInReactionI(i, pr, pf, corr, lRef, rRef, RR);
+        this->updateRRInReactionI(i, pr, pf, corr, lRef, rRef, p, T, RR);
     }
 
 

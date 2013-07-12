@@ -159,6 +159,8 @@ void Foam::chemistryModel<CompType, ThermoType>::updateConcsInReactionI
     const label index,
     const scalar dt,
     const scalar omeg,
+    const scalar p,
+    const scalar T,
     scalarField& c
 ) const
 {
@@ -191,6 +193,8 @@ void Foam::chemistryModel<CompType, ThermoType>::updateRRInReactionI
     const scalar corr,
     const label lRef,
     const label rRef,
+    const scalar p,
+    const scalar T,
     simpleMatrix<scalar>& RR
 ) const
 {

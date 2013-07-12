@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -49,9 +49,31 @@ namespace Foam
 template<class EquationOfState> class hExponentialThermo;
 
 template<class EquationOfState>
+inline hExponentialThermo<EquationOfState> operator+
+(
+    const hExponentialThermo<EquationOfState>&,
+    const hExponentialThermo<EquationOfState>&
+);
+
+template<class EquationOfState>
+inline hExponentialThermo<EquationOfState> operator-
+(
+    const hExponentialThermo<EquationOfState>&,
+    const hExponentialThermo<EquationOfState>&
+);
+
+template<class EquationOfState>
 inline hExponentialThermo<EquationOfState> operator*
 (
     const scalar,
+    const hExponentialThermo<EquationOfState>&
+);
+
+
+template<class EquationOfState>
+inline hExponentialThermo<EquationOfState> operator==
+(
+    const hExponentialThermo<EquationOfState>&,
     const hExponentialThermo<EquationOfState>&
 );
 
@@ -90,11 +112,6 @@ class hExponentialThermo
         //- Integrate Cp expression
         inline scalar integrateCp(const scalar T) const;
 
-
-public:
-
-    // Constructors
-
         //- Construct from components
         inline hExponentialThermo
         (
@@ -105,6 +122,13 @@ public:
             const scalar Hf
         );
 
+public:
+
+    // Constructors
+
+        //- Construct from Istream
+        hExponentialThermo(Istream&);
+
         //- Construct from dictionary
         hExponentialThermo(const dictionary&);
 
@@ -114,6 +138,15 @@ public:
             const word&,
             const hExponentialThermo&
         );
+
+         //- Construct and return a clone
+        inline autoPtr<hExponentialThermo> clone() const;
+
+        //- Selector from Istream
+        inline static autoPtr<hExponentialThermo> New(Istream& is);
+
+        //- Selector from dictionary
+        inline static autoPtr<hExponentialThermo> New(const dictionary& dict);
 
 
     // Member Functions
@@ -148,20 +181,34 @@ public:
 
     // Member operators
 
-        inline hExponentialThermo& operator=
-        (
-            const hExponentialThermo&
-        );
         inline void operator+=(const hExponentialThermo&);
         inline void operator-=(const hExponentialThermo&);
 
 
     // Friend operators
 
+        friend hExponentialThermo operator+ <EquationOfState>
+        (
+            const hExponentialThermo&,
+            const hExponentialThermo&
+        );
+
+        friend hExponentialThermo operator- <EquationOfState>
+        (
+            const hExponentialThermo&,
+            const hExponentialThermo&
+        );
 
         friend hExponentialThermo operator* <EquationOfState>
         (
             const scalar,
+            const hExponentialThermo&
+        );
+
+
+        friend hExponentialThermo operator== <EquationOfState>
+        (
+            const hExponentialThermo&,
             const hExponentialThermo&
         );
 

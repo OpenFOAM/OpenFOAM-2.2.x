@@ -97,10 +97,6 @@ protected:
             volScalarField& h_;
 
 
-        //- Name of the radiative flux in the primary region
-        word primaryRadFluxName_;
-
-
         // Solution parameters
 
             //- Number of non-orthogonal correctors
@@ -125,6 +121,16 @@ protected:
             volScalarField chemistrySh_;
 
 
+        // Source term fields
+
+            //- Coupled region radiative heat flux [W/m2]
+            //  Requires user to input mapping info for coupled patches
+            //volScalarField QrCoupled_;
+
+            //- In depth radiative heat flux [W/m2]
+            volScalarField Qr_;
+
+
         // Checks
 
             //- Cumulative lost mass of the condensed phase [kg]
@@ -140,6 +146,15 @@ protected:
             dimensionedScalar totalHeatRR_;
 
 
+        // Options
+
+            //- Add gas enthalpy source term
+            bool  gasHSource_;
+
+            //- Add in depth radiation source term
+            bool  QrHSource_;
+
+
     // Protected member functions
 
         //- Read control parameters from dictionary
@@ -153,6 +168,9 @@ protected:
 
         //- Update/move mesh based on change in mass
         void updateMesh(const scalarField& mass0);
+
+        //- Update radiative flux in pyrolysis region
+        void updateQr();
 
         //- Update enthalpy flux for pyrolysis gases
         void updatePhiGas();

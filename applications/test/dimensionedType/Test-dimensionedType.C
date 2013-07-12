@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -21,8 +21,6 @@ License
     You should have received a copy of the GNU General Public License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
-Description
-
 \*---------------------------------------------------------------------------*/
 
 #include "dimensionedTensor.H"
@@ -33,16 +31,19 @@ using namespace Foam;
 
 int main(int argc, char *argv[])
 {
-    dimensionedTensor dt("dt", dimless, tensor(0, 1, 2, 3, 4, 5, 6, 7, 8));
+    dimensionedTensor dt("dt", dimLength, tensor(0, 1, 2, 3, 4, 5, 6, 7, 8));
 
-    Info<< dt.component(tensor::XX) << endl;
+    Info<< "dt.component(tensor::XX): " << dt.component(tensor::XX) << endl;
 
-    dimensionedScalar ds("ds", dimless, 1.0);
+    dimensionedScalar ds("ds", dimTime, 1.0);
 
-    Info<< ds*dt << " " << dt*ds << endl;
+    Info<< "ds*dt dt*ds: " << ds*dt << " " << dt*ds << endl;
 
+    dimensionedTensor dt2("dt2", dimLength, tensor(1, 1, 2, 3, 4, 5, 6, 7, 8));
 
-    // dimensionSet
+    Info<< "cmptMultiply(dt, dt2): " << cmptMultiply(dt, dt2) << endl;
+    Info<< "cmptDivide(dt, dt2): " << cmptDivide(dt, dt2) << endl;
+
     {
         Pout<< "dimensionSet construct from is:"
             << dimensionSet(IStringStream("[Pa m^2 s^-2]")())
@@ -53,7 +54,7 @@ int main(int argc, char *argv[])
         is >> dset;
         Pout<< "dimensionSet read:" << dset << endl;
     }
-    // dimensionedType
+
     {
         Pout<< "construct from is:"
             << dimensionedScalar(IStringStream("bla [Pa mm^2 s^-2] 3.0")())
