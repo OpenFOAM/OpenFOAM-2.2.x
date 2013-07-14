@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -87,11 +87,13 @@ void Foam::CSV<Type>::read()
     DynamicList<Tuple2<scalar, Type> > values;
 
     // skip header
-    if (headerLine_)
+    for (label i = 0; i < nHeaderLine_; i++)
     {
         string line;
         is.getLine(line);
     }
+
+    label nEntries = max(componentColumns_);
 
     // read data
     while (is.good())
@@ -99,24 +101,69 @@ void Foam::CSV<Type>::read()
         string line;
         is.getLine(line);
 
+
+        label n = 0;
+        std::size_t pos = 0;
         DynamicList<string> splitted;
 
-        std::size_t pos = 0;
-        while (pos != std::string::npos)
+        if (mergeSeparators_)
         {
-            std::size_t nPos = line.find(separator_, pos);
+            std::size_t nPos = 0;
 
-            if (nPos == std::string::npos)
+            while ((pos != std::string::npos) && (n <= nEntries))
             {
-                splitted.append(line.substr(pos));
-                pos = nPos;
-            }
-            else
-            {
-                splitted.append(line.substr(pos, nPos - pos));
-                pos = nPos + 1;
+                bool found = false;
+                while (!found)
+                {
+                    nPos = line.find(separator_, pos);
+
+                    if ((nPos != std::string::npos) && (nPos - pos == 0))
+                    {
+                        pos = nPos + 1;
+                    }
+                    else
+                    {
+                        found = true;
+                    }
+                }
+
+                nPos = line.find(separator_, pos);
+
+                if (nPos == std::string::npos)
+                {
+                    splitted.append(line.substr(pos));
+                    pos = nPos;
+                    n++;
+                }
+                else
+                {
+                    splitted.append(line.substr(pos, nPos - pos));
+                    pos = nPos + 1;
+                    n++;
+                }
             }
         }
+        else
+        {
+            while ((pos != std::string::npos) && (n <= nEntries))
+            {
+                std::size_t nPos = line.find(separator_, pos);
+
+                if (nPos == std::string::npos)
+                {
+                    splitted.append(line.substr(pos));
+                    pos = nPos;
+                    n++;
+                }
+                else
+                {
+                    splitted.append(line.substr(pos, nPos - pos));
+                    pos = nPos + 1;
+                    n++;
+                }
+            }
+        }
+
 
         if (splitted.size() <= 1)
         {
@@ -136,15 +183,21 @@ void Foam::CSV<Type>::read()
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template<class Type>
-Foam::CSV<Type>::CSV(const word& entryName, const dictionary& dict)
+Foam::CSV<Type>::CSV
+(
+    const word& entryName,
+    const dictionary& dict,
+    const word& ext
+)
 :
     DataEntry<Type>(entryName),
-    TableBase<Type>(entryName, dict.subDict(type() + "Coeffs")),
-    coeffs_(dict.subDict(type() + "Coeffs")),
-    headerLine_(readBool(coeffs_.lookup("hasHeaderLine"))),
+    TableBase<Type>(entryName, dict.subDict(type() + ext)),
+    coeffs_(dict.subDict(type() + ext)),
+    nHeaderLine_(readLabel(coeffs_.lookup("nHeaderLine"))),
     refColumn_(readLabel(coeffs_.lookup("refColumn"))),
     componentColumns_(coeffs_.lookup("componentColumns")),
     separator_(coeffs_.lookupOrDefault<string>("separator", string(","))[0]),
+    mergeSeparators_(readBool(coeffs_.lookup("mergeSeparators"))),
     fName_(coeffs_.lookup("fileName"))
 {
     if (componentColumns_.size() != pTraits<Type>::nComponents)
@@ -166,10 +219,11 @@ Foam::CSV<Type>::CSV(const CSV<Type>& tbl)
 :
     DataEntry<Type>(tbl),
     TableBase<Type>(tbl),
-    headerLine_(tbl.headerLine_),
+    nHeaderLine_(tbl.nHeaderLine_),
     refColumn_(tbl.refColumn_),
     componentColumns_(tbl.componentColumns_),
     separator_(tbl.separator_),
+    mergeSeparators_(tbl.mergeSeparators_),
     fName_(tbl.fName_)
 {}
 
@@ -179,6 +233,15 @@ Foam::CSV<Type>::CSV(const CSV<Type>& tbl)
 template<class Type>
 Foam::CSV<Type>::~CSV()
 {}
+
+
+// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
+
+template<class Type>
+const Foam::fileName& Foam::CSV<Type>::fName() const
+{
+    return fName_;
+}
 
 
 // * * * * * * * * * * * * * *  IOStream operators * * * * * * * * * * * * * //

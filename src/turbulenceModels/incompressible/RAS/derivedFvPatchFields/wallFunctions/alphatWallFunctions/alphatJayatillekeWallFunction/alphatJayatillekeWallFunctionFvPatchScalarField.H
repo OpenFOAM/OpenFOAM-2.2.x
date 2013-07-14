@@ -2,27 +2,27 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
     This file is part of OpenFOAM.
 
-    OpenFOAM is free software: you can redistribute it and/or modify it under
-    the terms of the GNU General Public License as published by the Free
-    Software Foundation, either version 3 of the License, or (at your option)
-    any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-    OpenFOAM is distributed in the hope that it will be useful, but WITHOUT ANY
-    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-    FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
-    details.
+    OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+    for more details.
 
-    You should have received a copy of the GNU General Public License along with
-    OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::incompressible::kappatJayatillekeWallFunctionFvPatchScalarField
+    Foam::incompressible::alphatJayatillekeWallFunctionFvPatchScalarField
 
 Group
     grpIcoWallFunctions
@@ -45,7 +45,7 @@ Description
     \verbatim
     myPatch
     {
-        type            kappatJayatillekeWallFunction;
+        type            alphatJayatillekeWallFunction;
     }
     \endverbatim
 
@@ -56,12 +56,12 @@ SeeAlso
     Foam::fixedValueFvPatchField
 
 SourceFiles
-    kappatJayatillekeWallFunctionFvPatchScalarField.C
+    alphatJayatillekeWallFunctionFvPatchScalarField.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef kappatJayatillekeWallFunctionFvPatchScalarField_H
-#define kappatJayatillekeWallFunctionFvPatchScalarField_H
+#ifndef alphatJayatillekeWallFunctionFvPatchScalarField_H
+#define alphatJayatillekeWallFunctionFvPatchScalarField_H
 
 #include "fixedValueFvPatchFields.H"
 
@@ -73,10 +73,10 @@ namespace incompressible
 {
 
 /*---------------------------------------------------------------------------*\
-       Class kappatJayatillekeWallFunctionFvPatchScalarField Declaration
+       Class alphatJayatillekeWallFunctionFvPatchScalarField Declaration
 \*---------------------------------------------------------------------------*/
 
-class kappatJayatillekeWallFunctionFvPatchScalarField
+class alphatJayatillekeWallFunctionFvPatchScalarField
 :
     public fixedValueFvPatchScalarField
 {
@@ -122,20 +122,20 @@ protected:
 public:
 
     //- Runtime type information
-    TypeName("kappatJayatillekeWallFunction");
+    TypeName("alphatJayatillekeWallFunction");
 
 
     // Constructors
 
         //- Construct from patch and internal field
-        kappatJayatillekeWallFunctionFvPatchScalarField
+        alphatJayatillekeWallFunctionFvPatchScalarField
         (
             const fvPatch&,
             const DimensionedField<scalar, volMesh>&
         );
 
         //- Construct from patch, internal field and dictionary
-        kappatJayatillekeWallFunctionFvPatchScalarField
+        alphatJayatillekeWallFunctionFvPatchScalarField
         (
             const fvPatch&,
             const DimensionedField<scalar, volMesh>&,
@@ -143,20 +143,20 @@ public:
         );
 
         //- Construct by mapping given
-        //  kappatJayatillekeWallFunctionFvPatchScalarField
+        //  alphatJayatillekeWallFunctionFvPatchScalarField
         //  onto a new patch
-        kappatJayatillekeWallFunctionFvPatchScalarField
+        alphatJayatillekeWallFunctionFvPatchScalarField
         (
-            const kappatJayatillekeWallFunctionFvPatchScalarField&,
+            const alphatJayatillekeWallFunctionFvPatchScalarField&,
             const fvPatch&,
             const DimensionedField<scalar, volMesh>&,
             const fvPatchFieldMapper&
         );
 
         //- Construct as copy
-        kappatJayatillekeWallFunctionFvPatchScalarField
+        alphatJayatillekeWallFunctionFvPatchScalarField
         (
-            const kappatJayatillekeWallFunctionFvPatchScalarField&
+            const alphatJayatillekeWallFunctionFvPatchScalarField&
         );
 
         //- Construct and return a clone
@@ -164,14 +164,14 @@ public:
         {
             return tmp<fvPatchScalarField>
             (
-                new kappatJayatillekeWallFunctionFvPatchScalarField(*this)
+                new alphatJayatillekeWallFunctionFvPatchScalarField(*this)
             );
         }
 
         //- Construct as copy setting internal field reference
-        kappatJayatillekeWallFunctionFvPatchScalarField
+        alphatJayatillekeWallFunctionFvPatchScalarField
         (
-            const kappatJayatillekeWallFunctionFvPatchScalarField&,
+            const alphatJayatillekeWallFunctionFvPatchScalarField&,
             const DimensionedField<scalar, volMesh>&
         );
 
@@ -183,7 +183,7 @@ public:
         {
             return tmp<fvPatchScalarField>
             (
-                new kappatJayatillekeWallFunctionFvPatchScalarField(*this, iF)
+                new alphatJayatillekeWallFunctionFvPatchScalarField(*this, iF)
             );
         }
 

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -37,10 +37,11 @@ Foam::Ostream& Foam::operator<<
     if (os.format() == IOstream::ASCII)
     {
         os  << static_cast<const DataEntry<Type>& >(tbl)
-            << token::SPACE << tbl.headerLine_
+            << token::SPACE << tbl.nHeaderLine_
             << token::SPACE << tbl.timeColumn_
             << token::SPACE << tbl.componentColumns_
             << token::SPACE << tbl.separator_
+            << token::SPACE << tbl.mergeSeparators_
             << token::SPACE << tbl.fileName_;
     }
     else
@@ -70,7 +71,7 @@ void Foam::CSV<Type>::writeData(Ostream& os) const
     // the values themselves
     TableBase<Type>::writeEntries(os);
 
-    os.writeKeyword("hasHeaderLine") << headerLine_ << token::END_STATEMENT
+    os.writeKeyword("nHeaderLine") << nHeaderLine_ << token::END_STATEMENT
         << nl;
     os.writeKeyword("refColumn") << refColumn_ << token::END_STATEMENT << nl;
 
@@ -85,6 +86,8 @@ void Foam::CSV<Type>::writeData(Ostream& os) const
     os  << token::END_STATEMENT << nl;
 
     os.writeKeyword("separator") << string(separator_)
+        << token::END_STATEMENT << nl;
+    os.writeKeyword("mergeSeparators") << string(mergeSeparators_)
         << token::END_STATEMENT << nl;
     os.writeKeyword("fileName") << fName_ << token::END_STATEMENT << nl;
     os  << decrIndent << indent << token::END_BLOCK << endl;

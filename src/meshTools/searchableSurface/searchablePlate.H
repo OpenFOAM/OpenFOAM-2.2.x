@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -51,10 +51,9 @@ SourceFiles
 namespace Foam
 {
 
-// Forward declaration of classes
 
 /*---------------------------------------------------------------------------*\
-                           Class searchablePlate Declaration
+                       Class searchablePlate Declaration
 \*---------------------------------------------------------------------------*/
 
 class searchablePlate
@@ -112,7 +111,7 @@ public:
         (
             const IOobject& io,
             const point& origin,
-            const point& span
+            const vector& span
         );
 
         //- Construct from dictionary (used by searchableSurface)
@@ -121,6 +120,7 @@ public:
             const IOobject& io,
             const dictionary& dict
         );
+
 
     //- Destructor
     virtual ~searchablePlate();
@@ -193,7 +193,7 @@ public:
         }
 
 
-        // Multiple point queries.
+        // Multiple point queries
 
             virtual void findNearest
             (
@@ -254,7 +254,6 @@ public:
                 notImplemented("searchablePlate::writeData(Ostream&) const");
                 return false;
             }
-
 };
 
 

@@ -205,10 +205,7 @@ void reactingOneDim::updateFields()
         updateQr();
     }
 
-    if (gasHSource_)
-    {
-        updatePhiGas();
-    }
+    updatePhiGas();
 }
 
 
@@ -318,10 +315,6 @@ void reactingOneDim::solveEnergy()
         Info<< "reactingOneDim::solveEnergy()" << endl;
     }
 
-    const surfaceScalarField phiQr(fvc::interpolate(Qr_)*nMagSf());
-
-    const surfaceScalarField phiGas(fvc::interpolate(phiHsGas_));
-
     tmp<volScalarField> alpha(solidThermo_.alpha());
 
     fvScalarMatrix hEqn
@@ -334,12 +327,14 @@ void reactingOneDim::solveEnergy()
 
     if (gasHSource_)
     {
+        const surfaceScalarField phiGas(fvc::interpolate(phiHsGas_));
         hEqn += fvc::div(phiGas);
     }
 
     if (QrHSource_)
     {
-         hEqn += fvc::div(phiQr);
+        const surfaceScalarField phiQr(fvc::interpolate(Qr_)*nMagSf());
+        hEqn += fvc::div(phiQr);
     }
 
     if (regionMesh().moving())
@@ -445,20 +440,7 @@ reactingOneDim::reactingOneDim(const word& modelType, const fvMesh& mesh)
         regionMesh(),
         dimensionedScalar("zero", dimEnergy/dimTime/dimVolume, 0.0)
     ),
-/*
-    QrCoupled_
-    (
-        IOobject
-        (
-            "Qr",
-            time().timeName(),
-            regionMesh(),
-            IOobject::MUST_READ,
-            IOobject::AUTO_WRITE
-        ),
-        regionMesh()
-    ),
-*/
+
     Qr_
     (
         IOobject
@@ -558,20 +540,7 @@ reactingOneDim::reactingOneDim
         regionMesh(),
         dimensionedScalar("zero", dimEnergy/dimTime/dimVolume, 0.0)
     ),
-/*
-    QrCoupled_
-    (
-        IOobject
-        (
-            "Qr",
-            time().timeName(),
-            regionMesh(),
-            IOobject::MUST_READ,
-            IOobject::NO_WRITE
-        ),
-        regionMesh()
-    ),
-*/
+
     Qr_
     (
         IOobject

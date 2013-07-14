@@ -64,6 +64,11 @@ Foam::scalar Foam::tetOverlapVolume::tetTetOverlapVol
     tetPointRef::sumVolOp volInside;
     tetPointRef::dummyOp outside;
 
+    if ((tetA.tet().mag() < SMALL) || (tetB.tet().mag() < SMALL))
+    {
+        return 0.0;
+    }
+
     // face0
     plane pl0(tetB[1], tetB[3], tetB[2]);
     tetA.tet().sliceWithPlane(pl0, cutInside, outside);

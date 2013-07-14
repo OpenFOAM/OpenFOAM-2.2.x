@@ -1,8 +1,8 @@
 #                            -*- mode: org; -*-
 #
-#+TITLE:            OpenFOAM README for version 2.2.0
+#+TITLE:            OpenFOAM README for version 2.2.1
 #+AUTHOR:               The OpenFOAM Foundation
-#+DATE:                     11th January 2013
+#+DATE:                     11th June 2013
 #+LINK:                  http://www.openfoam.org
 #+OPTIONS: author:nil ^:{}
 # Copyright (c) 2013 OpenFOAM Foundation.
@@ -28,7 +28,7 @@
     [[http://www.OpenFOAM.org/git.php]]
 
 * Release notes
-  [[http://www.OpenFOAM.org/version2.2.0]]
+  [[http://www.OpenFOAM.org/version2.2.1]]
 
 * Documentation
   [[http://www.OpenFOAM.com/docs]]
