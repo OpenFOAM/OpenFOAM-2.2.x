@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.2.0                                 |
+|  \\    /   O peration     | Version:  2.2.1                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -40,7 +40,7 @@ laplacianSchemes
     default         none;
     laplacian(nuEff,U) Gauss linear corrected;
     laplacian(Dp,p_rgh) Gauss linear corrected;
-    laplacian(kappaEff,T) Gauss linear corrected;
+    laplacian(alphaEff,T) Gauss linear corrected;
     laplacian(DkEff,k) Gauss linear corrected;
     laplacian(DepsilonEff,epsilon) Gauss linear corrected;
     laplacian(DREff,R) Gauss linear corrected;

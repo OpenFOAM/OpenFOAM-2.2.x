@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.2.x                                 |
+|  \\    /   O peration     | Version:  2.2.1                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -117,7 +117,7 @@ wall
 
     alphat
     {
-        type            alphatWallFunction;
+        type            compressible::alphatWallFunction;
         Prt             0.85;
         value           uniform 0;
     }

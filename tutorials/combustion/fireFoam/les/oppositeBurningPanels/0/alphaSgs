@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.2.0                                 |
+|  \\    /   O peration     | Version:  2.2.1                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -23,7 +23,7 @@ boundaryField
 {
     ground
     {
-        type        alphatWallFunction;
+        type        compressible::alphatWallFunction;
         mut         muSgs;
         value       uniform 0;
     }
@@ -45,7 +45,7 @@ boundaryField
 
     "(region0_to.*)"
     {
-        type        alphatWallFunction;
+        type        compressible::alphatWallFunction;
         mut         muSgs;
         value       uniform 0;
     }

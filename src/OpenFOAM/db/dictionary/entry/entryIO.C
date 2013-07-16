@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -29,6 +29,8 @@ License
 #include "includeEntry.H"
 #include "inputModeEntry.H"
 #include "stringOps.H"
+
+#include "IOstreams.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -114,6 +116,9 @@ bool Foam::entry::New(dictionary& parentDict, Istream& is)
          && keyword[0] == '$'
         )                           // ... Substitution entry
         {
+            token nextToken(is);
+            is.putBack(nextToken);
+
             if (keyword.size() > 2 && keyword[1] == token::BEGIN_BLOCK)
             {
                 // Recursive substitution mode. Replace between {} with
@@ -125,7 +130,48 @@ bool Foam::entry::New(dictionary& parentDict, Istream& is)
                 stringOps::inplaceExpand(s, parentDict, true, false);
                 keyword.std::string::replace(1, keyword.size()-1, s);
             }
-            parentDict.substituteScopedKeyword(keyword);
+
+            if (nextToken == token::BEGIN_BLOCK)
+            {
+                word varName = keyword(1, keyword.size()-1);
+
+                // lookup the variable name in the given dictionary
+                const entry* ePtr = parentDict.lookupScopedEntryPtr
+                (
+                    varName,
+                    true,
+                    true
+                );
+
+                if (ePtr)
+                {
+                    // Read as primitiveEntry
+                    const word newKeyword(ePtr->stream());
+
+                    return parentDict.add
+                    (
+                        new dictionaryEntry(newKeyword, parentDict, is),
+                        false
+                    );
+                }
+                else
+                {
+                    FatalIOErrorIn
+                    (
+                        "entry::New(const dictionary& parentDict, Istream&)",
+                        is
+                    )
+                        << "Attempt to use undefined variable " << varName
+                        << " as keyword"
+                        << exit(FatalIOError);
+                    return false;
+                }
+            }
+            else
+            {
+                parentDict.substituteScopedKeyword(keyword);
+            }
+
             return true;
         }
         else if

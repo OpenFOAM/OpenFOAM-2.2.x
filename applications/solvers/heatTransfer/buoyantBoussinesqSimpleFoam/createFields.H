@@ -65,12 +65,12 @@
     );
 
     // kinematic turbulent thermal thermal conductivity m2/s
-    Info<< "Reading field kappat\n" << endl;
-    volScalarField kappat
+    Info<< "Reading field alphat\n" << endl;
+    volScalarField alphat
     (
         IOobject
         (
-            "kappat",
+            "alphat",
             runTime.timeName(),
             mesh,
             IOobject::MUST_READ,

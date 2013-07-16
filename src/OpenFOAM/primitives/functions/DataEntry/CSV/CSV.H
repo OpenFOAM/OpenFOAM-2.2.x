@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -32,10 +32,11 @@ Description
         <entryName>   csvFile;
         csvFileCoeffs
         {
-            hasHeaderLine       true;
+            nHeaderLines        4;
             refColumn           0;          // reference column index
             componentColumns    (1 2 3);    // component column indices
             separator           ",";        // optional (defaults to ",")
+            mergeSeparators     no;         // merge multiple separators
             fileName            "fileXYZ";  // name of csv data file
             outOfBounds         clamp;      // optional out-of-bounds handling
             interpolationScheme linear;     // optional interpolation scheme
@@ -86,8 +87,8 @@ class CSV
         //- Coefficients dictionary (for convenience on reading)
         dictionary coeffs_;
 
-        //- Does the file have a header line?
-        bool headerLine_;
+        //- Number header lines
+        label nHeaderLine_;
 
         //- Column of the time
         label refColumn_;
@@ -98,7 +99,10 @@ class CSV
         //- Separator character
         char separator_;
 
-        //- File name for csv table (optional)
+        //- Merge separators flag, e.g. ',,,' becomes ','
+        bool mergeSeparators_;
+
+        //- File name for csv table
         fileName fName_;
 
 
@@ -122,8 +126,13 @@ public:
 
     // Constructors
 
-        //- Construct from entry name and Istream
-        CSV(const word& entryName, const dictionary& dict);
+        //- Construct from entry name and dictionary
+        CSV
+        (
+            const word& entryName,
+            const dictionary& dict,
+            const word& ext = "Ceoffs"
+        );
 
         //- Copy constructor
         CSV(const CSV<Type>& tbl);
@@ -148,6 +157,12 @@ public:
             {
                 TableBase<Type>::convertTimeBase(t);
             }
+
+
+        // Access
+
+            //- Return const access to the file name
+            virtual const fileName& fName() const;
 
 
         // Evaluation

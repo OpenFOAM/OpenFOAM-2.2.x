@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -73,8 +73,18 @@ rotatingWallVelocityFvPatchVectorField
     axis_(dict.lookup("axis")),
     omega_(DataEntry<scalar>::New("omega", dict))
 {
-    // Evaluate the wall velocity
-    updateCoeffs();
+    if (dict.found("value"))
+    {
+        fvPatchField<vector>::operator=
+        (
+            vectorField("value", dict, p.size())
+        );
+    }
+    else
+    {
+        // Evaluate the wall velocity
+        updateCoeffs();
+    }
 }
 
 

@@ -115,7 +115,7 @@ Foam::fv::pressureGradientExplicitSource::pressureGradientExplicitSource
     // Read the initial pressure gradient from file if it exists
     IFstream propsFile
     (
-        mesh_.time().timeName()/"uniform"/(name_ + "Properties")
+        mesh_.time().timePath()/"uniform"/(name_ + "Properties")
     );
 
     if (propsFile.good())
