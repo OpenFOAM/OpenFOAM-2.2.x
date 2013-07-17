@@ -86,8 +86,10 @@ int main(int argc, char *argv[])
     );
 
     //Info<< fvc::div(st) << endl;
+    dimensionedScalar DT("dt", pow(dimLength, 2)/dimTime, 1.0);
 
-    solve(fvm::ddt(st) + fvm::div(phi, st) - fvm::laplacian(st));
+
+    solve(fvm::ddt(st) + fvm::div(phi, st) - fvm::laplacian(DT, st));
 
     return 0;
 }
