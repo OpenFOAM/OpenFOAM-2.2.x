@@ -50,6 +50,8 @@ readField
     }
 
 
+    label nUnset = this->size();
+
     // 1. Handle explicit patch names. Note that there can be only one explicit
     //    patch name since is key of dictionary.
     forAllConstIter(dictionary, dict, iter)
@@ -70,8 +72,14 @@ readField
                         iter().dict()
                     )
                 );
+                nUnset--;
             }
         }
+    }
+
+    if (nUnset == 0)
+    {
+        return;
     }
 
 

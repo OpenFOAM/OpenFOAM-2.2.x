@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.2.1                                 |
+|  \\    /   O peration     | Version:  dev                                   |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -9,45 +9,44 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       polyBoundaryMesh;
-    location    "constant/polyMesh";
-    object      boundary;
+    class       volScalarField;
+    object      p;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-5
-(
-    inlet
+dimensions      [0 2 -2 0 0 0 0];
+
+internalField   uniform 0;
+
+boundaryField
+{
+    // Set empty. Explicit patch name should win.
+    empty
     {
-        type            patch;
-        nFaces          30;
-        startFace       24170;
+        type            MATCHEMPTYGROUP;
     }
-    outlet
-    {
-        type            patch;
-        nFaces          57;
-        startFace       24200;
-    }
-    upperWall
-    {
-        type            wall;
-        nFaces          223;
-        startFace       24257;
-    }
-    lowerWall
-    {
-        type            wall;
-        nFaces          250;
-        startFace       24480;
-    }
+
     frontAndBack
     {
         type            empty;
-        inGroups        1(empty);
-        nFaces          24450;
-        startFace       24730;
     }
-)
+
+    ".*Back"
+    {
+        type            MATCHWILDCARD;
+    }
+
+    // Set walls. Last patchGroup should win.
+    allBoundaryGroup
+    {
+        type            MATCHALLGROUP;
+    }
+
+    wallsGroup
+    {
+        type            zeroGradient;
+    }
+
+}
 
 // ************************************************************************* //
