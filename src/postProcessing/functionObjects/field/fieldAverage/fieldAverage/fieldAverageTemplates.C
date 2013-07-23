@@ -78,7 +78,7 @@ void Foam::fieldAverage::addMeanField
                     IOobject
                     (
                         meanFieldName,
-                        obr_.time().timeName(),
+                        obr_.time().timeName(obr_.time().startTime().value()),
                         obr_,
                         IOobject::READ_IF_PRESENT,
                         IOobject::NO_WRITE
@@ -145,7 +145,7 @@ void Foam::fieldAverage::addPrime2MeanField
                     IOobject
                     (
                         meanFieldName,
-                        obr_.time().timeName(),
+                        obr_.time().timeName(obr_.time().startTime().value()),
                         obr_,
                         IOobject::READ_IF_PRESENT,
                         IOobject::NO_WRITE
