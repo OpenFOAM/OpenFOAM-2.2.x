@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -30,7 +30,7 @@ License
 #include "triSurfaceSearch.H"
 #include "cellClassification.H"
 #include "cpuTime.H"
-
+#include "demandDrivenData.H"
 #include "addToRunTimeSelectionTable.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
@@ -443,14 +443,8 @@ Foam::surfaceToCell::~surfaceToCell()
 {
     if (IOwnPtrs_)
     {
-        if (surfPtr_)
-        {
-            delete surfPtr_;
-        }
-        if (querySurfPtr_)
-        {
-            delete querySurfPtr_;
-        }
+        deleteDemandDrivenData(surfPtr_);
+        deleteDemandDrivenData(querySurfPtr_);
     }
 }
 
@@ -463,7 +457,7 @@ void Foam::surfaceToCell::applyToSet
     topoSet& set
 ) const
 {
-    if ( (action == topoSetSource::NEW) || (action == topoSetSource::ADD))
+    if ((action == topoSetSource::NEW) || (action == topoSetSource::ADD))
     {
         Info<< "    Adding cells in relation to surface " << surfName_
             << " ..." << endl;
