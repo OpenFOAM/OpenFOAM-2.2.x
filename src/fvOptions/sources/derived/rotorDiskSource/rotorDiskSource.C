@@ -610,7 +610,7 @@ void Foam::fv::rotorDiskSource::addSup
     (
         IOobject
         (
-            "rotorForce",
+            name_ + ":rotorForce",
             mesh_.time().timeName(),
             mesh_,
             IOobject::NO_READ,
