@@ -72,7 +72,9 @@ bool Foam::InjectionModel<CloudType>::prepareForNextTimeStep
     newParcels = this->parcelsToInject(t0, t1);
 
     // Volume of parcels to inject
-    newVolumeFraction = this->volumeToInject(t0, t1)/volumeTotal_;
+    newVolumeFraction =
+        this->volumeToInject(t0, t1)
+       /(volumeTotal_ + ROOTVSMALL);
 
     if (newVolumeFraction > 0)
     {
