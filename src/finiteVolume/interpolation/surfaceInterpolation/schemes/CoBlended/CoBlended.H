@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -34,6 +34,10 @@ Description
 
     The weight applies to the first scheme and 1-factor to the second scheme.
 
+    The face-based Courant number is obtained from the convection volumetric
+    flux.  If a mass-flux is provided it is converted into a volumetric using
+    the density field named "rho" obtained from the database.
+
 SourceFiles
     CoBlended.C
 
@@ -43,6 +47,7 @@ SourceFiles
 #define CoBlended_H
 
 #include "surfaceInterpolationScheme.H"
+#include "surfaceInterpolate.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -144,7 +149,7 @@ public:
             (
                 surfaceInterpolationScheme<Type>::New(mesh, faceFlux, is)
             ),
-             faceFlux_(faceFlux)
+            faceFlux_(faceFlux)
         {
             if (alpha_ <= 0)
             {
@@ -162,13 +167,33 @@ public:
         tmp<surfaceScalarField> blendingFactor() const
         {
             const fvMesh& mesh = faceFlux_.mesh();
+            tmp<surfaceScalarField> tUflux = faceFlux_;
+
+            if (faceFlux_.dimensions() == dimDensity*dimVelocity*dimArea)
+            {
+                // Currently assume that the density field
+                // corresponding to the mass-flux is named "rho"
+                const volScalarField& rho =
+                    mesh.objectRegistry::template lookupObject<volScalarField>
+                    ("rho");
+
+                tUflux = faceFlux_/fvc::interpolate(rho);
+            }
+            else if (faceFlux_.dimensions() != dimVelocity*dimArea)
+            {
+                FatalErrorIn
+                (
+                    "CoBlended::blendingFactor()"
+                )   << "dimensions of faceFlux are not correct"
+                    << exit(FatalError);
+            }
 
             return
             (
                 max
                 (
                     scalar(1)
-                  - mesh.time().deltaT()*mesh.deltaCoeffs()*mag(faceFlux_)
+                  - mesh.time().deltaT()*mesh.deltaCoeffs()*mag(tUflux)
                    /(mesh.magSf()*alpha_),
                     scalar(0)
                 )
