@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -67,7 +67,7 @@ Description
 
     4. compressible supersonic (\gamma > 1):
         \f[
-            p_T = \frac{p_0}{(1 + 0.5 \psi G)^{\frac{1}{G}}}
+            p_T = \frac{p_0}{(1 + 0.5 \psi G |U|^2)^{\frac{1}{G}}}
         \f]
         where
         \vartable
