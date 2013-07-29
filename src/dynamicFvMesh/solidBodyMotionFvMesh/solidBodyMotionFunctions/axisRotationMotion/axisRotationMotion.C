@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -73,7 +73,7 @@ Foam::solidBodyMotionFunctions::axisRotationMotion::transformation() const
 {
     scalar t = time_.value();
 
-    // Rotation around centre of gravity (in radians)
+    // Rotation origin (in radians)
     vector omega
     (
         t*degToRad(radialVelocity_.x()),
@@ -83,7 +83,7 @@ Foam::solidBodyMotionFunctions::axisRotationMotion::transformation() const
 
     scalar magOmega = mag(omega);
     quaternion R(omega/magOmega, magOmega);
-    septernion TR(septernion(CofG_)*R*septernion(-CofG_));
+    septernion TR(septernion(origin_)*R*septernion(-origin_));
 
     Info<< "solidBodyMotionFunctions::axisRotationMotion::transformation(): "
         << "Time = " << t << " transformation: " << TR << endl;
@@ -99,7 +99,7 @@ bool Foam::solidBodyMotionFunctions::axisRotationMotion::read
 {
     solidBodyMotionFunction::read(SBMFCoeffs);
 
-    SBMFCoeffs_.lookup("CofG") >> CofG_;
+    SBMFCoeffs_.lookup("origin") >> origin_;
     SBMFCoeffs_.lookup("radialVelocity") >> radialVelocity_;
 
     return true;
