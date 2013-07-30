@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.2.1                                 |
+|  \\    /   O peration     | Version:  dev                                   |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -29,8 +29,9 @@ solidBodyMotionFvMeshCoeffs
             solidBodyMotionFunction rotatingMotion;
             rotatingMotionCoeffs
             {
-                CofG            (0 0.1 0);
-                radialVelocity  (0 0 360);    // degrees/s
+                origin          (0 0.1 0);
+                axis            (0 0 1);
+                omega           6.2832; // rad/s
             }
         }
 
@@ -40,17 +41,19 @@ solidBodyMotionFvMeshCoeffs
         //    solidBodyMotionFunction rotatingMotion;
         //    rotatingMotionCoeffs
         //    {
-        //        CofG            (0 0 0);
-        //        radialVelocity  (720 0 0);    // degrees/s
+        //        origin          (0 0 0);
+        //        axis            (1 0 0);
+        //        omega           12.5664; // rad/s
         //    }
         //}
+
         // Tube rocking on rotating table
         rotatingBox
         {
             solidBodyMotionFunction oscillatingRotatingMotion;
             oscillatingRotatingMotionCoeffs
             {
-                CofG            (0 0 0);
+                origin          (0 0 0);
                 omega           40;         // rad/s
                 amplitude       (45 0 0);   // 45 degrees max tilt
             }

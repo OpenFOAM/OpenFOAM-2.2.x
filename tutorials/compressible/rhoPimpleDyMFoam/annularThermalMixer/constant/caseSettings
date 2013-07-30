@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.2.1                                 |
+|  \\    /   O peration     | Version:  dev                                   |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -33,7 +33,7 @@ outerInlet
 
 meshMotionProperties
 {
-    radialVelocity (0 0 1440); // deg/s
+    omega 25; // rad/s
 }
 
 #include "${FOAM_CASE}/constant/boundaryConditions"

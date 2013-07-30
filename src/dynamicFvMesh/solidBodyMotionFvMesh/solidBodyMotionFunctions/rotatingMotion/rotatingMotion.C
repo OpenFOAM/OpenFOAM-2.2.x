@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -54,10 +54,11 @@ Foam::solidBodyMotionFunctions::rotatingMotion::rotatingMotion
     const Time& runTime
 )
 :
-    solidBodyMotionFunction(SBMFCoeffs, runTime)
-{
-    read(SBMFCoeffs);
-}
+    solidBodyMotionFunction(SBMFCoeffs, runTime),
+    origin_(SBMFCoeffs_.lookup("origin")),
+    axis_(SBMFCoeffs_.lookup("axis")),
+    omega_(DataEntry<scalar>::New("omega", SBMFCoeffs_))
+{}
 
 
 // * * * * * * * * * * * * * * * * Destructors * * * * * * * * * * * * * * * //
@@ -73,16 +74,11 @@ Foam::solidBodyMotionFunctions::rotatingMotion::transformation() const
 {
     scalar t = time_.value();
 
-    // Motion around a centre of gravity
-
-    // Rotation around centre of gravity (in degrees)
-    vector eulerAngles = radialVelocity_*t;
-
-    // Convert the rotational motion from deg to rad
-    eulerAngles *= pi/180.0;
+    // Rotation around axis
+    vector eulerAngles = omega_->integrate(0, t)*axis_;
 
     quaternion R(eulerAngles.x(), eulerAngles.y(), eulerAngles.z());
-    septernion TR(septernion(CofG_)*R*septernion(-CofG_));
+    septernion TR(septernion(origin_)*R*septernion(-origin_));
 
     Info<< "solidBodyMotionFunctions::rotatingMotion::transformation(): "
         << "Time = " << t << " transformation: " << TR << endl;
@@ -98,8 +94,10 @@ bool Foam::solidBodyMotionFunctions::rotatingMotion::read
 {
     solidBodyMotionFunction::read(SBMFCoeffs);
 
-    SBMFCoeffs_.lookup("CofG") >> CofG_;
-    SBMFCoeffs_.lookup("radialVelocity") >> radialVelocity_;
+    omega_.reset
+    (
+        DataEntry<scalar>::New("omega", SBMFCoeffs_).ptr()
+    );
 
     return true;
 }

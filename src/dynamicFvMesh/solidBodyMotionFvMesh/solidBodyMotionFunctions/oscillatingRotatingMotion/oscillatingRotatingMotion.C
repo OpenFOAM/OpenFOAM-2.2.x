@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -82,7 +82,7 @@ transformation() const
     eulerAngles *= pi/180.0;
 
     quaternion R(eulerAngles.x(), eulerAngles.y(), eulerAngles.z());
-    septernion TR(septernion(CofG_)*R*septernion(-CofG_));
+    septernion TR(septernion(origin_)*R*septernion(-origin_));
 
     Info<< "solidBodyMotionFunctions::oscillatingRotatingMotion::"
         << "transformation(): "
@@ -99,7 +99,7 @@ bool Foam::solidBodyMotionFunctions::oscillatingRotatingMotion::read
 {
     solidBodyMotionFunction::read(SBMFCoeffs);
 
-    SBMFCoeffs_.lookup("CofG") >> CofG_;
+    SBMFCoeffs_.lookup("origin") >> origin_;
     SBMFCoeffs_.lookup("amplitude") >> amplitude_;
     SBMFCoeffs_.lookup("omega") >> omega_;
 

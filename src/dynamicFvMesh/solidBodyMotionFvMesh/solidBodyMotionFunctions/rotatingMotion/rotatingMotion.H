@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -25,8 +25,10 @@ Class
     Foam::solidBodyMotionFunctions::rotatingMotion
 
 Description
-    SolidBodyMotionFvMesh 6DoF motion function. Constant
-    velocity rotation around CoG.
+    SolidBodyMotionFvMesh 6DoF motion function.
+
+    The rotation is defined by an origin and axis of rotation and an angular
+    speed.
 
 SourceFiles
     rotatingMotion.C
@@ -39,6 +41,8 @@ SourceFiles
 #include "solidBodyMotionFunction.H"
 #include "primitiveFields.H"
 #include "point.H"
+#include "DataEntry.H"
+#include "autoPtr.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -57,11 +61,14 @@ class rotatingMotion
 {
     // Private data
 
-        //- Centre of gravity
-        point CofG_;
+        //- Origin of the axis
+        const vector origin_;
 
-        //- Rotational velocity (deg/s)
-        vector radialVelocity_;
+        //- Axis vector
+        const vector axis_;
+
+        //- Angular velocty (rad/sec)
+        autoPtr<DataEntry<scalar> > omega_;
 
 
     // Private Member Functions
