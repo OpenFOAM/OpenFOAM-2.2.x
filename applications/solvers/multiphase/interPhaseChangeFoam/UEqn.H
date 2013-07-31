@@ -2,6 +2,7 @@
     (
         fvm::ddt(rho, U)
       + fvm::div(rhoPhi, U)
+      - fvm::Sp(fvc::ddt(rho) + fvc::div(rhoPhi), U)
       + turbulence->divDevRhoReff(rho, U)
     );
 
