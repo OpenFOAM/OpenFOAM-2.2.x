@@ -101,7 +101,7 @@ tmp<volScalarField> kOmegaSSTSAS::Lvk2
     (
         kappa_*sqrt(S2)
        /(
-            fvc::magSqrGradGrad(U())
+            mag(fvc::laplacian(U()))
           + dimensionedScalar
             (
                 "ROOTVSMALL",
