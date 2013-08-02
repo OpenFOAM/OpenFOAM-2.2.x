@@ -3,7 +3,7 @@
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
 #  \\    /   O peration     |
-#   \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+#   \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
 #    \\/     M anipulation  |
 #-------------------------------------------------------------------------------
 # License
@@ -169,6 +169,13 @@ colourPipe()
 
 
 colourIndex=0
+
+# Check for existence of lockfile binary
+if ! type -p lockfile >/dev/null
+then
+    echo "Could not find executable 'lockfile'"
+    exit 1
+fi
 
 while :
 do
