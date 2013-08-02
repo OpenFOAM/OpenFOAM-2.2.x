@@ -1490,22 +1490,6 @@ void Foam::autoLayerDriver::shrinkMeshMedialDistance
 
         // dispVec
         meshRefinement::testSyncPointList("dispVec", mesh, dispVec);
-
-        // displacement before and after correction
-        meshRefinement::testSyncPointList
-        (
-            "displacement BEFORE",
-            mesh,
-            displacement
-        );
-
-        meshMover.correctBoundaryConditions(displacement);
-        meshRefinement::testSyncPointList
-        (
-            "displacement AFTER",
-            mesh,
-            displacement
-        );
     }
 
 

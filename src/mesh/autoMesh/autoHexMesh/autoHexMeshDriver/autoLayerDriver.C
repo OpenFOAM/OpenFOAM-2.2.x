@@ -799,6 +799,11 @@ Foam::autoLayerDriver::makeLayerDisplacementField
         pointPatches.size(),
         slipPointPatchVectorField::typeName
     );
+    wordList actualPatchTypes(patchFieldTypes.size());
+    forAll(pointPatches, patchI)
+    {
+        actualPatchTypes[patchI] = pointPatches[patchI].type();
+    }
 
     forAll(numLayers, patchI)
     {
@@ -841,7 +846,8 @@ Foam::autoLayerDriver::makeLayerDisplacementField
             ),
             pMesh,
             dimensionedVector("displacement", dimLength, vector::zero),
-            patchFieldTypes
+            patchFieldTypes,
+            actualPatchTypes
         )
     );
     return tfld;
@@ -3270,7 +3276,7 @@ void Foam::autoLayerDriver::doLayers
         {
             const polyPatch& pp = mesh.boundaryMesh()[patchI];
 
-            if (!polyPatch::constraintType(pp.type()))
+            if (!pp.coupled())
             {
                 patchIDs.append(patchI);
                 nFacesWithLayers += mesh.boundaryMesh()[patchI].size();
@@ -3278,7 +3284,7 @@ void Foam::autoLayerDriver::doLayers
             else
             {
                 WarningIn("autoLayerDriver::doLayers(..)")
-                    << "Ignoring layers on constraint patch " << pp.name()
+                    << "Ignoring layers on coupled patch " << pp.name()
                     << endl;
             }
         }

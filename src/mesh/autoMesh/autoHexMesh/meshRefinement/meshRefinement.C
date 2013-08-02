@@ -131,7 +131,7 @@ void Foam::meshRefinement::calcNeighbourData
                     // Other cell more refined. Adjust normal distance
                     d *= 0.5;
                 }
-                neiLevel[bFaceI] = cellLevel[ownLevel];
+                neiLevel[bFaceI] = faceLevel;
                 // Calculate other cell centre by extrapolation
                 neiCc[bFaceI] = faceCentres[i] + d*fn;
                 bFaceI++;
