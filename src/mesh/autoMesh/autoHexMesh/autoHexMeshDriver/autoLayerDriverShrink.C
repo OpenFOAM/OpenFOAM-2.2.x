@@ -1490,22 +1490,6 @@ void Foam::autoLayerDriver::shrinkMeshMedialDistance
 
         // dispVec
         meshRefinement::testSyncPointList("dispVec", mesh, dispVec);
-
-        // displacement before and after correction
-        meshRefinement::testSyncPointList
-        (
-            "displacement BEFORE",
-            mesh,
-            displacement
-        );
-
-        meshMover.correctBoundaryConditions(displacement);
-        meshRefinement::testSyncPointList
-        (
-            "displacement AFTER",
-            mesh,
-            displacement
-        );
     }
 
 
@@ -1601,16 +1585,19 @@ void Foam::autoLayerDriver::shrinkMeshMedialDistance
         Info<< "Writing wanted-displacement mesh (possibly illegal) to "
             << meshRefiner_.timeName() << endl;
         pointField oldPoints(mesh.points());
-        meshMover.movePoints
+        vectorField totalDisp
         (
-            (
-                mesh.points()
-         +      (
-                    meshMover.scale().internalField()
-                  * displacement.internalField()
-                )
-            )()
+            meshMover.scale().internalField()
+          * displacement.internalField()
         );
+        syncTools::syncPointList
+        (
+            mesh,
+            totalDisp,
+            minMagSqrEqOp<point>(),
+            vector(GREAT, GREAT, GREAT)
+        );
+        meshMover.movePoints((mesh.points()+totalDisp)());
 
         // Above move will have changed the instance only on the points (which
         // is correct).

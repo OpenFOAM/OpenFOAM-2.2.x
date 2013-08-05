@@ -65,7 +65,12 @@ const Type& Foam::MeshObject<Mesh, MeshObjectType, Type>::New
             Pout<< "MeshObject::New(const Mesh&) : constructing new "
                 << Type::typeName << endl;
         }
-        return regIOobject::store(new Type(mesh));
+
+        Type* objectPtr = new Type(mesh);
+
+        regIOobject::store(static_cast<MeshObjectType<Mesh>*>(objectPtr));
+
+        return *objectPtr;
     }
 }
 
@@ -98,7 +103,12 @@ const Type& Foam::MeshObject<Mesh, MeshObjectType, Type>::New
             Pout<< "MeshObject::New(const Mesh&) : constructing new "
                 << Type::typeName << endl;
         }
-        return regIOobject::store(new Type(mesh, d));
+
+        Type* objectPtr = new Type(mesh, d);
+
+        regIOobject::store(static_cast<MeshObjectType<Mesh>*>(objectPtr));
+
+        return *objectPtr;
     }
 }
 
@@ -132,7 +142,14 @@ const Type& Foam::MeshObject<Mesh, MeshObjectType, Type>::New
             Pout<< "MeshObject(const Mesh&) : constructing new "
                 << Type::typeName << endl;
         }
-        return regIOobject::store(new Type(mesh, d1, d2));
+
+        Type* objectPtr = new Type(mesh, d1, d2);
+
+        // Make sure to register the top level regIOobject for if Type itself
+        // is a regIOobject
+        regIOobject::store(static_cast<MeshObjectType<Mesh>*>(objectPtr));
+
+        return *objectPtr;
     }
 }
 
@@ -167,7 +184,11 @@ const Type& Foam::MeshObject<Mesh, MeshObjectType, Type>::New
             Pout<< "MeshObject(const Mesh&) : constructing new "
                 << Type::typeName << endl;
         }
-        return regIOobject::store(new Type(mesh, d1, d2, d3));
+        Type* objectPtr = new Type(mesh, d1, d2, d3);
+
+        regIOobject::store(static_cast<MeshObjectType<Mesh>*>(objectPtr));
+
+        return *objectPtr;
     }
 }
 
@@ -203,7 +224,11 @@ const Type& Foam::MeshObject<Mesh, MeshObjectType, Type>::New
             Pout<< "MeshObject(const Mesh&) : constructing new "
                 << Type::typeName << endl;
         }
-        return regIOobject::store(new Type(mesh, d1, d2, d3, d4));
+        Type* objectPtr = new Type(mesh, d1, d2, d3, d4);
+
+        regIOobject::store(static_cast<MeshObjectType<Mesh>*>(objectPtr));
+
+        return *objectPtr;
     }
 }
 
