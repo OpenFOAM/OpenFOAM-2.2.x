@@ -132,7 +132,7 @@ public:
         ) const;
 
         //- Return maximum/limiting temperature
-        virtual scalar TMax(const scalar pIn, const scalar TIn) const;
+        virtual scalar TMax(const scalar pIn) const;
 };
 
 
