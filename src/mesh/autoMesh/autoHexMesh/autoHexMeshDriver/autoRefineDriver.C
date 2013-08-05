@@ -676,12 +676,15 @@ void Foam::autoRefineDriver::mergePatchFaces
         << "----------------------------" << nl
         << endl;
 
+    const fvMesh& mesh = meshRefiner_.mesh();
+
     meshRefiner_.mergePatchFacesUndo
     (
         Foam::cos(degToRad(45.0)),
         Foam::cos(degToRad(45.0)),
         meshRefiner_.meshedPatches(),
-        motionDict
+        motionDict,
+        labelList(mesh.nFaces(), -1)
     );
 
     if (debug)

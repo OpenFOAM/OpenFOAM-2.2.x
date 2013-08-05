@@ -249,7 +249,8 @@ Foam::label Foam::meshRefinement::mergePatchFacesUndo
     const scalar minCos,
     const scalar concaveCos,
     const labelList& patchIDs,
-    const dictionary& motionDict
+    const dictionary& motionDict,
+    const labelList& preserveFaces
 )
 {
     // Patch face merging engine
@@ -280,7 +281,7 @@ Foam::label Foam::meshRefinement::mergePatchFacesUndo
     // Get all sets of faces that can be merged. Since only faces on the same
     // patch get merged there is no risk of e.g. patchID faces getting merged
     // with original patches (or even processor patches). There is a risk
-    // though of original patchfaces getting merged if they make a small
+    // though of original patch faces getting merged if they make a small
     // angle. Would be pretty weird starting mesh though.
     labelListList allFaceSets
     (
@@ -291,6 +292,27 @@ Foam::label Foam::meshRefinement::mergePatchFacesUndo
             boundaryCells
         )
     );
+
+    label compactI = 0;
+    forAll(allFaceSets, i)
+    {
+        bool keep = true;
+        const labelList& set = allFaceSets[i];
+        forAll(set, j)
+        {
+            if (preserveFaces[set[j]] != -1)
+            {
+                keep = false;
+                break;
+            }
+        }
+
+        if (keep && (compactI != i))
+        {
+            allFaceSets[compactI++] = set;
+        }
+    }
+    allFaceSets.setSize(compactI);
 
     label nFaceSets = returnReduce(allFaceSets.size(), sumOp<label>());
 

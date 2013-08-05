@@ -1099,7 +1099,8 @@ bool Foam::autoSnapDriver::scaleMesh
 Foam::autoPtr<Foam::mapPolyMesh> Foam::autoSnapDriver::repatchToSurface
 (
     const snapParameters& snapParams,
-    const labelList& adaptPatchIDs
+    const labelList& adaptPatchIDs,
+    const labelList& preserveFaces
 )
 {
     const fvMesh& mesh = meshRefiner_.mesh();
@@ -1126,7 +1127,16 @@ Foam::autoPtr<Foam::mapPolyMesh> Foam::autoSnapDriver::repatchToSurface
     // Faces that do not move
     PackedBoolList isZonedFace(mesh.nFaces());
     {
-        // 1. All faces on zoned surfaces
+        // 1. Preserve faces in preserveFaces list
+        forAll(preserveFaces, faceI)
+        {
+            if (preserveFaces[faceI] != -1)
+            {
+                isZonedFace.set(faceI, 1);
+            }
+        }
+
+        // 2. All faces on zoned surfaces
         const wordList& faceZoneNames = surfaces.faceZoneNames();
         const faceZoneMesh& fZones = mesh.faceZones();
 
@@ -1274,6 +1284,15 @@ void Foam::autoSnapDriver::doSnap
         baffles
     );
 
+    // Keep copy of baffles
+    labelList origBaffles(mesh.nFaces(), -1);
+
+    forAll(baffles, i)
+    {
+        const labelPair& baffle = baffles[i];
+        origBaffles[baffle.first()] = baffle.second();
+        origBaffles[baffle.second()] = baffle.first();
+    }
 
     // Selectively 'forget' about the baffles, i.e. not check across them
     // or merge across them.
@@ -1355,11 +1374,22 @@ void Foam::autoSnapDriver::doSnap
 
 
             localPointRegion regionSide(mesh, candidatePoints);
-            autoPtr<mapPolyMesh> mapPtr = meshRefiner_.dupNonManifoldPoints
-            (
-                regionSide
-            );
+            autoPtr<mapPolyMesh> mapPtr =
+                meshRefiner_.dupNonManifoldPoints(regionSide);
             meshRefinement::updateList(mapPtr().faceMap(), -1, filterFace);
+
+            const labelList& reverseFaceMap = mapPtr().reverseFaceMap();
+            origBaffles.setSize(mesh.nFaces());
+            origBaffles = -1;
+
+            forAll(baffles, i)
+            {
+                labelPair& baffle = baffles[i];
+                baffle.first() = reverseFaceMap[baffle.first()];
+                baffle.second() = reverseFaceMap[baffle.second()];
+                origBaffles[baffle.first()] = baffle.second();
+                origBaffles[baffle.second()] = baffle.first();
+            }
 
             if (debug&meshRefinement::MESH)
             {
@@ -1560,10 +1590,23 @@ void Foam::autoSnapDriver::doSnap
     }
 
     // Merge any introduced baffles.
-    mergeZoneBaffles(baffles);
+    {
+        autoPtr<mapPolyMesh> mapPtr = mergeZoneBaffles(baffles);
+
+        if (mapPtr.valid())
+        {
+            forAll(origBaffles, faceI)
+            {
+                if (origBaffles[faceI] != -1)
+                {
+                    origBaffles[faceI] = mapPtr->reverseFaceMap()[faceI];
+                }
+            }
+        }
+    }
 
     // Repatch faces according to nearest.
-    repatchToSurface(snapParams, adaptPatchIDs);
+    repatchToSurface(snapParams, adaptPatchIDs, origBaffles);
 
     // Repatching might have caused faces to be on same patch and hence
     // mergeable so try again to merge coplanar faces
@@ -1572,7 +1615,8 @@ void Foam::autoSnapDriver::doSnap
         featureCos,  // minCos
         featureCos,  // concaveCos
         meshRefiner_.meshedPatches(),
-        motionDict
+        motionDict,
+        origBaffles
     );
 
     nChanged += meshRefiner_.mergeEdgesUndo
@@ -1581,7 +1625,7 @@ void Foam::autoSnapDriver::doSnap
         motionDict
     );
 
-    if (nChanged > 0 && debug&meshRefinement::MESH)
+    if (nChanged > 0 && debug & meshRefinement::MESH)
     {
         const_cast<Time&>(mesh.time())++;
         Info<< "Writing patchFace merged mesh to time "
