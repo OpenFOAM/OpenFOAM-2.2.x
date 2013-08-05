@@ -510,7 +510,7 @@ void Foam::ReactingParcel<ParcelType>::calcPhaseChange
     const CompositionModel<reactingCloudType>& composition =
         td.cloud().composition();
 
-    const scalar TMax = td.cloud().phaseChange().TMax(pc_, this->Tc_);
+    const scalar TMax = td.cloud().phaseChange().TMax(pc_);
     const scalar Tdash = min(T, TMax);
     const scalar Tsdash = min(Ts, TMax);
 
