@@ -126,7 +126,7 @@ do
     if [ -e "$dir" ]
     then
         #- no duplicate dirs
-        duplicate=$(echo " $dirList " | sed -ne "s@ $dir @DUP@p")
+        duplicate=$(echo " $dirList " | sed -ne "s: $dir :DUP:p")
 
         if [ ! "$duplicate" ]
         then
