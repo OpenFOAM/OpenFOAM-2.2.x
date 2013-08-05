@@ -242,16 +242,12 @@ Foam::scalar Foam::LiquidEvaporation<CloudType>::dh
 
 
 template<class CloudType>
-Foam::scalar Foam::LiquidEvaporation<CloudType>::TMax
-(
-    const scalar pIn,
-    const scalar TIn
-) const
+Foam::scalar Foam::LiquidEvaporation<CloudType>::TMax(const scalar pIn) const
 {
     scalar T = -GREAT;
     forAll(liquids_, i)
     {
-        T = max(T, liquids_.properties()[i].pv(pIn, TIn));
+        T = max(T, liquids_.properties()[i].pvInvert(pIn));
     }
 
     return T;

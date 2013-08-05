@@ -460,7 +460,8 @@ public:
             autoPtr<mapPolyMesh> repatchToSurface
             (
                 const snapParameters& snapParams,
-                const labelList& adaptPatchIDs
+                const labelList& adaptPatchIDs,
+                const labelList& preserveFaces
             );
 
             void doSnap

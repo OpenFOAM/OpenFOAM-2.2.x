@@ -179,11 +179,7 @@ Foam::scalar Foam::PhaseChangeModel<CloudType>::dh
 
 
 template<class CloudType>
-Foam::scalar Foam::PhaseChangeModel<CloudType>::TMax
-(
-    const scalar,
-    const scalar
-) const
+Foam::scalar Foam::PhaseChangeModel<CloudType>::TMax(const scalar) const
 {
     return GREAT;
 }

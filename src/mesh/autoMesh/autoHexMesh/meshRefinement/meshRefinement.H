@@ -840,7 +840,8 @@ public:
                     const scalar minCos,
                     const scalar concaveCos,
                     const labelList& patchIDs,
-                    const dictionary& motionDict
+                    const dictionary& motionDict,
+                    const labelList& preserveFaces
                 );
 
                 autoPtr<mapPolyMesh> doRemovePoints

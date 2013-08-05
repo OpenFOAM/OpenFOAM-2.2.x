@@ -2448,12 +2448,15 @@ void Foam::autoLayerDriver::mergePatchFacesUndo
         << "      (0=straight, 180=fully concave)" << nl
         << endl;
 
+    const fvMesh& mesh = meshRefiner_.mesh();
+
     label nChanged = meshRefiner_.mergePatchFacesUndo
     (
         minCos,
         concaveCos,
         meshRefiner_.meshedPatches(),
-        motionDict
+        motionDict,
+        labelList(mesh.nFaces() -1)
     );
 
     nChanged += meshRefiner_.mergeEdgesUndo(minCos, motionDict);
