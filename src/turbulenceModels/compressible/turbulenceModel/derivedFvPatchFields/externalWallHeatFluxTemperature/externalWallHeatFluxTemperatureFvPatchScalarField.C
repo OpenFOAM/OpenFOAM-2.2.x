@@ -68,7 +68,9 @@ externalWallHeatFluxTemperatureFvPatchScalarField
     oldMode_(unknown),
     q_(p.size(), 0.0),
     h_(p.size(), 0.0),
-    Ta_(p.size(), 0.0)
+    Ta_(p.size(), 0.0),
+    thicknessLayer_(0),
+    kappaLayer_(0)
 {
     this->refValue() = 0.0;
     this->refGrad() = 0.0;
@@ -90,7 +92,9 @@ externalWallHeatFluxTemperatureFvPatchScalarField
     oldMode_(ptf.oldMode_),
     q_(ptf.q_, mapper),
     h_(ptf.h_, mapper),
-    Ta_(ptf.Ta_, mapper)
+    Ta_(ptf.Ta_, mapper),
+    thicknessLayer_(ptf.thicknessLayer_),
+    kappaLayer_(ptf.kappaLayer_)
 {}
 
 
@@ -107,7 +111,9 @@ externalWallHeatFluxTemperatureFvPatchScalarField
     oldMode_(unknown),
     q_(p.size(), 0.0),
     h_(p.size(), 0.0),
-    Ta_(p.size(), 0.0)
+    Ta_(p.size(), 0.0),
+    thicknessLayer_(dict.lookupOrDefault<scalar>("thicknessLayer", 0.0)),
+    kappaLayer_(dict.lookupOrDefault<scalar>("kappaLayer", 0.0))
 {
     if (dict.found("q") && !dict.found("h") && !dict.found("Ta"))
     {
@@ -169,7 +175,9 @@ externalWallHeatFluxTemperatureFvPatchScalarField
     oldMode_(tppsf.oldMode_),
     q_(tppsf.q_),
     h_(tppsf.h_),
-    Ta_(tppsf.Ta_)
+    Ta_(tppsf.Ta_),
+    thicknessLayer_(tppsf.thicknessLayer_),
+    kappaLayer_(tppsf.kappaLayer_)
 {}
 
 
@@ -185,7 +193,9 @@ externalWallHeatFluxTemperatureFvPatchScalarField
     oldMode_(tppsf.oldMode_),
     q_(tppsf.q_),
     h_(tppsf.h_),
-    Ta_(tppsf.Ta_)
+    Ta_(tppsf.Ta_),
+    thicknessLayer_(tppsf.thicknessLayer_),
+    kappaLayer_(tppsf.kappaLayer_)
 {}
 
 
@@ -237,7 +247,7 @@ void Foam::externalWallHeatFluxTemperatureFvPatchScalarField::updateCoeffs()
     }
     else if (oldMode_ == fixedHeatTransferCoeff)
     {
-        q = (Ta_ - *this)*h_;
+        q = (Ta_ - *this)/(1.0/h_ + thicknessLayer_/(kappaLayer_ + VSMALL));
     }
     else
     {
@@ -291,6 +301,10 @@ void Foam::externalWallHeatFluxTemperatureFvPatchScalarField::write
 {
     mixedFvPatchScalarField::write(os);
     temperatureCoupledBase::write(os);
+    os.writeKeyword("thicknessLayer")<< thicknessLayer_
+        << token::END_STATEMENT << nl;
+    os.writeKeyword("kappaLayer")<< kappaLayer_ << token::END_STATEMENT << nl;
+
     switch (oldMode_)
     {
         case fixedHeatFlux:
