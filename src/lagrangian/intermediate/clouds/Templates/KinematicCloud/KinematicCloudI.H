@@ -90,6 +90,14 @@ Foam::KinematicCloud<CloudType>::constProps() const
 
 
 template<class CloudType>
+inline typename CloudType::particleType::constantProperties&
+Foam::KinematicCloud<CloudType>::constProps()
+{
+    return constProps_;
+}
+
+
+template<class CloudType>
 inline const Foam::dictionary&
 Foam::KinematicCloud<CloudType>::subModelProperties() const
 {

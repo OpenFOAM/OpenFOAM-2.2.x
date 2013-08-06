@@ -211,6 +211,9 @@ public:
             inline const typename parcelType::constantProperties&
                 constProps() const;
 
+            //- Return access to the constant properties
+            inline typename parcelType::constantProperties& constProps();
+
 
             // Sub-models
 

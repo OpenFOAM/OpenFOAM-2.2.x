@@ -46,6 +46,14 @@ Foam::ThermoCloud<CloudType>::constProps() const
 
 
 template<class CloudType>
+inline typename CloudType::particleType::constantProperties&
+Foam::ThermoCloud<CloudType>::constProps()
+{
+    return constProps_;
+}
+
+
+template<class CloudType>
 inline const Foam::SLGThermo& Foam::ThermoCloud<CloudType>::thermo() const
 {
     return thermo_;

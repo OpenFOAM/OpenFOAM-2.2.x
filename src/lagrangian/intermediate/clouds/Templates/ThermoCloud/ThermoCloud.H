@@ -225,6 +225,9 @@ public:
             inline const typename parcelType::constantProperties&
                 constProps() const;
 
+            //- Return access to the constant properties
+            inline typename parcelType::constantProperties& constProps();
+
             //- Return const access to thermo package
             inline const SLGThermo& thermo() const;
 
