@@ -7,5 +7,7 @@ cd ${0%/*} || exit 1    # run from this directory
 cleanCase
 
 rm -rf constant/panelRegion/polyMesh
+rm  -f 0/polyMesh/cellMap
+rm  -f constant/polyMesh/boundary
 
 # ----------------------------------------------------------------- end-of-file
