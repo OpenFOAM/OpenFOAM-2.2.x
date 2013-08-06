@@ -138,9 +138,11 @@ public:
             return components_.size();
         }
 
-
         //- Calculate the critical temperature of mixture
         scalar Tc(const scalarField& x) const;
+
+        //- Calculate the maximum temperature of mixture at given pressure
+        scalar TMax(const scalar p) const;
 
         //- Return pseudocritical temperature according to Kay's rule
         scalar Tpc(const scalarField& x) const;
