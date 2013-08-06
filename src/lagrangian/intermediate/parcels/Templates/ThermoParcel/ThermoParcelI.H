@@ -217,6 +217,14 @@ Foam::ThermoParcel<ParcelType>::constantProperties::TMax() const
 
 
 template<class ParcelType>
+inline Foam::scalar&
+Foam::ThermoParcel<ParcelType>::constantProperties::TMax()
+{
+    return TMax_;
+}
+
+
+template<class ParcelType>
 inline Foam::scalar
 Foam::ThermoParcel<ParcelType>::constantProperties::Cp0() const
 {

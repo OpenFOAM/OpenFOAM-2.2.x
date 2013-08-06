@@ -42,6 +42,14 @@ Foam::ReactingCloud<CloudType>::constProps() const
 
 
 template<class CloudType>
+inline typename CloudType::particleType::constantProperties&
+Foam::ReactingCloud<CloudType>::constProps()
+{
+    return constProps_;
+}
+
+
+template<class CloudType>
 inline const Foam::CompositionModel<Foam::ReactingCloud<CloudType> >&
 Foam::ReactingCloud<CloudType>::composition() const
 {

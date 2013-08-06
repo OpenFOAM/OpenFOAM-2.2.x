@@ -42,6 +42,14 @@ Foam::ReactingMultiphaseCloud<CloudType>::constProps() const
 
 
 template<class CloudType>
+inline typename CloudType::particleType::constantProperties&
+Foam::ReactingMultiphaseCloud<CloudType>::constProps()
+{
+    return constProps_;
+}
+
+
+template<class CloudType>
 inline const Foam::DevolatilisationModel
 <
     Foam::ReactingMultiphaseCloud<CloudType>

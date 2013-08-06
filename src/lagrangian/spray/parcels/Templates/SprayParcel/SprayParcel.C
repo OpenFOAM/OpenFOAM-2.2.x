@@ -76,6 +76,10 @@ void Foam::SprayParcel<ParcelType>::calc
         }
     }
 
+    // set the maximum temperature limit
+    const scalar TMax = td.cloud().composition().liquids().TMax(this->pc_);
+    td.cloud().constProps().TMax() = TMax;
+
     // store the parcel properties
     const scalarField& Y(this->Y());
     scalarField X(td.cloud().composition().liquids().X(Y));
@@ -320,15 +324,12 @@ Foam::scalar Foam::SprayParcel<ParcelType>::chi
 {
     // modifications to take account of the flash boiling on primary break-up
 
-    static label nIter = 200;
-
     typedef typename TrackData::cloudType::reactingCloudType reactingCloudType;
     const CompositionModel<reactingCloudType>& composition =
         td.cloud().composition();
 
     scalar chi = 0.0;
     scalar T0 = this->T();
-    scalar Tc0 = this->Tc();
     scalar p0 = this->pc();
     scalar pAmb = td.cloud().pAmbient();
 
@@ -341,21 +342,7 @@ Foam::scalar Foam::SprayParcel<ParcelType>::chi
             // liquid is boiling - calc boiling temperature
 
             const liquidProperties& liq = composition.liquids().properties()[i];
-            scalar TBoil = T0;
-
-            for (label k=0; k<nIter; k++)
-            {
-                scalar pBoil = liq.pv(p0, TBoil);
-
-                if (pBoil > p0)
-                {
-                    TBoil = TBoil - (T0 - Tc0)/nIter;
-                }
-                else
-                {
-                    break;
-                }
-            }
+            scalar TBoil = liq.pvInvert(p0);
 
             scalar hl = liq.hl(pAmb, TBoil);
             scalar iTp = liq.h(pAmb, T0) - liq.rho(pAmb, T0);

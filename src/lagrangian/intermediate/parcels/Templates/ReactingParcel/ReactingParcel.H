@@ -83,9 +83,6 @@ public:
             //- Vaporisation temperature [K]
             scalar Tvap_;
 
-            //- Boiling point [K]
-            scalar Tbp_;
-
 
     public:
 
@@ -122,8 +119,7 @@ public:
                 const scalar Pr,
                 const scalar pMin,
                 const Switch& constantVolume,
-                const scalar Tvap,
-                const scalar Tbp
+                const scalar Tvap
             );
 
 
@@ -137,9 +133,6 @@ public:
 
             //- Return const access to the vaporisation temperature
             inline scalar Tvap() const;
-
-            //- Return const access to the boiling point
-            inline scalar Tbp() const;
     };
 
 

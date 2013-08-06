@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -146,6 +146,9 @@ public:
 
                 //- Return const access to maximum temperature [K]
                 inline scalar TMax() const;
+
+                //- Return non-const access to maximum temperature [K]
+                inline scalar& TMax();
 
                 //- Return const access to the particle specific heat capacity
                 //  [J/(kg.K)]

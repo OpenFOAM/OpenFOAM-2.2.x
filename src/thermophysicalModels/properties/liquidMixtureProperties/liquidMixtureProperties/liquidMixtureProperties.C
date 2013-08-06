@@ -103,6 +103,18 @@ Foam::scalar Foam::liquidMixtureProperties::Tc(const scalarField& x) const
 }
 
 
+Foam::scalar Foam::liquidMixtureProperties::TMax(const scalar p) const
+{
+    scalar T = -GREAT;
+    forAll(properties_, i)
+    {
+        T = max(T, properties_[i].pvInvert(p));
+    }
+
+    return T;
+}
+
+
 Foam::scalar Foam::liquidMixtureProperties::Tpc(const scalarField& x) const
 {
     scalar Tpc = 0.0;
