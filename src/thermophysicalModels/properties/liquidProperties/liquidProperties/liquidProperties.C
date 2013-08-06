@@ -344,44 +344,43 @@ Foam::scalar Foam::liquidProperties::D(scalar p, scalar T, scalar Wb) const
 
 Foam::scalar Foam::liquidProperties::pvInvert(scalar p) const
 {
-    scalar T = Tc_;
-    scalar deltaT = 10.0;
-    scalar dp0 = pv(p, T) - p;
-
-
-    label n = 0;
-
-    while ((n < 200) && (mag(deltaT) > 1.0e-3))
+    // Check for critical and solid phase conditions
+    if (p >= Pc_)
     {
-        n++;
-        scalar pBoil = pv(p, T);
-        scalar dp = pBoil - p;
-
-        if ((dp > 0.0) && (dp0 > 0.0))
+        return Tc_;
+    }
+    else if (p < Pt_)
+    {
+        if (debug)
         {
-            T -= deltaT;
+            WarningIn
+            (
+                "Foam::scalar Foam::liquidProperties::pvInvert(scalar) const"
+            )   << "Pressure below triple point pressure: "
+                << "p = " << p << " < Pt = " << Pt_ <<  nl << endl;
+        }
+        return -1;
+    }
+
+    // Set initial upper and lower bounds
+    scalar Thi = Tc_;
+    scalar Tlo = Tt_;
+
+    // Initialise T as boiling temperature under normal conditions
+    scalar T = Tb_;
+
+    while ((Thi - Tlo) > 1.0e-4)
+    {
+        if ((pv(p, T) - p) <= 0.0)
+        {
+            Tlo = T;
         }
         else
         {
-            if ((dp < 0.0) && (dp0 < 0.0))
-            {
-                T += deltaT;
-            }
-            else
-            {
-                deltaT *= 0.5;
-                if ((dp > 0.0) && (dp0 < 0.0))
-                {
-                    T -= deltaT;
-                }
-                else
-                {
-                    T += deltaT;
-                }
-            }
+            Thi = T;
         }
 
-        dp0 = dp;
+        T = (Thi + Tlo)*0.5;
     }
 
     return T;
