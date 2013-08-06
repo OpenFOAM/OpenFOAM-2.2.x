@@ -32,8 +32,7 @@ Foam::ReactingParcel<ParcelType>::constantProperties::constantProperties()
     ParcelType::constantProperties(),
     pMin_(0.0),
     constantVolume_(false),
-    Tvap_(0.0),
-    Tbp_(0.0)
+    Tvap_(0.0)
 {}
 
 
@@ -46,8 +45,7 @@ inline Foam::ReactingParcel<ParcelType>::constantProperties::constantProperties
     ParcelType::constantProperties(cp),
     pMin_(cp.pMin_),
     constantVolume_(cp.constantVolume_),
-    Tvap_(cp.Tvap_),
-    Tbp_(cp.Tbp_)
+    Tvap_(cp.Tvap_)
 {}
 
 
@@ -61,8 +59,7 @@ inline Foam::ReactingParcel<ParcelType>::constantProperties::constantProperties
     ParcelType::constantProperties(parentDict, readFields),
     pMin_(1000.0),
     constantVolume_(false),
-    Tvap_(0.0),
-    Tbp_(0.0)
+    Tvap_(0.0)
 {
     if (readFields)
     {
@@ -73,7 +70,6 @@ inline Foam::ReactingParcel<ParcelType>::constantProperties::constantProperties
 
         this->dict().lookup("constantVolume") >> constantVolume_;
         this->dict().lookup("Tvap") >> Tvap_;
-        this->dict().lookup("Tbp") >> Tbp_;
     }
 }
 
@@ -96,8 +92,7 @@ inline Foam::ReactingParcel<ParcelType>::constantProperties::constantProperties
     const scalar Pr,
     const scalar pMin,
     const Switch& constantVolume,
-    const scalar Tvap,
-    const scalar Tbp
+    const scalar Tvap
 )
 :
     ParcelType::constantProperties
@@ -118,8 +113,7 @@ inline Foam::ReactingParcel<ParcelType>::constantProperties::constantProperties
     ),
     pMin_(pMin),
     constantVolume_(constantVolume),
-    Tvap_(Tvap),
-    Tbp_(Tbp)
+    Tvap_(Tvap)
 {}
 
 
@@ -209,14 +203,6 @@ inline Foam::scalar
 Foam::ReactingParcel<ParcelType>::constantProperties::Tvap() const
 {
     return Tvap_;
-}
-
-
-template<class ParcelType>
-inline Foam::scalar
-Foam::ReactingParcel<ParcelType>::constantProperties::Tbp() const
-{
-    return Tbp_;
 }
 
 
