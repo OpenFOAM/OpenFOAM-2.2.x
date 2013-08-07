@@ -614,7 +614,9 @@ externalCoupledMixedFvPatchField
 template<class Type>
 Foam::externalCoupledMixedFvPatchField<Type>::
 ~externalCoupledMixedFvPatchField()
-{}
+{
+    removeLockFile();
+}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
