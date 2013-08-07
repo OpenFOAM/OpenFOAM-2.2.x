@@ -59,9 +59,9 @@ int main(int argc, char *argv[])
     // function objects so do it ourselves
     runTime.functionObjects().start();
 
-    adjustPhi(phi, U, p);
-
     fvOptions.relativeFlux(phi);
+
+    adjustPhi(phi, U, p);
 
     for (int nonOrth=0; nonOrth<=nNonOrthCorr; nonOrth++)
     {

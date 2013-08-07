@@ -18,9 +18,9 @@ surfaceScalarField phiHbyA
   + fvc::ddtPhiCorr(rAU, U, phi)
 );
 
-adjustPhi(phiHbyA, U, p_gh);
-
 fvOptions.relativeFlux(phiHbyA);
+
+adjustPhi(phiHbyA, U, p_gh);
 
 // Non-orthogonal pressure corrector loop
 while (pimple.correctNonOrthogonal())
