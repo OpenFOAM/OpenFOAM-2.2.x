@@ -631,7 +631,7 @@ void calcEdgeMinMaxZone
         mesh,
         extrudeMeshEdges,
         minZoneID,
-        minOp<label>(),
+        minEqOp<label>(),
         labelMax        // null value
     );
     syncTools::syncEdgeList
@@ -639,7 +639,7 @@ void calcEdgeMinMaxZone
         mesh,
         extrudeMeshEdges,
         maxZoneID,
-        maxOp<label>(),
+        maxEqOp<label>(),
         labelMin        // null value
     );
 }
@@ -891,7 +891,7 @@ void addCoupledPatches
         mesh,
         extrudeMeshEdges,
         minProcID,
-        minOp<label>(),
+        minEqOp<label>(),
         labelMax        // null value
     );
     syncTools::syncEdgeList
@@ -899,7 +899,7 @@ void addCoupledPatches
         mesh,
         extrudeMeshEdges,
         maxProcID,
-        maxOp<label>(),
+        maxEqOp<label>(),
         labelMin        // null value
     );
 
