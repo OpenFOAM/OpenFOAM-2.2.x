@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -42,7 +42,8 @@ totalFlowRateAdvectiveDiffusiveFvPatchScalarField
 :
     mixedFvPatchField<scalar>(p, iF),
     phiName_("phi"),
-    rhoName_("none")
+    rhoName_("none"),
+    massFluxFraction_(1.0)
 {
     refValue() = 0.0;
     refGrad() = 0.0;
@@ -60,7 +61,8 @@ totalFlowRateAdvectiveDiffusiveFvPatchScalarField
 :
     mixedFvPatchField<scalar>(p, iF),
     phiName_(dict.lookupOrDefault<word>("phi", "phi")),
-    rhoName_(dict.lookupOrDefault<word>("rho", "none"))
+    rhoName_(dict.lookupOrDefault<word>("rho", "none")),
+    massFluxFraction_(dict.lookupOrDefault<scalar>("massFluxFraction", 1.0))
 {
 
     refValue() = 1.0;
@@ -91,7 +93,8 @@ totalFlowRateAdvectiveDiffusiveFvPatchScalarField
 :
     mixedFvPatchField<scalar>(ptf, p, iF, mapper),
     phiName_(ptf.phiName_),
-    rhoName_(ptf.rhoName_)
+    rhoName_(ptf.rhoName_),
+    massFluxFraction_(ptf.massFluxFraction_)
 {}
 
 
@@ -103,7 +106,8 @@ totalFlowRateAdvectiveDiffusiveFvPatchScalarField
 :
     mixedFvPatchField<scalar>(tppsf),
     phiName_(tppsf.phiName_),
-    rhoName_(tppsf.rhoName_)
+    rhoName_(tppsf.rhoName_),
+    massFluxFraction_(tppsf.massFluxFraction_)
 {}
 
 Foam::totalFlowRateAdvectiveDiffusiveFvPatchScalarField::
@@ -115,7 +119,8 @@ totalFlowRateAdvectiveDiffusiveFvPatchScalarField
 :
     mixedFvPatchField<scalar>(tppsf, iF),
     phiName_(tppsf.phiName_),
-    rhoName_(tppsf.rhoName_)
+    rhoName_(tppsf.rhoName_),
+    massFluxFraction_(tppsf.massFluxFraction_)
 {}
 
 
@@ -160,7 +165,7 @@ void Foam::totalFlowRateAdvectiveDiffusiveFvPatchScalarField::updateCoeffs()
 
     const scalarField alphap(turbulence.alphaEff(patchI));
 
-    refValue() = 1.0;
+    refValue() = massFluxFraction_;
     refGrad() = 0.0;
 
     valueFraction() =
@@ -192,6 +197,8 @@ write(Ostream& os) const
     fvPatchField<scalar>::write(os);
     os.writeKeyword("phi") << phiName_ << token::END_STATEMENT << nl;
     os.writeKeyword("rho") << rhoName_ << token::END_STATEMENT << nl;
+    os.writeKeyword("massFluxFraction") << massFluxFraction_
+        << token::END_STATEMENT << nl;
     this->writeEntry("value", os);
 }
 
