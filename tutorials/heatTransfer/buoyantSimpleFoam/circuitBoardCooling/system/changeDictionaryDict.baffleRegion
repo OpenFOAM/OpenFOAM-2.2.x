@@ -94,12 +94,14 @@ dictionaryReplacement
                 type                compressible::thermalBaffle;
 
                 // Coupled BC.
-                neighbourFieldName  T;
+                Tnbr                T;
                 kappa               fluidThermo;
                 kappaName           none;
+                QrNbr               none;
+                Qr                  none;
 
                 // Thermo baffle model
-                thermalBaffleModel   thermalBaffle;
+                thermalBaffleModel  thermalBaffle;
                 regionName          baffleRegion;
                 infoOutput          no;
                 active              yes;

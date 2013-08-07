@@ -323,7 +323,7 @@ void reactingOneDim::solveEnergy()
       - fvm::laplacian(alpha, h_)
      ==
         chemistrySh_
-      + fvm::Sp(solidChemistry_->RRg(), h_)
+      - fvm::Sp(solidChemistry_->RRg(), h_)
     );
 
     if (gasHSource_)

@@ -42,7 +42,7 @@ thermalBaffleFvPatchScalarField
     const DimensionedField<scalar, volMesh>& iF
 )
 :
-    turbulentTemperatureCoupledBaffleMixedFvPatchScalarField(p, iF),
+    turbulentTemperatureRadCoupledMixedFvPatchScalarField(p, iF),
     owner_(false),
     baffle_(),
     dict_(dictionary::null)
@@ -58,7 +58,7 @@ thermalBaffleFvPatchScalarField
     const fvPatchFieldMapper& mapper
 )
 :
-    turbulentTemperatureCoupledBaffleMixedFvPatchScalarField
+    turbulentTemperatureRadCoupledMixedFvPatchScalarField
     (
         ptf,
         p,
@@ -79,7 +79,7 @@ thermalBaffleFvPatchScalarField
     const dictionary& dict
 )
 :
-    turbulentTemperatureCoupledBaffleMixedFvPatchScalarField(p, iF, dict),
+    turbulentTemperatureRadCoupledMixedFvPatchScalarField(p, iF, dict),
     owner_(false),
     baffle_(),
     dict_(dict)
@@ -134,7 +134,7 @@ thermalBaffleFvPatchScalarField
     const DimensionedField<scalar, volMesh>& iF
 )
 :
-    turbulentTemperatureCoupledBaffleMixedFvPatchScalarField(ptf, iF),
+    turbulentTemperatureRadCoupledMixedFvPatchScalarField(ptf, iF),
     owner_(ptf.owner_),
     baffle_(ptf.baffle_),
     dict_(ptf.dict_)
@@ -177,13 +177,13 @@ void thermalBaffleFvPatchScalarField::updateCoeffs()
         baffle_->evolve();
     }
 
-    turbulentTemperatureCoupledBaffleMixedFvPatchScalarField::updateCoeffs();
+    turbulentTemperatureRadCoupledMixedFvPatchScalarField::updateCoeffs();
 }
 
 
 void thermalBaffleFvPatchScalarField::write(Ostream& os) const
 {
-    turbulentTemperatureCoupledBaffleMixedFvPatchScalarField::write(os);
+    turbulentTemperatureRadCoupledMixedFvPatchScalarField::write(os);
 
     const fvMesh& thisMesh = patch().boundaryMesh().mesh();
 
