@@ -23,9 +23,11 @@ dictionaryReplacement
             "region0_to.*"
             {
                 type                compressible::thermalBaffle;
-                neighbourFieldName  T;
+                Tnbr                T;
                 kappa               solidThermo;
                 kappaName           none;
+                QrNbr               none;
+                Qr                  none;
                 value               uniform 300;
             }
             baffleFaces2_side
