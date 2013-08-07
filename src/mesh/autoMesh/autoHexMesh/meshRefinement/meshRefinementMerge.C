@@ -307,9 +307,14 @@ Foam::label Foam::meshRefinement::mergePatchFacesUndo
             }
         }
 
-        if (keep && (compactI != i))
+        if (keep)
         {
-            allFaceSets[compactI++] = set;
+            if (compactI != i)
+            {
+                allFaceSets[compactI] = set;
+            }
+
+            compactI++;
         }
     }
     allFaceSets.setSize(compactI);
