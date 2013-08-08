@@ -10,9 +10,9 @@ else
 
 UEqn.clear();
 surfaceScalarField phiHbyA("phiHbyA", fvc::interpolate(HbyA) & mesh.Sf());
-adjustPhi(phiHbyA, U, p);
 
 mrfZones.relativeFlux(phiHbyA);
+adjustPhi(phiHbyA, U, p);
 
 while (simple.correctNonOrthogonal())
 {

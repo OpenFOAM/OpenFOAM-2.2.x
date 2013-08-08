@@ -19,11 +19,11 @@
         fvc::interpolate(rho)*(fvc::interpolate(HbyA) & mesh.Sf())
     );
 
+    fvOptions.relativeFlux(fvc::interpolate(rho), phiHbyA);
+
     bool closedVolume = adjustPhi(phiHbyA, U, p_rgh);
 
     phiHbyA += phig;
-
-    fvOptions.relativeFlux(fvc::interpolate(rho), phiHbyA);
 
     dimensionedScalar compressibility = fvc::domainIntegrate(psi);
     bool compressible = (compressibility.value() > SMALL);

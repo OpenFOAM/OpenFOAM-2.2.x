@@ -5,9 +5,8 @@
     UEqn.clear();
 
     surfaceScalarField phiHbyA("phiHbyA", fvc::interpolate(HbyA) & mesh.Sf());
-    adjustPhi(phiHbyA, U, p);
-
     fvOptions.relativeFlux(phiHbyA);
+    adjustPhi(phiHbyA, U, p);
 
     // Non-orthogonal pressure corrector loop
     while (simple.correctNonOrthogonal())
