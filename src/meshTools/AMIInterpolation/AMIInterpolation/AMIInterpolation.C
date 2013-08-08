@@ -241,8 +241,6 @@ void Foam::AMIInterpolation<SourcePatch, TargetPatch>::appendNbrFaces
 {
     const labelList& nbrFaces = patch.faceFaces()[faceI];
 
-    const pointField& tgtPoints = patch.points();
-
     // filter out faces already visited from src face neighbours
     forAll(nbrFaces, i)
     {
@@ -269,16 +267,15 @@ void Foam::AMIInterpolation<SourcePatch, TargetPatch>::appendNbrFaces
             }
         }
 
+        // prevent addition of face if it is not on the same plane-ish
         if (valid)
         {
-            const face& myn = patch[faceI];
-            const face& nbrn = patch[nbrFaceI];
-            const vector& nbrNormal = nbrn.normal(tgtPoints);
-            const vector& mynNormal = myn.normal(tgtPoints);
+            const vector& n1 = patch.faceNormals()[faceI];
+            const vector& n2 = patch.faceNormals()[nbrFaceI];
 
-            scalar cosI = nbrNormal & mynNormal;
+            scalar cosI = n1 & n2;
 
-            if (cosI < Foam::cos(degToRad(89.0)))
+            if (cosI > Foam::cos(degToRad(89.0)))
             {
                 faceIDs.append(nbrFaceI);
             }
@@ -500,15 +497,14 @@ Foam::scalar Foam::AMIInterpolation<SourcePatch, TargetPatch>::interArea
 
 
     // crude resultant norm
-    vector n(-src.normal(srcPoints));
-    n /= mag(n);
+    vector n(-srcPatch.faceNormals()[srcFaceI]);
     if (reverseTarget_)
     {
-        n -= tgt.normal(tgtPoints)/tgtMag;
+        n -= tgtPatch.faceNormals()[tgtFaceI];
     }
     else
     {
-        n += tgt.normal(tgtPoints)/tgtMag;
+        n += tgtPatch.faceNormals()[tgtFaceI];
     }
     n *= 0.5;
 
