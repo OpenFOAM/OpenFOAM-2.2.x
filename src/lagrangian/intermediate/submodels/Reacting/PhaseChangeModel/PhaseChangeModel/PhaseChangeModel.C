@@ -179,9 +179,20 @@ Foam::scalar Foam::PhaseChangeModel<CloudType>::dh
 
 
 template<class CloudType>
-Foam::scalar Foam::PhaseChangeModel<CloudType>::TMax(const scalar) const
+Foam::scalar Foam::PhaseChangeModel<CloudType>::TMax
+(
+    const scalar,
+    const scalarField&
+) const
 {
     return GREAT;
+}
+
+
+template<class CloudType>
+Foam::scalar Foam::PhaseChangeModel<CloudType>::Tvap(const scalarField& Y) const
+{
+    return -GREAT;
 }
 
 

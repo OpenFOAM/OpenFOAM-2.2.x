@@ -184,8 +184,11 @@ public:
             const scalar T
         ) const;
 
+        //- Return vapourisation temperature
+        virtual scalar Tvap(const scalarField& Y) const;
+
         //- Return maximum/limiting temperature
-        virtual scalar TMax(const scalar pIn) const;
+        virtual scalar TMax(const scalar p, const scalarField& Y) const;
 
         //- Add to phase change mass
         void addToPhaseChangeMass(const scalar dMass);
