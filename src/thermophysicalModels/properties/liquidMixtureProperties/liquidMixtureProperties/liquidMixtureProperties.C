@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -103,12 +103,62 @@ Foam::scalar Foam::liquidMixtureProperties::Tc(const scalarField& x) const
 }
 
 
-Foam::scalar Foam::liquidMixtureProperties::TMax(const scalar p) const
+Foam::scalar Foam::liquidMixtureProperties::Tpt(const scalarField& x) const
 {
-    scalar T = -GREAT;
+    scalar Tpt = 0.0;
     forAll(properties_, i)
     {
-        T = max(T, properties_[i].pvInvert(p));
+        Tpt += x[i]*properties_[i].Tt();
+    }
+
+    return Tpt;
+}
+
+
+Foam::scalar Foam::liquidMixtureProperties::pvInvert
+(
+    const scalar p,
+    const scalarField& x
+) const
+{
+    // Set upper and lower bounds
+    scalar Thi = Tc(x);
+    scalar Tlo = Tpt(x);
+
+    // Check for critical and solid phase conditions
+    if (p >= pv(p, Thi, x))
+    {
+        return Thi;
+    }
+    else if (p < pv(p, Tlo, x))
+    {
+        WarningIn
+        (
+            "Foam::scalar Foam::liquidMixtureProperties::pvInvert"
+            "("
+            "    const scalar,"
+            "    const scalarField&"
+            ") const"
+        )   << "Pressure below triple point pressure: "
+            << "p = " << p << " < Pt = " << pv(p, Tlo, x) <<  nl << endl;
+        return -1;
+    }
+
+    // Set initial guess
+    scalar T = (Thi + Tlo)*0.5;
+
+    while ((Thi - Tlo) > 1.0e-4)
+    {
+        if ((pv(p, T, x) - p) <= 0.0)
+        {
+            Tlo = T;
+        }
+        else
+        {
+            Thi = T;
+        }
+
+        T = (Thi + Tlo)*0.5;
     }
 
     return T;
