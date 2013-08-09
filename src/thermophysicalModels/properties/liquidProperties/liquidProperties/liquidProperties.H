@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -252,7 +252,7 @@ public:
             virtual scalar D(scalar p, scalar T, scalar Wb) const;
 
             //- Invert the vapour pressure relationship to retrieve the
-            //  boiling temperuture as a function of temperature
+            //  boiling temperuture as a function of pressure
             virtual scalar pvInvert(scalar p) const;
 
 
