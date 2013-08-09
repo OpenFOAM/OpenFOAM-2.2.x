@@ -151,6 +151,44 @@ void Foam::LiquidEvaporation<CloudType>::calculate
     scalarField& dMassPC
 ) const
 {
+    // liquid volume fraction
+    const scalarField X(liquids_.X(Yl));
+
+    // immediately evaporate mass that has reached critical condition
+    if (mag(T - liquids_.Tc(X)) < SMALL)
+    {
+        if (debug)
+        {
+            WarningIn
+            (
+                "void Foam::LiquidEvaporation<CloudType>::calculate"
+                "("
+                    "const scalar, "
+                    "const label, "
+                    "const scalar, "
+                    "const scalar, "
+                    "const scalar, "
+                    "const scalar, "
+                    "const scalar, "
+                    "const scalar, "
+                    "const scalar, "
+                    "const scalar, "
+                    "const scalarField&, "
+                    "scalarField&"
+                ") const"
+            )   << "Parcel reached critical conditions: "
+                << "evaporating all avaliable mass" << endl;
+        }
+
+        forAll(activeLiquids_, i)
+        {
+            const label lid = liqToLiqMap_[i];
+            dMassPC[lid] = GREAT;
+        }
+
+        return;
+    }
+
     // construct carrier phase species volume fractions for cell, cellI
     const scalarField Xc(calcXc(cellI));
 
@@ -242,9 +280,27 @@ Foam::scalar Foam::LiquidEvaporation<CloudType>::dh
 
 
 template<class CloudType>
-Foam::scalar Foam::LiquidEvaporation<CloudType>::TMax(const scalar pIn) const
+Foam::scalar Foam::LiquidEvaporation<CloudType>::Tvap
+(
+    const scalarField& Y
+) const
 {
-    return liquids_.TMax(pIn);
+    const scalarField X(liquids_.X(Y));
+
+    return liquids_.Tpt(X);
+}
+
+
+template<class CloudType>
+Foam::scalar Foam::LiquidEvaporation<CloudType>::TMax
+(
+    const scalar p,
+    const scalarField& Y
+) const
+{
+    const scalarField X(liquids_.X(Y));
+
+    return liquids_.pvInvert(p, X);
 }
 
 
