@@ -240,6 +240,7 @@ void Foam::externalWallHeatFluxTemperatureFvPatchScalarField::updateCoeffs()
     scalarField q(size(), 0.0);
     scalarField KWall(kappa(*this));
     scalarField KDelta(KWall*patch().deltaCoeffs());
+    scalarField Tc(patchInternalField());
 
     if (oldMode_ == fixedHeatFlux)
     {
@@ -247,7 +248,7 @@ void Foam::externalWallHeatFluxTemperatureFvPatchScalarField::updateCoeffs()
     }
     else if (oldMode_ == fixedHeatTransferCoeff)
     {
-        q = (Ta_ - *this)/(1.0/h_ + thicknessLayer_/(kappaLayer_ + VSMALL));
+        q = (Ta_ - Tc)/(1.0/h_ + thicknessLayer_/(kappaLayer_ + VSMALL));
     }
     else
     {
@@ -263,14 +264,14 @@ void Foam::externalWallHeatFluxTemperatureFvPatchScalarField::updateCoeffs()
     {
         if (q[i] > 0) //in
         {
-            this->refGrad()[i] = q[i]/kappa(*this)()[i];
+            this->refGrad()[i] = q[i]/KWall[i];
             this->refValue()[i] = 0.0;
             this->valueFraction()[i] = 0.0;
         }
         else //out
         {
             this->refGrad()[i] = 0.0;
-            this->refValue()[i] = q[i]/KDelta[i] + patchInternalField()()[i];
+            this->refValue()[i] = q[i]/KDelta[i] + Tc[i];
             this->valueFraction()[i] = 1.0;
         }
     }
