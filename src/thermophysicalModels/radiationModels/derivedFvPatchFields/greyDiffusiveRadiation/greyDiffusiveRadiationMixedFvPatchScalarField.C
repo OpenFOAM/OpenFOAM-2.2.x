@@ -197,7 +197,7 @@ updateCoeffs()
 
     const vector& myRayId = dom.IRay(rayId).d();
 
-    const scalarField& Ir = dom.Qin();
+    const scalarField& Ir = dom.Qin().boundaryField()[patchI];
 
     forAll(Iw, faceI)
     {
