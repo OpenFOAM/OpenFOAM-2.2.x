@@ -33,6 +33,7 @@ License
 #include "ensightBinaryStream.H"
 #include "ensightAsciiStream.H"
 #include "globalIndex.H"
+#include "ensightPTraits.H"
 
 using namespace Foam;
 
@@ -198,7 +199,7 @@ void writePatchField
             ensightCaseFile.setf(ios_base::left);
 
             ensightCaseFile
-                << pTraits<Type>::typeName
+                << ensightPTraits<Type>::typeName
                 << " per element:            1       "
                 << setw(15) << pfName
                 << (' ' + prepend + "****." + pfName).c_str()
@@ -230,7 +231,7 @@ void writePatchField
 
     if (Pstream::master())
     {
-        ensightFile.write(pTraits<Type>::typeName);
+        ensightFile.write(ensightPTraits<Type>::typeName);
     }
 
     if (patchi >= 0)
@@ -341,14 +342,14 @@ void ensightField
                 ensightCaseFile.setf(ios_base::left);
 
                 ensightCaseFile
-                    << pTraits<Type>::typeName
+                    << ensightPTraits<Type>::typeName
                     << " per element:            1       "
                     << setw(15) << vf.name()
                     << (' ' + prepend + "****." + vf.name()).c_str()
                     << nl;
             }
 
-            ensightFile.write(pTraits<Type>::typeName);
+            ensightFile.write(ensightPTraits<Type>::typeName);
             ensightFile.writePartHeader(1);
         }
 
@@ -555,14 +556,14 @@ void ensightPointField
                 ensightCaseFile.setf(ios_base::left);
 
                 ensightCaseFile
-                    << pTraits<Type>::typeName
+                    << ensightPTraits<Type>::typeName
                     << " per node:            1       "
                     << setw(15) << pf.name()
                     << (' ' + prepend + "****." + pf.name()).c_str()
                     << nl;
             }
 
-            ensightFile.write(pTraits<Type>::typeName);
+            ensightFile.write(ensightPTraits<Type>::typeName);
             ensightFile.writePartHeader(1);
         }
 

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -29,6 +29,7 @@ License
 #include "OSspecific.H"
 #include "IOmanip.H"
 #include "ensightPartFaces.H"
+#include "ensightPTraits.H"
 
 #include "makeSurfaceWriterMethods.H"
 
@@ -89,7 +90,7 @@ void Foam::ensightSurfaceWriter::writeTemplate
         << "model:        1     " << osGeom.name().name() << nl
         << nl
         << "VARIABLE" << nl
-        << pTraits<Type>::typeName << " per "
+        << ensightPTraits<Type>::typeName << " per "
         << word(isNodeValues ? "node:" : "element:") << setw(10) << 1
         << "       " << fieldName
         << "       " << surfaceName.c_str() << ".***." << fieldName << nl
@@ -107,7 +108,7 @@ void Foam::ensightSurfaceWriter::writeTemplate
     osGeom << ensPart;
 
     // Write field
-    osField.writeKeyword(pTraits<Type>::typeName);
+    osField.writeKeyword(ensightPTraits<Type>::typeName);
     ensPart.writeField(osField, values, isNodeValues);
 }
 
