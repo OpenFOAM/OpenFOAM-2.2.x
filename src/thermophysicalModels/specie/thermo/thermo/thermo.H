@@ -217,9 +217,6 @@ public:
                 //- Enthalpy/Internal energy [J/kg]
                 inline scalar HE(const scalar p, const scalar T) const;
 
-                //- Enthalpy [J/kg]
-                inline scalar H(const scalar p, const scalar T) const;
-
                 //- Sensible enthalpy [J/kg]
                 inline scalar Hs(const scalar p, const scalar T) const;
 
