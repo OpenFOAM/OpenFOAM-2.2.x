@@ -155,7 +155,7 @@ void Foam::LiquidEvaporation<CloudType>::calculate
     const scalarField X(liquids_.X(Yl));
 
     // immediately evaporate mass that has reached critical condition
-    if (mag(T - liquids_.Tc(X)) < SMALL)
+    if (T >= liquids_.Tc(X))
     {
         if (debug)
         {
