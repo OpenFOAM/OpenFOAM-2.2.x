@@ -136,7 +136,13 @@ void getBand
     }
 
     bandwidth = max(cellBandwidth);
-    profile = sum(1.0*cellBandwidth);
+
+    // Do not use field algebra because of conversion label to scalar
+    profile = 0.0;
+    forAll(cellBandwidth, cellI)
+    {
+        profile += 1.0*cellBandwidth[cellI];
+    }
 
     sumSqrIntersect = 0.0;
     if (calculateIntersect)

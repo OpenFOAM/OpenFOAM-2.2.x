@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -23,44 +23,24 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "specie.H"
+#include "ensightPTraits.H"
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
-inline Foam::scalar Foam::solidProperties::rho() const
-{
-    return rho_;
-}
+const char* const Foam::ensightPTraits<Foam::scalar>::typeName =
+    Foam::pTraits<Foam::scalar>::typeName;
 
+const char* const Foam::ensightPTraits<Foam::vector>::typeName =
+    Foam::pTraits<Foam::vector>::typeName;
 
-inline Foam::scalar Foam::solidProperties::Cp() const
-{
-    return Cp_;
-}
+const char* const Foam::ensightPTraits<Foam::sphericalTensor>::typeName =
+    Foam::pTraits<Foam::scalar>::typeName;
 
+const char* const Foam::ensightPTraits<Foam::symmTensor>::typeName =
+    "tensor symm";
 
-inline Foam::scalar Foam::solidProperties::K() const
-{
-    return K_;
-}
-
-
-inline Foam::scalar Foam::solidProperties::Hf() const
-{
-    return Hf_;
-}
-
-
-inline Foam::scalar Foam::solidProperties::Hs(const scalar T) const
-{
-    return Cp_*(T - specie::Tstd);
-}
-
-
-inline Foam::scalar Foam::solidProperties::emissivity() const
-{
-    return emissivity_;
-}
+const char* const Foam::ensightPTraits<Foam::tensor>::typeName =
+    Foam::pTraits<Foam::tensor>::typeName;
 
 
 // ************************************************************************* //

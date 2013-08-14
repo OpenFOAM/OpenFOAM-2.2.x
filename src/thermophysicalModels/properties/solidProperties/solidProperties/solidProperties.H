@@ -173,9 +173,6 @@ public:
             //- Heat of formation [J/kg]
             inline scalar Hf() const;
 
-            //- Total enthalpy - reference to Tstd [J/kg]
-            inline scalar H(const scalar T) const;
-
             //- Sensible enthalpy - reference to Tstd [J/kg]
             inline scalar Hs(const scalar T) const;
 
