@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -256,6 +256,15 @@ protected:
         //- Overridable function to handle the particle hitting a cyclicPatch
         template<class TrackData>
         void hitCyclicPatch(const cyclicPolyPatch&, TrackData& td);
+
+        //- Overridable function to handle the particle hitting a cyclicAMIPatch
+        template<class TrackData>
+        void hitCyclicAMIPatch
+        (
+            const cyclicAMIPolyPatch&,
+            TrackData& td,
+            const vector& direction
+        );
 
         //- Overridable function to handle the particle hitting a
         //  processorPatch

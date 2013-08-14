@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -361,6 +361,15 @@ public:
             const primitivePatch&,
             labelList& faceMap,
             labelList& rotation
+        ) const;
+
+        //- Return face index on neighbour patch which shares point p
+        //  following trajectory vector n
+        label pointFace
+        (
+            const label faceI,
+            const vector& n,
+            point& p
         ) const;
 
         //- Write the polyPatch data as a dictionary
