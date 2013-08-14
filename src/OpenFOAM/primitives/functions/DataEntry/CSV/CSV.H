@@ -131,7 +131,7 @@ public:
         (
             const word& entryName,
             const dictionary& dict,
-            const word& ext = "Ceoffs"
+            const word& ext = "Coeffs"
         );
 
         //- Copy constructor
