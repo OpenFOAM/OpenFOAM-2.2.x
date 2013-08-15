@@ -206,14 +206,26 @@ Foam::functionEntries::codeStream::getFunction
             off_t masterSize = mySize;
             Pstream::scatter(masterSize);
 
+            if (debug)
+            {
+                Pout<< endl<< "on processor " << Pstream::myProcNo()
+                    << " have masterSize:" << masterSize
+                    << " and localSize:" << mySize
+                    << endl;
+            }
+
+
             if (mySize < masterSize)
             {
-                Pout<< "Local file " << libPath
-                    << " not of same size (" << mySize
-                    << ") as master ("
-                    << masterSize << "). Waiting for "
-                    << regIOobject::fileModificationSkew
-                    << " seconds." << endl;
+                if (debug)
+                {
+                    Pout<< "Local file " << libPath
+                        << " not of same size (" << mySize
+                        << ") as master ("
+                        << masterSize << "). Waiting for "
+                        << regIOobject::fileModificationSkew
+                        << " seconds." << endl;
+                }
                 Foam::sleep(regIOobject::fileModificationSkew);
 
                 // Recheck local size
@@ -237,6 +249,14 @@ Foam::functionEntries::codeStream::getFunction
                         << exit(FatalIOError);
                 }
             }
+
+            if (debug)
+            {
+                Pout<< endl<< "on processor " << Pstream::myProcNo()
+                    << " after waiting: have masterSize:" << masterSize
+                    << " and localSize:" << mySize
+                    << endl;
+            }
         }
 
         if (isA<IOdictionary>(topDict(parentDict)))
@@ -244,6 +264,12 @@ Foam::functionEntries::codeStream::getFunction
             // Cached access to dl libs. Guarantees clean up upon destruction
             // of Time.
             dlLibraryTable& dlLibs = libs(parentDict);
+
+            if (debug)
+            {
+                Pout<< "Opening cached dictionary:" << libPath << endl;
+            }
+
             if (!dlLibs.open(libPath, false))
             {
                 FatalIOErrorIn
@@ -261,8 +287,26 @@ Foam::functionEntries::codeStream::getFunction
         else
         {
             // Uncached opening of libPath
+            if (debug)
+            {
+                Pout<< "Opening uncached dictionary:" << libPath << endl;
+            }
             lib = dlOpen(libPath, true);
         }
+    }
+
+    bool haveLib = lib;
+    reduce(haveLib, andOp<bool>());
+
+    if (!haveLib)
+    {
+        FatalIOErrorIn
+        (
+            "functionEntries::codeStream::execute(..)",
+            parentDict
+        )   << "Failed loading library " << libPath
+            << " on some processors."
+            << exit(FatalIOError);
     }
 
 
