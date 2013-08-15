@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -44,16 +44,22 @@ void Foam::Cloud<ParticleType>::checkPatches() const
     {
         if (isA<cyclicAMIPolyPatch>(pbm[patchI]))
         {
-            ok = false;
-            break;
+            const cyclicAMIPolyPatch& cami =
+                refCast<const cyclicAMIPolyPatch>(pbm[patchI]);
+
+            if (cami.owner())
+            {
+                ok = ok && (cami.AMI().singlePatchProc() != -1);
+            }
         }
     }
 
     if (!ok)
     {
-        WarningIn("void Foam::Cloud<ParticleType>::initCloud(const bool)")
-            << "Particle tracking across AMI patches is not currently "
-            << "supported" << endl;
+        FatalErrorIn("void Foam::Cloud<ParticleType>::initCloud(const bool)")
+            << "Particle tracking across AMI patches is only currently "
+            << "supported for cases where the AMI patches reside on a "
+            << "single processor" << abort(FatalError);
     }
 }
 

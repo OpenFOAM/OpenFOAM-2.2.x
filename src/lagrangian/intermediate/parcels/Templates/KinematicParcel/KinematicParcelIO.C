@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -179,6 +179,7 @@ void Foam::KinematicParcel<ParcelType>::readFields(CloudType& c)
         p.U_ = U[i];
         p.f_ = f[i];
         p.angularMomentum_ = angularMomentum[i];
+        p.torque_ = torque[i];
         p.rho_ = rho[i];
         p.age_ = age[i];
         p.tTurb_ = tTurb[i];

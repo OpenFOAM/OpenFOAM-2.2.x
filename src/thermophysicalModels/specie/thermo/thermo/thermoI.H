@@ -217,14 +217,6 @@ Foam::species::thermo<Thermo, Type>::HE(const scalar p, const scalar T) const
 
 template<class Thermo, template<class> class Type>
 inline Foam::scalar
-Foam::species::thermo<Thermo, Type>::H(const scalar p, const scalar T) const
-{
-    return this->h(p, T)/this->W();
-}
-
-
-template<class Thermo, template<class> class Type>
-inline Foam::scalar
 Foam::species::thermo<Thermo, Type>::Hs(const scalar p, const scalar T) const
 {
     return this->hs(p, T)/this->W();

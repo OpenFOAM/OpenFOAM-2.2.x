@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -26,6 +26,7 @@ License
 #include "IOPosition.H"
 
 #include "cyclicPolyPatch.H"
+#include "cyclicAMIPolyPatch.H"
 #include "processorPolyPatch.H"
 #include "symmetryPolyPatch.H"
 #include "wallPolyPatch.H"
@@ -598,6 +599,15 @@ Foam::scalar Foam::particle::trackToFace
                     static_cast<const cyclicPolyPatch&>(patch), td
                 );
             }
+            else if (isA<cyclicAMIPolyPatch>(patch))
+            {
+                p.hitCyclicAMIPatch
+                (
+                    static_cast<const cyclicAMIPolyPatch&>(patch),
+                    td,
+                    endPosition - position_
+                );
+            }
             else if (isA<processorPolyPatch>(patch))
             {
                 p.hitProcessorPatch
@@ -1004,6 +1014,78 @@ void Foam::particle::hitCyclicPatch
             (receiveCpp.separation().size() == 1)
           ? receiveCpp.separation()[0]
           : receiveCpp.separation()[patchFacei]
+        );
+        transformProperties(-s);
+    }
+}
+
+
+template<class TrackData>
+void Foam::particle::hitCyclicAMIPatch
+(
+    const cyclicAMIPolyPatch& cpp,
+    TrackData& td,
+    const vector& direction
+)
+{
+    const cyclicAMIPolyPatch& receiveCpp = cpp.neighbPatch();
+
+    // patch face index on sending side
+    label patchFaceI = faceI_ - cpp.start();
+
+    // patch face index on receiving side - also updates position
+    patchFaceI = cpp.pointFace(patchFaceI, direction, position_);
+
+    if (patchFaceI < 0)
+    {
+        FatalErrorIn
+        (
+            "template<class TrackData>"
+            "void Foam::particle::hitCyclicAMIPatch"
+            "("
+                "const cyclicAMIPolyPatch&, "
+                "TrackData&, "
+                "const vector&"
+            ")"
+        )
+            << "Particle lost across " << cyclicAMIPolyPatch::typeName
+            << " patches " << cpp.name() << " and " << receiveCpp.name()
+            << " at position " << position_ << abort(FatalError);
+    }
+
+    // convert face index into global numbering
+    faceI_ = patchFaceI + receiveCpp.start();
+
+    cellI_ = mesh_.faceOwner()[faceI_];
+
+    tetFaceI_ = faceI_;
+
+    // See note in correctAfterParallelTransfer for tetPtI_ addressing.
+    tetPtI_ = mesh_.faces()[tetFaceI_].size() - 1 - tetPtI_;
+
+    // Now the particle is on the receiving side
+
+    // Have patch transform the position
+    receiveCpp.transformPosition(position_, patchFaceI);
+
+    // Transform the properties
+    if (!receiveCpp.parallel())
+    {
+        const tensor& T =
+        (
+            receiveCpp.forwardT().size() == 1
+          ? receiveCpp.forwardT()[0]
+          : receiveCpp.forwardT()[patchFaceI]
+        );
+        transformProperties(T);
+    }
+    else if (receiveCpp.separated())
+    {
+        const vector& s =
+        (
+            (receiveCpp.separation().size() == 1)
+          ? receiveCpp.separation()[0]
+          : receiveCpp.separation()[patchFaceI]
         );
         transformProperties(-s);
     }

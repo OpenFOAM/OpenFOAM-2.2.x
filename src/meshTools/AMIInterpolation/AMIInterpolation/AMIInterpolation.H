@@ -545,6 +545,30 @@ public:
                 const TargetPatch& tgtPatch,
                 const labelListList& srcAddress
             ) const;
+
+        // Point intersections
+
+            //- Return source patch face index of point on target patch face
+            label srcPointFace
+            (
+                const SourcePatch& srcPatch,
+                const TargetPatch& tgtPatch,
+                const vector& n,
+                const label tgtFaceI,
+                point& tgtPoint
+            )
+            const;
+
+            //- Return target patch face index of point on source patch face
+            label tgtPointFace
+            (
+                const SourcePatch& srcPatch,
+                const TargetPatch& tgtPatch,
+                const vector& n,
+                const label srcFaceI,
+                point& srcPoint
+            )
+            const;
 };
 
 

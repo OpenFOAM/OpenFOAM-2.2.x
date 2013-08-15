@@ -793,6 +793,38 @@ bool Foam::cyclicAMIPolyPatch::order
 }
 
 
+Foam::label Foam::cyclicAMIPolyPatch::pointFace
+(
+    const label faceI,
+    const vector& n,
+    point& p
+) const
+{
+    if (owner())
+    {
+        return AMI().tgtPointFace
+        (
+            *this,
+            neighbPatch(),
+            n,
+            faceI,
+            p
+        );
+    }
+    else
+    {
+        return neighbPatch().AMI().srcPointFace
+        (
+            neighbPatch(),
+            *this,
+            n,
+            faceI,
+            p
+        );
+    }
+}
+
+
 void Foam::cyclicAMIPolyPatch::write(Ostream& os) const
 {
     coupledPolyPatch::write(os);

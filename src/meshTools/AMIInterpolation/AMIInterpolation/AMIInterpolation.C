@@ -1895,4 +1895,112 @@ const
 }
 
 
+template<class SourcePatch, class TargetPatch>
+Foam::label Foam::AMIInterpolation<SourcePatch, TargetPatch>::srcPointFace
+(
+    const SourcePatch& srcPatch,
+    const TargetPatch& tgtPatch,
+    const vector& n,
+    const label tgtFaceI,
+    point& tgtPoint
+)
+const
+{
+    const pointField& srcPoints = srcPatch.points();
+
+    // source face addresses that intersect target face tgtFaceI
+    const labelList& addr = tgtAddress_[tgtFaceI];
+
+    forAll(addr, i)
+    {
+        label srcFaceI = addr[i];
+        const face& f = srcPatch[tgtFaceI];
+
+        pointHit ray = f.ray(tgtPoint, n, srcPoints);
+
+        if (ray.hit())
+        {
+            tgtPoint = ray.rawPoint();
+
+            return srcFaceI;
+        }
+    }
+
+    // no hit registered - try with face normal instead of input normal
+    forAll(addr, i)
+    {
+        label srcFaceI = addr[i];
+        const face& f = srcPatch[tgtFaceI];
+
+        vector nFace(-srcPatch.faceNormals()[srcFaceI]);
+        nFace += tgtPatch.faceNormals()[tgtFaceI];
+
+        pointHit ray = f.ray(tgtPoint, nFace, srcPoints);
+
+        if (ray.hit())
+        {
+            tgtPoint = ray.rawPoint();
+
+            return srcFaceI;
+        }
+    }
+
+    return -1;
+}
+
+
+template<class SourcePatch, class TargetPatch>
+Foam::label Foam::AMIInterpolation<SourcePatch, TargetPatch>::tgtPointFace
+(
+    const SourcePatch& srcPatch,
+    const TargetPatch& tgtPatch,
+    const vector& n,
+    const label srcFaceI,
+    point& srcPoint
+)
+const
+{
+    const pointField& tgtPoints = tgtPatch.points();
+
+    // target face addresses that intersect source face srcFaceI
+    const labelList& addr = srcAddress_[srcFaceI];
+
+    forAll(addr, i)
+    {
+        label tgtFaceI = addr[i];
+        const face& f = tgtPatch[tgtFaceI];
+
+        pointHit ray = f.ray(srcPoint, n, tgtPoints);
+
+        if (ray.hit())
+        {
+            srcPoint = ray.rawPoint();
+
+            return tgtFaceI;
+        }
+    }
+
+    // no hit registered - try with face normal instead of input normal
+    forAll(addr, i)
+    {
+        label tgtFaceI = addr[i];
+        const face& f = tgtPatch[tgtFaceI];
+
+        vector nFace(-srcPatch.faceNormals()[srcFaceI]);
+        nFace += tgtPatch.faceNormals()[tgtFaceI];
+
+        pointHit ray = f.ray(srcPoint, n, tgtPoints);
+
+        if (ray.hit())
+        {
+            srcPoint = ray.rawPoint();
+
+            return tgtFaceI;
+        }
+    }
+
+    return -1;
+}
+
+
 // ************************************************************************* //
