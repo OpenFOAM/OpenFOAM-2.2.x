@@ -98,12 +98,11 @@ int main(int argc, char *argv[])
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-    Info<< "Time = " << runTime.timeName() << nl << endl;
-
     // Modify velocity by applying a 1/7th power law boundary-layer
     // u/U0 = (y/ybl)^(1/7)
     // assumes U0 is the same as the current cell velocity
 
+    Info<< "Setting boundary layer velocity" << nl << endl;
     scalar yblv = ybl.value();
     forAll(U, celli)
     {
@@ -117,9 +116,15 @@ int main(int argc, char *argv[])
     U.write();
 
     // Update/re-write phi
-    phi = fvc::interpolate(U) & mesh.Sf();
+    #include "createPhi.H"
     phi.write();
 
+    singlePhaseTransportModel laminarTransport(U, phi);
+
+    autoPtr<incompressible::turbulenceModel> turbulence
+    (
+        incompressible::turbulenceModel::New(U, phi, laminarTransport)
+    );
 
     if (isA<incompressible::RASModel>(turbulence()))
     {
@@ -153,7 +158,6 @@ int main(int argc, char *argv[])
 
 
         // Turbulence epsilon
-
         tmp<volScalarField> tepsilon = turbulence->epsilon();
         volScalarField& epsilon = tepsilon();
         scalar ce0 = ::pow(Cmu, 0.75)/kappa;
