@@ -1151,7 +1151,12 @@ Foam::mappedPatchBase::mappedPatchBase
     samplePatch_(mpb.samplePatch_),
     offsetMode_(mpb.offsetMode_),
     offset_(mpb.offset_),
-    offsets_(mpb.offsets_, mapAddressing),
+    offsets_
+    (
+        offsetMode_ == NONUNIFORM
+      ? vectorField(mpb.offsets_, mapAddressing)
+      : vectorField(0)
+    ),
     distance_(mpb.distance_),
     sameRegion_(mpb.sameRegion_),
     mapPtr_(NULL),
