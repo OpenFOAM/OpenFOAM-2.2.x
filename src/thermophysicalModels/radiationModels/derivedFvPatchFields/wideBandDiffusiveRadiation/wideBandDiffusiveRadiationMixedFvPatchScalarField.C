@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -187,7 +187,9 @@ updateCoeffs()
     radiativeIntensityRay& ray =
         const_cast<radiativeIntensityRay&>(dom.IRay(rayId));
 
-    ray.Qr().boundaryField()[patchI] += Iw*(n & ray.dAve());
+    const scalarField nAve(n & ray.dAve());
+
+    ray.Qr().boundaryField()[patchI] += Iw*nAve;
 
     const scalarField Eb
     (
@@ -196,23 +198,20 @@ updateCoeffs()
 
     scalarField temissivity = emissivity();
 
+    scalarField& Qem = ray.Qem().boundaryField()[patchI];
+    scalarField& Qin = ray.Qin().boundaryField()[patchI];
+
+    // Use updated Ir while iterating over rays
+    // avoids to used lagged Qin
+    scalarField Ir = dom.IRay(0).Qin().boundaryField()[patchI];
+
+    for (label rayI=1; rayI < dom.nRay(); rayI++)
+    {
+        Ir += dom.IRay(rayI).Qin().boundaryField()[patchI];
+    }
+
     forAll(Iw, faceI)
     {
-        scalar Ir = 0.0;
-        for (label rayI=0; rayI < dom.nRay(); rayI++)
-        {
-            const vector& d = dom.IRay(rayI).d();
-
-            const scalarField& IFace =
-                dom.IRay(rayI).ILambda(lambdaId).boundaryField()[patchI];
-
-            if ((-n[faceI] & d) < 0.0) // qin into the wall
-            {
-                const vector& dAve = dom.IRay(rayI).dAve();
-                Ir = Ir + IFace[faceI]*mag(n[faceI] & dAve);
-            }
-        }
-
         const vector& d = dom.IRay(rayId).d();
 
         if ((-n[faceI] & d) > 0.0)
@@ -222,9 +221,12 @@ updateCoeffs()
             valueFraction()[faceI] = 1.0;
             refValue()[faceI] =
                 (
-                    Ir*(1.0 - temissivity[faceI])
+                    Ir[faceI]*(1.0 - temissivity[faceI])
                   + temissivity[faceI]*Eb[faceI]
                 )/pi;
+
+            // Emmited heat flux from this ray direction
+            Qem[faceI] = refValue()[faceI]*nAve[faceI];
         }
         else
         {
@@ -232,6 +234,9 @@ updateCoeffs()
             valueFraction()[faceI] = 0.0;
             refGrad()[faceI] = 0.0;
             refValue()[faceI] = 0.0; //not used
+
+            // Incident heat flux on this ray direction
+            Qin[faceI] = Iw[faceI]*nAve[faceI];
         }
     }
 
