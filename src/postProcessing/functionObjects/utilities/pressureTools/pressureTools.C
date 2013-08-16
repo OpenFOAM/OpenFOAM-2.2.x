@@ -70,7 +70,7 @@ Foam::dimensionedScalar Foam::pressureTools::rhoScale
     }
     else
     {
-        return dimensionedScalar("rhoRef", dimDensity, rhoRef_);
+        return dimensionedScalar("rhoRef", dimDensity, rhoInf_);
     }
 }
 
@@ -100,7 +100,7 @@ Foam::tmp<Foam::volScalarField> Foam::pressureTools::rho
                         IOobject::NO_WRITE
                     ),
                     p.mesh(),
-                    dimensionedScalar("zero", dimDensity, rhoRef_)
+                    dimensionedScalar("zero", dimDensity, rhoInf_)
                 )
             );
     }
@@ -193,7 +193,6 @@ Foam::pressureTools::pressureTools
     pName_("p"),
     UName_("U"),
     rhoName_("rho"),
-    rhoRef_(1.0),
     calcTotal_(false),
     pRef_(0.0),
     calcCoeff_(false),
@@ -219,6 +218,37 @@ Foam::pressureTools::pressureTools
     }
 
     read(dict);
+
+    if (active_)
+    {
+        dimensionSet pDims(dimPressure);
+
+        if (calcCoeff_)
+        {
+            pDims /= dimPressure;
+        }
+
+        const fvMesh& mesh = refCast<const fvMesh>(obr_);
+
+        volScalarField* pPtr
+        (
+            new volScalarField
+            (
+                IOobject
+                (
+                    pName(),
+                    mesh.time().timeName(),
+                    mesh,
+                    IOobject::NO_READ,
+                    IOobject::NO_WRITE
+                ),
+                mesh,
+                dimensionedScalar("0", pDims, 0.0)
+            )
+        );
+
+        mesh.objectRegistry::store(pPtr);
+    }
 }
 
 
@@ -238,11 +268,9 @@ void Foam::pressureTools::read(const dictionary& dict)
         dict.readIfPresent("UName", UName_);
         dict.readIfPresent("rhoName", rhoName_);
 
-        const volScalarField& p = obr_.lookupObject<volScalarField>(pName_);
-
-        if (p.dimensions() != dimPressure)
+        if (rhoName_ == "rhoInf")
         {
-            dict.lookup("rhoRef") >> rhoRef_;
+            dict.lookup("rhoInf") >> rhoInf_;
         }
 
         dict.lookup("calcTotal") >> calcTotal_;
@@ -286,17 +314,17 @@ void Foam::pressureTools::write()
     {
         const volScalarField& p = obr_.lookupObject<volScalarField>(pName_);
 
-        volScalarField pResult
-        (
-            IOobject
+        volScalarField& pResult =
+            const_cast<volScalarField&>
             (
-                pName(),
-                obr_.time().timeName(),
-                obr_,
-                IOobject::NO_READ
-            ),
-            convertToCoeff(rhoScale(p)*p + pDyn(p) + pRef())
-        );
+                obr_.lookupObject<volScalarField>(pName())
+            );
+
+        pResult == convertToCoeff(rhoScale(p)*p + pDyn(p) + pRef());
+
+        Info<< type() << " " << name_ << " output:" << nl
+            << "    writing field " << pResult.name() << nl
+            << endl;
 
         pResult.write();
     }

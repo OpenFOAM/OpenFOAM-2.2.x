@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2013 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -92,7 +92,6 @@ Description
     \table
         Property     | Description             | Required    | Default value
         type         | type name: pressureTools| yes         |
-        rhoRef       | Reference density for incompressible cases | no | 1
         calcTotal    | Calculate total coefficient | yes     |
         pRef         | Reference pressure for total pressure | no | 0.0
         calcCoeff    | Calculate pressure coefficient | yes  |
@@ -149,9 +148,6 @@ class pressureTools
 
         //- Name of density field, default is "rho"
         word rhoName_;
-
-        //- Reference density employed for incompressible cases
-        scalar rhoRef_;
 
 
         // Total pressure calculation

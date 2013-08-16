@@ -37,15 +37,6 @@ License
         mesh
     );
 
-    #include "createPhi.H"
-
-    singlePhaseTransportModel laminarTransport(U, phi);
-
-    autoPtr<incompressible::turbulenceModel> turbulence
-    (
-        incompressible::turbulenceModel::New(U, phi, laminarTransport)
-    );
-
     Info<< "Calculating wall distance field" << endl;
     volScalarField y(wallDist(mesh).y());
 
