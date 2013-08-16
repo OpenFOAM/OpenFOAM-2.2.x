@@ -201,6 +201,7 @@ void Foam::nastranSurfaceWriter::writeTemplate
                 {
                     v += values[f[fptI]];
                 }
+                v /= f.size();
 
                 writeFaceValue(nasFieldName, v, ++n, os);
             }
