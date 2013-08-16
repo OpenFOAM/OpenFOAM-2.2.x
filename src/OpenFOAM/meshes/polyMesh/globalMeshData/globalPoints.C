@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -90,6 +90,11 @@ Foam::labelPairList Foam::globalPoints::addSendTransform
     const labelPairList& info
 ) const
 {
+    scalar tol = refCast<const coupledPolyPatch>
+    (
+        mesh_.boundaryMesh()[patchI]
+    ).matchTolerance();
+
     labelPairList sendInfo(info.size());
 
     forAll(info, i)
@@ -111,7 +116,8 @@ Foam::labelPairList Foam::globalPoints::addSendTransform
             (
                 globalIndexAndTransform::transformIndex(info[i]),
                 patchI,
-                true           // patchI is sending side
+                true,           // patchI is sending side
+                tol             // tolerance for comparison
             )
         );
     }

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -195,7 +195,8 @@ public:
         (
             const label transformIndex,
             const label patchI,
-            const bool isSendingSide = true
+            const bool isSendingSide = true,
+            const scalar tol = SMALL
         ) const;
 
         //- Combine two transformIndices
