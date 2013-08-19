@@ -1561,7 +1561,8 @@ void Foam::autoSnapDriver::doSnap
             {
                 WarningIn("autoSnapDriver::doSnap(..)")
                     << "Did not succesfully snap mesh."
-                    << " Continuing to snap to resolve easy surfaces but the"
+                    << " Continuing to snap to resolve easy" << nl
+                    << "    surfaces but the"
                     << " resulting mesh will not satisfy your quality"
                     << " constraints" << nl << endl;
                 //Info<< "Did not succesfully snap mesh. Giving up."
