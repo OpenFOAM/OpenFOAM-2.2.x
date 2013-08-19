@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -190,7 +190,8 @@ Foam::label Foam::globalIndexAndTransform::addToTransformIndex
 (
     const label transformIndex,
     const label patchI,
-    const bool isSendingSide
+    const bool isSendingSide,
+    const scalar tol
 ) const
 {
     const Pair<label>& transSign = patchTransformSign_[patchI];
@@ -228,21 +229,49 @@ Foam::label Foam::globalIndexAndTransform::addToTransformIndex
             }
             else if (sign == permutation[matchTransI])
             {
-                FatalErrorIn
-                (
-                    "Foam::label "
-                    "Foam::globalIndexAndTransform::addToTransformIndex\n"
-                    "(\n"
-                        "const label,\n"
-                        "const label,\n"
-                        "const bool\n"
-                    ") const\n"
-                )   << "More than one patch accessing the same transform "
-                    << "but not of the same sign." << endl
-                    << "patch:" << mesh_.boundaryMesh()[patchI].name()
-                    << " transform:" << matchTransI << " sign:" << sign
-                    << "  current transforms:" << permutation
-                    << exit(FatalError);
+                // This is usually illegal. The only exception is for points
+                // on the axis of a 180 degree cyclic wedge when the
+                // transformation is going to be (-1 0 0 0 -1 0 0 0 +1)
+                // (or a different permutation but always two times -1 and
+                // once +1)
+                bool antiCyclic = false;
+
+                const vectorTensorTransform& vt = transforms_[matchTransI];
+                if (mag(vt.t()) < SMALL && vt.hasR())
+                {
+                    const tensor& R = vt.R();
+                    scalar sumDiag = tr(R);
+                    scalar sumMagDiag = mag(R.xx())+mag(R.yy())+mag(R.zz());
+
+                    if (mag(sumMagDiag-3) < tol && mag(sumDiag+1) < tol)
+                    {
+                        antiCyclic = true;
+                    }
+                }
+
+                if (antiCyclic)
+                {
+                    // 180 degree rotational. Reset transformation.
+                    permutation[matchTransI] = 0;
+                }
+                else
+                {
+                    FatalErrorIn
+                    (
+                        "Foam::label "
+                        "Foam::globalIndexAndTransform::addToTransformIndex\n"
+                        "(\n"
+                            "const label,\n"
+                            "const label,\n"
+                            "const bool\n"
+                        ") const\n"
+                    )   << "More than one patch accessing the same transform "
+                        << "but not of the same sign." << endl
+                        << "patch:" << mesh_.boundaryMesh()[patchI].name()
+                        << " transform:" << matchTransI << " sign:" << sign
+                        << "  current transforms:" << permutation
+                        << exit(FatalError);
+                }
             }
             else
             {

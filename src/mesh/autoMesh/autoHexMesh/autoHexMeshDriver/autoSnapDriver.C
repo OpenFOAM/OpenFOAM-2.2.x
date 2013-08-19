@@ -1559,13 +1559,19 @@ void Foam::autoSnapDriver::doSnap
 
             if (!meshOk)
             {
-                Info<< "Did not succesfully snap mesh. Giving up."
-                    << nl << endl;
-
-                // Use current mesh as base mesh
-                meshMover.correct();
-
-                break;
+                WarningIn("autoSnapDriver::doSnap(..)")
+                    << "Did not succesfully snap mesh."
+                    << " Continuing to snap to resolve easy" << nl
+                    << "    surfaces but the"
+                    << " resulting mesh will not satisfy your quality"
+                    << " constraints" << nl << endl;
+                //Info<< "Did not succesfully snap mesh. Giving up."
+                //    << nl << endl;
+                //
+                //// Use current mesh as base mesh
+                //meshMover.correct();
+                //
+                //break;
             }
 
             if (debug&meshRefinement::MESH)
