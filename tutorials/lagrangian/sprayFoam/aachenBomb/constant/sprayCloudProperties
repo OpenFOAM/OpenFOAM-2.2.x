@@ -41,6 +41,7 @@ solution
         thermo:mu       cell;
         T               cell;
         Cp              cell;
+        kappa           cell;
         p               cell;
     }
 
@@ -234,7 +235,24 @@ subModels
 
 
 cloudFunctions
-{}
+{
+    particleCollector
+    {
+        mode            concentricCircle;
+
+        origin          (0 0.08 0);
+        radius          (0.0010 0.0015 0.0020 0.0025 0.0030 0.0035 0.0040 0.0045);
+        nSector         20;
+        refDir          (1 0 0);
+        normal          (0 1 0);
+
+        negateParcelsOppositeNormal no;
+        removeCollected no;
+        surfaceFormat   vtk;
+        resetOnWrite    no;
+        log             yes;
+    }
+}
 
 
 // ************************************************************************* //
