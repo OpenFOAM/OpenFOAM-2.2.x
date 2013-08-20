@@ -50,10 +50,7 @@ Foam::Ostream& Foam::operator<<
     }
 
     // Check state of Ostream
-    os.check
-    (
-        "Ostream& operator<<(Ostream&, const CSV<Type>&)"
-    );
+    os.check("Ostream& operator<<(Ostream&, const CSV<Type>&)");
 
     return os;
 }
@@ -83,11 +80,15 @@ void Foam::CSV<Type>::writeData(Ostream& os) const
         os  << componentColumns_;
         os.format(IOstream::BINARY);
     }
+    else
+    {
+        os  << componentColumns_;
+    }
     os  << token::END_STATEMENT << nl;
 
     os.writeKeyword("separator") << string(separator_)
         << token::END_STATEMENT << nl;
-    os.writeKeyword("mergeSeparators") << string(mergeSeparators_)
+    os.writeKeyword("mergeSeparators") << mergeSeparators_
         << token::END_STATEMENT << nl;
     os.writeKeyword("fileName") << fName_ << token::END_STATEMENT << nl;
     os  << decrIndent << indent << token::END_BLOCK << endl;
