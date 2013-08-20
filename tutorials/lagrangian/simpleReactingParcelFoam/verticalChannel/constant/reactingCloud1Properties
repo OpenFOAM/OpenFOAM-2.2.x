@@ -47,6 +47,7 @@ solution
         thermo:mu       cell;
         T               cell;
         Cp              cell;
+        kappa           cell;
         p               cell;
     }
 

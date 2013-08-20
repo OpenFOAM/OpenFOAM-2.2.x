@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -151,12 +151,10 @@ void Foam::ThermoParcel<ParcelType>::calcSurfaceValues
 
     tetIndices tetIs = this->currentTetIndices();
     mus = td.muInterp().interpolate(this->position(), tetIs)/TRatio;
+    kappas = td.kappaInterp().interpolate(this->position(), tetIs)/TRatio;
 
-    Pr = td.cloud().constProps().Pr();
+    Pr = Cpc_*mus/kappas;
     Pr = max(ROOTVSMALL, Pr);
-
-    kappas = Cpc_*mus/Pr;
-    kappas = max(ROOTVSMALL, kappas);
 }
 
 
