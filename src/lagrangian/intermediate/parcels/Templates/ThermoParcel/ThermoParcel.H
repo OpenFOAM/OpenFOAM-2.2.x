@@ -94,9 +94,6 @@ public:
             //- Particle scattering factor [] (radiation)
             scalar f0_;
 
-            //- Default carrier Prandtl number []
-            scalar Pr_;
-
 
     public:
 
@@ -129,8 +126,7 @@ public:
                 const scalar TMax,
                 const scalar Cp0,
                 const scalar epsilon0,
-                const scalar f0,
-                const scalar Pr
+                const scalar f0
             );
 
 
@@ -161,9 +157,6 @@ public:
                 //- Return const access to the particle scattering factor []
                 //  Active for radiation only
                 inline scalar f0() const;
-
-                //- Return const access to the default carrier Prandtl number []
-                inline scalar Pr() const;
     };
 
 
@@ -180,6 +173,10 @@ public:
             //  Cp not stored on carrier thermo, but returned as tmp<...>
             const volScalarField Cp_;
 
+            //- Local copy of carrier thermal conductivity field
+            //  kappa not stored on carrier thermo, but returned as tmp<...>
+            const volScalarField kappa_;
+
 
             // Interpolators for continuous phase fields
 
@@ -189,9 +186,11 @@ public:
                 //- Specific heat capacity field interpolator
                 autoPtr<interpolation<scalar> > CpInterp_;
 
+                //- Thermal conductivity field interpolator
+                autoPtr<interpolation<scalar> > kappaInterp_;
+
                 //- Radiation field interpolator
                 autoPtr<interpolation<scalar> > GInterp_;
-
 
 
     public:
@@ -215,6 +214,9 @@ public:
             //- Return access to the locally stored carrier Cp field
             inline const volScalarField& Cp() const;
 
+            //- Return access to the locally stored carrier kappa field
+            inline const volScalarField& kappa() const;
+
             //- Return const access to the interpolator for continuous
             //  phase temperature field
             inline const interpolation<scalar>& TInterp() const;
@@ -222,6 +224,10 @@ public:
             //- Return const access to the interpolator for continuous
             //  phase specific heat capacity field
             inline const interpolation<scalar>& CpInterp() const;
+
+            //- Return const access to the interpolator for continuous
+            //  phase thermal conductivity field
+            inline const interpolation<scalar>& kappaInterp() const;
 
             //- Return const access to the interpolator for continuous
             //  radiation field

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -89,7 +89,6 @@ inline Foam::ReactingParcel<ParcelType>::constantProperties::constantProperties
     const scalar Cp0,
     const scalar epsilon0,
     const scalar f0,
-    const scalar Pr,
     const scalar pMin,
     const Switch& constantVolume,
     const scalar Tvap
@@ -108,8 +107,7 @@ inline Foam::ReactingParcel<ParcelType>::constantProperties::constantProperties
         TMax,
         Cp0,
         epsilon0,
-        f0,
-        Pr
+        f0
     ),
     pMin_(pMin),
     constantVolume_(constantVolume),

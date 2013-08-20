@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -34,8 +34,7 @@ inline Foam::ThermoParcel<ParcelType>::constantProperties::constantProperties()
     TMax_(VGREAT),
     Cp0_(0.0),
     epsilon0_(0.0),
-    f0_(0.0),
-    Pr_(0.0)
+    f0_(0.0)
 {}
 
 
@@ -51,8 +50,7 @@ inline Foam::ThermoParcel<ParcelType>::constantProperties::constantProperties
     TMax_(cp.TMax_),
     Cp0_(cp.Cp0_),
     epsilon0_(cp.epsilon0_),
-    f0_(cp.f0_),
-    Pr_(cp.Pr_)
+    f0_(cp.f0_)
 {}
 
 
@@ -69,8 +67,7 @@ inline Foam::ThermoParcel<ParcelType>::constantProperties::constantProperties
     TMax_(5000),
     Cp0_(0.0),
     epsilon0_(0.0),
-    f0_(0.0),
-    Pr_(0.0)
+    f0_(0.0)
 {
     if (readFields)
     {
@@ -87,7 +84,6 @@ inline Foam::ThermoParcel<ParcelType>::constantProperties::constantProperties
         this->dict().lookup("Cp0") >> Cp0_;
         this->dict().lookup("epsilon0") >> epsilon0_;
         this->dict().lookup("f0") >> f0_;
-        this->dict().lookup("Pr") >> Pr_;
     }
 }
 
@@ -106,8 +102,7 @@ inline Foam::ThermoParcel<ParcelType>::constantProperties::constantProperties
     const scalar TMax,
     const scalar Cp0,
     const scalar epsilon0,
-    const scalar f0,
-    const scalar Pr
+    const scalar f0
 )
 :
     ParcelType::constantProperties
@@ -124,8 +119,7 @@ inline Foam::ThermoParcel<ParcelType>::constantProperties::constantProperties
     TMax_(TMax),
     Cp0_(Cp0),
     epsilon0_(epsilon0),
-    f0_(f0),
-    Pr_(Pr)
+    f0_(f0)
 {}
 
 
@@ -245,14 +239,6 @@ inline Foam::scalar
 Foam::ThermoParcel<ParcelType>::constantProperties::f0() const
 {
     return f0_;
-}
-
-
-template<class ParcelType>
-inline Foam::scalar
-Foam::ThermoParcel<ParcelType>::constantProperties::Pr() const
-{
-    return Pr_;
 }
 
 

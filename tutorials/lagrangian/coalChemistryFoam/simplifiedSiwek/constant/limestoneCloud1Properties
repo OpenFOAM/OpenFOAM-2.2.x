@@ -38,6 +38,7 @@ solution
         thermo:mu       cell;
         U               cellPoint;
         Cp              cell;
+        kappa           cell;
         T               cell;
         G               cell;
     }
