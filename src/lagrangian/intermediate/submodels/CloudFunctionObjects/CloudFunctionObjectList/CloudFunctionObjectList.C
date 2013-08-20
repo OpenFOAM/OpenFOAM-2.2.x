@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -133,12 +133,13 @@ void Foam::CloudFunctionObjectList<CloudType>::postMove
     const typename CloudType::parcelType& p,
     const label cellI,
     const scalar dt,
+    const point& position0,
     bool& keepParticle
 )
 {
     forAll(*this, i)
     {
-        this->operator[](i).postMove(p, cellI, dt, keepParticle);
+        this->operator[](i).postMove(p, cellI, dt, position0, keepParticle);
 
         if (!keepParticle)
         {

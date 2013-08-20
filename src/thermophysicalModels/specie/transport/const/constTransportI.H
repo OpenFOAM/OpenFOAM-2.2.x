@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -157,7 +157,7 @@ inline void Foam::constTransport<Thermo>::operator+=
     scalar molr2 = st.nMoles()/this->nMoles();
 
     mu_ = molr1*mu_ + molr2*st.mu_;
-    rPr_ = molr1*rPr_ + molr2*st.rPr_;
+    rPr_ = 1.0/(molr1/rPr_ + molr2/st.rPr_);
 }
 
 
@@ -175,7 +175,7 @@ inline void Foam::constTransport<Thermo>::operator-=
     scalar molr2 = st.nMoles()/this->nMoles();
 
     mu_ = molr1*mu_ - molr2*st.mu_;
-    rPr_ = molr1*rPr_ - molr2*st.rPr_;
+    rPr_ = 1.0/(molr1/rPr_ - molr2/st.rPr_);
 }
 
 
@@ -210,7 +210,7 @@ inline Foam::constTransport<Thermo> Foam::operator+
     (
         t,
         molr1*ct1.mu_ + molr2*ct2.mu_,
-        molr1*ct1.rPr_ + molr2*ct2.rPr_
+        1.0/(molr1/ct1.rPr_ + molr2/ct2.rPr_)
     );
 }
 
@@ -234,7 +234,7 @@ inline Foam::constTransport<Thermo> Foam::operator-
     (
         t,
         molr1*ct1.mu_ - molr2*ct2.mu_,
-        molr1*ct1.rPr_ - molr2*ct2.rPr_
+        1.0/(molr1/ct1.rPr_ - molr2/ct2.rPr_)
     );
 }
 
@@ -250,7 +250,7 @@ inline Foam::constTransport<Thermo> Foam::operator*
     (
         s*static_cast<const Thermo&>(ct),
         ct.mu_,
-        ct.rPr_
+        1.0/ct.rPr_
     );
 }
 

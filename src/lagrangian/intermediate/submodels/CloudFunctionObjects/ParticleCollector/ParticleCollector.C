@@ -64,12 +64,28 @@ void Foam::ParticleCollector<CloudType>::makeLogFile
 
             outputFilePtr_()
                 << "# Source     : " << type() << nl
-                << "# Total area : " << sum(area) << nl
-                << "# Time";
+                << "# Total area : " << sum(area) << nl;
+
+            outputFilePtr_() << "# Geometry   :" << nl;
+            forAll(faces, i)
+            {
+                word id = Foam::name(i);
+
+                outputFilePtr_()
+                    << '#' << tab << "point[" << id << "] = "
+                    << faces[i].centre(points) << nl;
+            }
+
+            outputFilePtr_()<< '#' << nl << "# Time";
 
             forAll(faces, i)
             {
                 word id = Foam::name(i);
+
+                if (i != 0)
+                {
+                    outputFilePtr_() << "#";
+                }
 
                 outputFilePtr_()
                     << tab << "area[" << id << "]"
@@ -265,14 +281,10 @@ void Foam::ParticleCollector<CloudType>::initConcentricCircles()
 template<class CloudType>
 Foam::label Foam::ParticleCollector<CloudType>::collectParcelPolygon
 (
-    const point& position,
-    const vector& U
+    const point& p1,
+    const point& p2
 ) const
 {
-    scalar dt = this->owner().db().time().deltaTValue();
-
-    point end(position + dt*U);
-
     label dummyNearType = -1;
     label dummyNearLabel = -1;
 
@@ -280,10 +292,10 @@ Foam::label Foam::ParticleCollector<CloudType>::collectParcelPolygon
     {
         const label facePoint0 = faces_[faceI][0];
 
-        const point p0 = points_[facePoint0];
+        const point& pf = points_[facePoint0];
 
-        const scalar d1 = normal_ & (position - p0);
-        const scalar d2 = normal_ & (end - p0);
+        const scalar d1 = normal_ & (p1 - pf);
+        const scalar d2 = normal_ & (p2 - pf);
 
         if (sign(d1) == sign(d2))
         {
@@ -292,7 +304,7 @@ Foam::label Foam::ParticleCollector<CloudType>::collectParcelPolygon
         }
 
         // intersection point
-        point pIntersect = position + (d1/(d1 - d2))*dt*U;
+        const point pIntersect = p1 + (d1/(d1 - d2))*(p2 - p1);
 
         const List<face>& tris = faceTris_[faceI];
 
@@ -321,18 +333,14 @@ Foam::label Foam::ParticleCollector<CloudType>::collectParcelPolygon
 template<class CloudType>
 Foam::label Foam::ParticleCollector<CloudType>::collectParcelConcentricCircles
 (
-    const point& position,
-    const vector& U
+    const point& p1,
+    const point& p2
 ) const
 {
     label secI = -1;
 
-    scalar dt = this->owner().db().time().deltaTValue();
-
-    point end(position + dt*U);
-
-    const scalar d1 = normal_ & (position - coordSys_.origin());
-    const scalar d2 = normal_ & (end - coordSys_.origin());
+    const scalar d1 = normal_ & (p1 - coordSys_.origin());
+    const scalar d2 = normal_ & (p2 - coordSys_.origin());
 
     if (sign(d1) == sign(d2))
     {
@@ -341,7 +349,7 @@ Foam::label Foam::ParticleCollector<CloudType>::collectParcelConcentricCircles
     }
 
     // intersection point in cylindrical co-ordinate system
-    point pCyl = coordSys_.localPosition(position + (d1/(d1 - d2))*dt*U);
+    const point pCyl = coordSys_.localPosition(p1 + (d1/(d1 - d2))*(p2 - p1));
 
     scalar r = pCyl[0];
 
@@ -410,6 +418,9 @@ void Foam::ParticleCollector<CloudType>::write()
     Field<scalar> faceMassFlowRate(massFlowRate_.size(), 0.0);
     this->getModelProperty("massFlowRate", faceMassFlowRate);
 
+
+    scalar sumTotalMass = 0.0;
+    scalar sumAverageMFR = 0.0;
     forAll(faces_, faceI)
     {
         scalarList allProcMass(Pstream::nProcs());
@@ -422,10 +433,8 @@ void Foam::ParticleCollector<CloudType>::write()
         Pstream::gatherList(allProcMassFlowRate);
         faceMassFlowRate[faceI] += sum(allProcMassFlowRate);
 
-        Info<< "    face " << faceI
-            << ": total mass = " << faceMassTotal[faceI]
-            << "; average mass flow rate = " << faceMassFlowRate[faceI]
-            << nl;
+        sumTotalMass += faceMassTotal[faceI];
+        sumAverageMFR += faceMassFlowRate[faceI];
 
         if (outputFilePtr_.valid())
         {
@@ -437,7 +446,9 @@ void Foam::ParticleCollector<CloudType>::write()
         }
     }
 
-    Info<< endl;
+    Info<< "    sum(total mass) = " << sumTotalMass << nl
+        << "    sum(average mass flow rate) = " << sumAverageMFR << nl
+        << endl;
 
 
     if (surfaceFormat_ != "none")
@@ -556,16 +567,17 @@ Foam::ParticleCollector<CloudType>::ParticleCollector
     }
     else
     {
-        FatalErrorIn
+        FatalIOErrorIn
         (
             "Foam::ParticleCollector<CloudType>::ParticleCollector"
             "("
                 "const dictionary&,"
                 "CloudType&"
-            ")"
+            ")",
+            this->coeffDict()
         )
             << "Unknown mode " << mode << ".  Available options are "
-            << "polygon and concentricCircle" << exit(FatalError);
+            << "polygon and concentricCircle" << exit(FatalIOError);
     }
 
     mass_.setSize(faces_.size(), 0.0);
@@ -622,6 +634,7 @@ void Foam::ParticleCollector<CloudType>::postMove
     const parcelType& p,
     const label cellI,
     const scalar dt,
+    const point& position0,
     bool& keepParticle
 )
 {
@@ -632,16 +645,19 @@ void Foam::ParticleCollector<CloudType>::postMove
 
     label faceI = -1;
 
+    // slightly extend end position to avoid falling within tracking tolerances
+    const point position1 = position0 + 1.0001*(p.position() - position0);
+
     switch (mode_)
     {
         case mtPolygon:
         {
-            faceI = collectParcelPolygon(p.position(), p.U());
+            faceI = collectParcelPolygon(position0, position1);
             break;
         }
         case mtConcentricCircle:
         {
-            faceI = collectParcelConcentricCircles(p.position(), p.U());
+            faceI = collectParcelConcentricCircles(position0, position1);
             break;
         }
         default:
