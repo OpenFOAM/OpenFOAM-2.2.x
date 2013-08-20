@@ -44,6 +44,14 @@ namespace functionEntries
         functionEntry,
         codeStream,
         execute,
+        dictionaryIstream
+    );
+
+    addToMemberFunctionSelectionTable
+    (
+        functionEntry,
+        codeStream,
+        execute,
         primitiveEntryIstream
     );
 
@@ -364,6 +372,38 @@ bool Foam::functionEntries::codeStream::execute
     IStringStream resultStream(os.str());
     entry.read(parentDict, resultStream);
 
+    return true;
+}
+
+
+bool Foam::functionEntries::codeStream::execute
+(
+    dictionary& parentDict,
+    Istream& is
+)
+{
+    Info<< "Using #codeStream at line " << is.lineNumber()
+        << " in file " <<  parentDict.name() << endl;
+
+    dynamicCode::checkSecurity
+    (
+        "functionEntries::codeStream::execute(..)",
+        parentDict
+    );
+
+    // get code dictionary
+    // must reference parent for stringOps::expand to work nicely
+    dictionary codeDict("#codeStream", parentDict, is);
+
+    streamingFunctionType function = getFunction(parentDict, codeDict);
+
+    // use function to write stream
+    OStringStream os(is.format());
+    (*function)(os, parentDict);
+
+    // get the entry from this stream
+    IStringStream resultStream(os.str());
+    parentDict.read(resultStream);
 
     return true;
 }
