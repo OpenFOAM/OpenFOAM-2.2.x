@@ -143,6 +143,9 @@ FoamFile
 //    sourceInfo
 //    {
 //        file            "www.avl.com-geometry.stl";
+//        useSurfaceOrientation false;  // use closed surface inside/outside
+//                                      // test (ignores includeCut,
+//                                      // outsidePoints)
 //        outsidePoints   ((-99 -99 -59));    // definition of outside
 //        includeCut      false;              // cells cut by surface
 //        includeInside   false;              // cells not on outside of surf

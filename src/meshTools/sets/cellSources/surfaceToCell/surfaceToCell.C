@@ -157,7 +157,30 @@ void Foam::surfaceToCell::combine(topoSet& set, const bool add) const
 {
     cpuTime timer;
 
-    if (includeCut_ || includeInside_ || includeOutside_)
+
+    if (useSurfaceOrientation_ && (includeInside_ || includeOutside_))
+    {
+        const meshSearch queryMesh(mesh_);
+
+        //- Calculate for each searchPoint inside/outside status.
+        boolList isInside(querySurf().calcInside(mesh_.cellCentres()));
+
+        Info<< "    Marked inside/outside using surface orientation in = "
+            << timer.cpuTimeIncrement() << " s" << endl << endl;
+
+        forAll(isInside, cellI)
+        {
+            if (isInside[cellI] && includeInside_)
+            {
+                addOrDelete(set, cellI, add);
+            }
+            else if (!isInside[cellI] && includeOutside_)
+            {
+                addOrDelete(set, cellI, add);
+            }
+        }
+    }
+    else if (includeCut_ || includeInside_ || includeOutside_)
     {
         //
         // Cut cells with surface and classify cells
@@ -166,7 +189,7 @@ void Foam::surfaceToCell::combine(topoSet& set, const bool add) const
 
         // Construct search engine on mesh
 
-        meshSearch queryMesh(mesh_);
+        const meshSearch queryMesh(mesh_);
 
 
         // Check all 'outside' points
@@ -196,10 +219,10 @@ void Foam::surfaceToCell::combine(topoSet& set, const bool add) const
         );
 
 
-        Info<< "    Marked inside/outside in = "
+        Info<< "    Marked inside/outside using surface intersection in = "
             << timer.cpuTimeIncrement() << " s" << endl << endl;
 
-
+        //- Add/remove cells using set
         forAll(cellType, cellI)
         {
             label cType = cellType[cellI];
@@ -326,6 +349,18 @@ void Foam::surfaceToCell::checkSettings() const
             << " or set curvature to a value -1 .. 1."
             << exit(FatalError);
     }
+
+    if (useSurfaceOrientation_ && includeCut_)
+    {
+        FatalErrorIn
+        (
+            "surfaceToCell:checkSettings()"
+        )   << "Illegal include cell specification."
+            << " You cannot specify both 'useSurfaceOrientation'"
+            << " and 'includeCut'"
+            << " since 'includeCut' specifies a topological split"
+            << exit(FatalError);
+    }
 }
 
 
@@ -340,6 +375,7 @@ Foam::surfaceToCell::surfaceToCell
     const bool includeCut,
     const bool includeInside,
     const bool includeOutside,
+    const bool useSurfaceOrientation,
     const scalar nearDist,
     const scalar curvature
 )
@@ -350,6 +386,7 @@ Foam::surfaceToCell::surfaceToCell
     includeCut_(includeCut),
     includeInside_(includeInside),
     includeOutside_(includeOutside),
+    useSurfaceOrientation_(useSurfaceOrientation),
     nearDist_(nearDist),
     curvature_(curvature),
     surfPtr_(new triSurface(surfName_)),
@@ -371,6 +408,7 @@ Foam::surfaceToCell::surfaceToCell
     const bool includeCut,
     const bool includeInside,
     const bool includeOutside,
+    const bool useSurfaceOrientation,
     const scalar nearDist,
     const scalar curvature
 )
@@ -381,6 +419,7 @@ Foam::surfaceToCell::surfaceToCell
     includeCut_(includeCut),
     includeInside_(includeInside),
     includeOutside_(includeOutside),
+    useSurfaceOrientation_(useSurfaceOrientation),
     nearDist_(nearDist),
     curvature_(curvature),
     surfPtr_(&surf),
@@ -404,6 +443,10 @@ Foam::surfaceToCell::surfaceToCell
     includeCut_(readBool(dict.lookup("includeCut"))),
     includeInside_(readBool(dict.lookup("includeInside"))),
     includeOutside_(readBool(dict.lookup("includeOutside"))),
+    useSurfaceOrientation_
+    (
+        dict.lookupOrDefault<bool>("useSurfaceOrientation", false)
+    ),
     nearDist_(readScalar(dict.lookup("nearDistance"))),
     curvature_(readScalar(dict.lookup("curvature"))),
     surfPtr_(new triSurface(surfName_)),
@@ -427,6 +470,7 @@ Foam::surfaceToCell::surfaceToCell
     includeCut_(readBool(checkIs(is))),
     includeInside_(readBool(checkIs(is))),
     includeOutside_(readBool(checkIs(is))),
+    useSurfaceOrientation_(false),
     nearDist_(readScalar(checkIs(is))),
     curvature_(readScalar(checkIs(is))),
     surfPtr_(new triSurface(surfName_)),
