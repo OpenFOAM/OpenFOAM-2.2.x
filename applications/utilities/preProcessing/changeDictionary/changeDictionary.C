@@ -602,8 +602,13 @@ int main(int argc, char *argv[])
                 dictList.set(sz++, iter().clone());
             }
 
-            Info<< "Writing modified fieldDict " << fieldName << endl;
-            dictList.write();
+            Info<< "Writing modified " << fieldName << endl;
+            dictList.writeObject
+            (
+                runTime.writeFormat(),
+                runTime.writeFormat(),
+                IOstream::UNCOMPRESSED
+            );
         }
         else
         {
