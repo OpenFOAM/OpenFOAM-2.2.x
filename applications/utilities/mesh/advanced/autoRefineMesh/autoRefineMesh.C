@@ -269,9 +269,10 @@ void selectCurvatureCells
         querySurf.surface(),
         querySurf,
         pointField(1, mesh.cellCentres()[0]),
-        false,
-        false,
-        false,
+        false,              // includeCut
+        false,              // includeInside
+        false,              // includeOutside
+        false,              // geometricOnly
         nearDist,
         curvature
     );

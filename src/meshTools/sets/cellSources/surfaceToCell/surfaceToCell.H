@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -29,6 +29,8 @@ Description
 
     Selects:
     - all cells inside/outside/cut by surface
+    - all cells inside/outside surface ('useSurfaceOrientation', requires closed
+      surface)
     - cells with centre nearer than XXX to surface
     - cells with centre nearer than XXX to surface \b and with normal
       at nearest point to centre and cell-corners differing by
@@ -67,27 +69,31 @@ class surfaceToCell
         static addToUsageTable usage_;
 
         //- Name of surface file
-        fileName surfName_;
+        const fileName surfName_;
 
         //- Points which are outside
-        pointField outsidePoints_;
+        const pointField outsidePoints_;
 
         //- Include cut cells
-        bool includeCut_;
+        const bool includeCut_;
 
         //- Include inside cells
-        bool includeInside_;
+        const bool includeInside_;
 
         //- Include outside cells
-        bool includeOutside_;
+        const bool includeOutside_;
+
+        //- Determine inside/outside purely using geometric test
+        //  (does not allow includeCut)
+        const bool useSurfaceOrientation_;
 
         //- if > 0 : include cells with distance from cellCentre to surface
         //  less than nearDist.
-        scalar nearDist_;
+        const scalar nearDist_;
 
         //- if > -1 : include cells with normals at nearest surface points
         //  varying more than curvature_.
-        scalar curvature_;
+        const scalar curvature_;
 
         //- triSurface to search on. On pointer since can be external.
         const triSurface* surfPtr_;
@@ -97,7 +103,7 @@ class surfaceToCell
 
         //- whether I allocated above surface ptrs or whether they are
         //  external.
-        bool IOwnPtrs_;
+        const bool IOwnPtrs_;
 
 
     // Private Member Functions
@@ -155,6 +161,7 @@ public:
             const bool includeCut,
             const bool includeInside,
             const bool includeOutside,
+            const bool useSurfaceOrientation,
             const scalar nearDist,
             const scalar curvature
         );
@@ -170,6 +177,7 @@ public:
             const bool includeCut,
             const bool includeInside,
             const bool includeOutside,
+            const bool useSurfaceOrientation,
             const scalar nearDist,
             const scalar curvature
         );
