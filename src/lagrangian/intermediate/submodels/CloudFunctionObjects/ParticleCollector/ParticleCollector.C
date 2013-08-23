@@ -64,31 +64,40 @@ void Foam::ParticleCollector<CloudType>::makeLogFile
 
             outputFilePtr_()
                 << "# Source     : " << type() << nl
+                << "# Bins       : " << faces.size() << nl
                 << "# Total area : " << sum(area) << nl;
 
-            outputFilePtr_() << "# Geometry   :" << nl;
+            outputFilePtr_()
+                << "# Geometry   :" << nl
+                << '#'
+                << tab << "Bin"
+                << tab << "(Centre_x Centre_y Centre_z)"
+                << tab << "Area"
+                << nl;
+
             forAll(faces, i)
             {
-                word id = Foam::name(i);
-
                 outputFilePtr_()
-                    << '#' << tab << "point[" << id << "] = "
-                    << faces[i].centre(points) << nl;
+                    << '#'
+                    << tab << i
+                    << tab << faces[i].centre(points)
+                    << tab << area[i]
+                    << nl;
             }
 
-            outputFilePtr_()<< '#' << nl << "# Time";
+            outputFilePtr_()
+                << '#' << nl
+                << "# Output format:" << nl;
 
             forAll(faces, i)
             {
                 word id = Foam::name(i);
-
-                if (i != 0)
-                {
-                    outputFilePtr_() << "#";
-                }
+                word binId = "bin_" + id;
 
                 outputFilePtr_()
-                    << tab << "area[" << id << "]"
+                    << '#'
+                    << tab << "Time"
+                    << tab << binId
                     << tab << "mass[" << id << "]"
                     << tab << "massFlowRate[" << id << "]"
                     << endl;
@@ -406,12 +415,6 @@ void Foam::ParticleCollector<CloudType>::write()
 
     Info<< type() << " output:" << nl;
 
-    if (outputFilePtr_.valid())
-    {
-        outputFilePtr_() << time.timeName();
-    }
-
-
     Field<scalar> faceMassTotal(mass_.size(), 0.0);
     this->getModelProperty("massTotal", faceMassTotal);
 
@@ -439,7 +442,8 @@ void Foam::ParticleCollector<CloudType>::write()
         if (outputFilePtr_.valid())
         {
             outputFilePtr_()
-                << tab << area_[faceI]
+                << time.timeName()
+                << tab << faceI
                 << tab << faceMassTotal[faceI]
                 << tab << faceMassFlowRate[faceI]
                 << endl;
