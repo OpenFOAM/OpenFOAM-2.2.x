@@ -633,7 +633,11 @@ void Foam::KinematicCloud<CloudType>::scaleSources()
 template<class CloudType>
 void Foam::KinematicCloud<CloudType>::preEvolve()
 {
-    Info<< "\nSolving cloud " << this->name() << endl;
+    // force calculaion of mesh dimensions - needed for parallel runs
+    // with topology change due to lazy evaluation of valid mesh dimensions
+    label nGeometricD = mesh_.nGeometricD();
+
+    Info<< "\nSolving " << nGeometricD << "-D cloud " << this->name() << endl;
 
     this->dispersion().cacheFields(true);
     forces_.cacheFields(true);
