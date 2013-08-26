@@ -42,14 +42,26 @@ Description
 int main(int argc, char *argv[])
 {
     timeSelector::addOptions();
-#   include "addRegionOption.H"
+    #include "addRegionOption.H"
 
-#   include "setRootCase.H"
-#   include "createTime.H"
+    #include "setRootCase.H"
+    #include "createTime.H"
 
     instantList timeDirs = timeSelector::select0(runTime, args);
 
-#   include "createNamedMesh.H"
+    #include "createNamedMesh.H"
+
+    label nD = mesh.nGeometricD();
+
+    if (nD != 2)
+    {
+        FatalErrorIn(args.executable())
+            << "Case is not 2D, stream-function cannot be computed"
+            << exit(FatalError);
+    }
+
+    const vector slabDir((Vector<label>::one - mesh.geometricD())/2);
+    scalar thickness = slabDir & mesh.bounds().span();
 
     const pointMesh& pMesh = pointMesh::New(mesh);
 
@@ -428,7 +440,6 @@ int main(int argc, char *argv[])
                      }
 
                      Info<< ".";
-//                     Info<< "One pass, n visited = " << nVisited << endl;
 
                      if (nVisited == nVisitedOld)
                      {
@@ -449,6 +460,8 @@ int main(int argc, char *argv[])
                 Info<< endl;
             } while (!finished);
 
+            // Normalise the stream-function by the 2D mesh thickness
+            streamFunction /= thickness;
             streamFunction.boundaryField() = 0.0;
             streamFunction.write();
         }
