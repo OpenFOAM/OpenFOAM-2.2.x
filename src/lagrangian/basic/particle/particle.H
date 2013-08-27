@@ -307,6 +307,9 @@ public:
         //  for the denominator and numerator of lambda
         static const scalar lambdaDistanceToleranceCoeff;
 
+        //- Minimum stepFraction tolerance
+        static const scalar minStepFractionTol;
+
 
     // Constructors
 

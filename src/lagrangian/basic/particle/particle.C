@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -33,6 +33,8 @@ Foam::label Foam::particle::particleCount_ = 0;
 const Foam::scalar Foam::particle::trackingCorrectionTol = 1e-5;
 
 const Foam::scalar Foam::particle::lambdaDistanceToleranceCoeff = 1e3*SMALL;
+
+const Foam::scalar Foam::particle::minStepFractionTol = 1e5*SMALL;
 
 namespace Foam
 {
