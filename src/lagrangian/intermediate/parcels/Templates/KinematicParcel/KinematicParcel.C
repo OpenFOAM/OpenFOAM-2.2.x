@@ -293,16 +293,13 @@ bool Foam::KinematicParcel<ParcelType>::move
         const label cellI = p.cell();
 
         const scalar magU = mag(U_);
-        if (p.active())
+        if (p.active() && moving && (magU > ROOTVSMALL))
         {
             const scalar d = dt*magU;
             const scalar dCorr = min(d, maxCo*cbrt(V[cellI]));
-            dt *= dCorr/d;
-
-            if (moving && (magU > ROOTVSMALL))
-            {
-                dt *= p.trackToFace(p.position() + dCorr*U_/magU, td);
-            }
+            dt *=
+                dCorr/d
+               *p.trackToFace(p.position() + dCorr*U_/magU, td);
         }
 
         tEnd -= dt;
