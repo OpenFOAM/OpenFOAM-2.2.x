@@ -154,6 +154,9 @@ protected:
             //- Add in depth radiation source term
             bool  QrHSource_;
 
+            //- Use chemistry solvers (ode or sequential)
+            bool useChemistrySolvers_;
+
 
     // Protected member functions
 

@@ -95,16 +95,4 @@ Foam::solidChemistryModel<CompType, SolidThermo>::RRs() const
 }
 
 
-template<class CompType, class SolidThermo>
-inline const Foam::DimensionedField<Foam::scalar, Foam::volMesh>&
-Foam::solidChemistryModel<CompType, SolidThermo>::RR
-(
-    const label i
-) const
-{
-    notImplemented("solidChemistryModel::RR(const label)");
-    return (DimensionedField<scalar, volMesh>::null());
-}
-
-
 // ************************************************************************* //

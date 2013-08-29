@@ -203,7 +203,7 @@ public:
         ) const = 0;
 
 
-        // Chemistry model functions
+        // Solid Chemistry model functions
 
             //- Return const access to the chemical source terms for solids
             inline const DimensionedField<scalar, volMesh>& RRs
@@ -213,13 +213,6 @@ public:
 
             //- Return total solid source term
             inline tmp<DimensionedField<scalar, volMesh> > RRs() const;
-
-            //- Return const access to the total source terms
-            inline const DimensionedField<scalar, volMesh>& RR
-            (
-                const label i
-            ) const;
-
 
             //- Solve the reaction system for the given start time and time
             //  step and return the characteristic time

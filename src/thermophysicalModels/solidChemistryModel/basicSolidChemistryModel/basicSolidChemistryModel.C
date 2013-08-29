@@ -53,4 +53,35 @@ Foam::basicSolidChemistryModel::~basicSolidChemistryModel()
 {}
 
 
+const Foam::DimensionedField<Foam::scalar, Foam::volMesh>&
+Foam::basicSolidChemistryModel::RR(const label i) const
+{
+    notImplemented
+    (
+        "const Foam::DimensionedField<Foam::scalar, Foam::volMesh>&"
+        "basicSolidChemistryModel::RR(const label)"
+    );
+    return (DimensionedField<scalar, volMesh>::null());
+}
+
+
+Foam::DimensionedField<Foam::scalar, Foam::volMesh>&
+Foam::basicSolidChemistryModel::RR(const label i)
+{
+    notImplemented
+    (
+        "Foam::DimensionedField<Foam::scalar, Foam::volMesh>&"
+        "basicSolidChemistryModel::RR(const label)"
+    );
+
+    return dynamic_cast<DimensionedField<scalar, volMesh>&>
+    (
+        const_cast<DimensionedField<scalar, volMesh>& >
+        (
+            DimensionedField<scalar, volMesh>::null()
+        )
+    );
+}
+
+
 // ************************************************************************* //

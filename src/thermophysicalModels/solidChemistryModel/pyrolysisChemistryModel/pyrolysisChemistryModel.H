@@ -137,8 +137,9 @@ public:
             const bool updateC0 = false
         ) const;
 
-        //- Return the reaction rate for reaction r and the reference
-        //  species and charateristic times
+        //- Return the reaction rate for reaction r
+        // NOTE: Currently does not calculate reference specie and
+        // characteristic times (pf, cf,l Ref, etc.)
         virtual scalar omega
         (
             const Reaction<SolidThermo>& r,
@@ -154,8 +155,9 @@ public:
         ) const;
 
 
-        //- Return the reaction rate for iReaction and the reference
-        //  species and charateristic times
+        //- Return the reaction rate for iReaction
+        // NOTE: Currently does not calculate reference specie and
+        // characteristic times (pf, cf,l Ref, etc.)
         virtual scalar omegaI
         (
             label iReaction,
@@ -188,6 +190,7 @@ public:
 
 
         //- Update matrix RR for reaction i. Used by EulerImplicit
+        // (Not implemented)
         virtual void updateRRInReactionI
         (
             const label i,

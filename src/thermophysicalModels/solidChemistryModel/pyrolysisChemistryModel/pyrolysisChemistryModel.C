@@ -535,13 +535,20 @@ updateConcsInReactionI
         c[si] = max(0.0, c[si]);
     }
 
+    scalar sr = 0.0;
     forAll(R.rhs(), s)
     {
         label si = R.rhs()[s].index;
         const scalar rhoR = this->solidThermo_[si].rho(p, T);
-        const scalar sr = rhoR/rhoL;
+        sr = rhoR/rhoL;
         c[si] += dt*sr*omeg;
         c[si] = max(0.0, c[si]);
+    }
+
+    forAll(R.grhs(), g)
+    {
+        label gi = R.grhs()[g].index;
+        c[gi + this->nSolids_] += (1.0 - sr)*omeg*dt;
     }
 }
 
@@ -561,24 +568,11 @@ updateRRInReactionI
     simpleMatrix<scalar>& RR
 ) const
 {
-    const Reaction<SolidThermo>& R = this->reactions_[index];
-    scalar rhoL = 0.0;
-    forAll(R.lhs(), s)
-    {
-        label si = R.lhs()[s].index;
-        rhoL = this->solidThermo_[si].rho(p, T);
-        RR[si][rRef] -= pr*corr;
-        RR[si][lRef] += pf*corr;
-    }
-
-    forAll(R.rhs(), s)
-    {
-        label si = R.rhs()[s].index;
-        const scalar rhoR = this->solidThermo_[si].rho(p, T);
-        const scalar sr = rhoR/rhoL;
-        RR[si][lRef] -= sr*pf*corr;
-        RR[si][rRef] += sr*pr*corr;
-    }
+    notImplemented
+    (
+        "void Foam::pyrolysisChemistryModel<CompType, SolidThermo,GasThermo>::"
+        "updateRRInReactionI"
+    );
 }
 
 
@@ -666,7 +660,6 @@ Foam::pyrolysisChemistryModel<CompType, SolidThermo, GasThermo>::solve
 
                 scalar newCp = 0.0;
                 scalar newhi = 0.0;
-                scalar invRho = 0.0;
                 scalarList dcdt = (c - c0)/dt;
 
                 for (label i=0; i<this->nSolids_; i++)
@@ -675,7 +668,6 @@ Foam::pyrolysisChemistryModel<CompType, SolidThermo, GasThermo>::solve
                     scalar Yi = c[i]/cTot;
                     newCp += Yi*this->solidThermo_[i].Cp(pi, Ti);
                     newhi -= dYi*this->solidThermo_[i].Hc();
-                    invRho += Yi/this->solidThermo_[i].rho(pi, Ti);
                 }
 
                 scalar dTi = (newhi/newCp)*dt;

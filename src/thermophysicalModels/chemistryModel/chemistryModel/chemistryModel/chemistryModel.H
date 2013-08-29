@@ -211,6 +211,12 @@ public:
                 const label i
             ) const;
 
+            //- Return non const access to chemical source terms [kg/m3/s]
+            virtual DimensionedField<scalar, volMesh>& RR
+            (
+                const label i
+            );
+
             //- Solve the reaction system for the given start time and time
             //  step and return the characteristic time
             virtual scalar solve(const scalar t0, const scalar deltaT);

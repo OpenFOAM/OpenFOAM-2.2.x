@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -139,6 +139,12 @@ public:
                 (
                     const label i
                 ) const = 0;
+
+                //- Return access to chemical source terms [kg/m3/s]
+                virtual DimensionedField<scalar, volMesh>& RR
+                (
+                    const label i
+                ) = 0;
 
 
             // Chemistry solution

@@ -76,14 +76,6 @@ namespace Foam
         GThermo                                                               \
     );                                                                        \
                                                                               \
-    makeSolidChemistrySolverType                                              \
-    (                                                                         \
-        EulerImplicit,                                                        \
-        SolidChem,                                                            \
-        Comp,                                                                 \
-        SThermo,                                                              \
-        GThermo                                                               \
-    );                                                                        \
                                                                               \
     makeSolidChemistrySolverType                                              \
     (                                                                         \

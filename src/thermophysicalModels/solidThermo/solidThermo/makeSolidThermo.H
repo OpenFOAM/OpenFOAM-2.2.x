@@ -30,7 +30,7 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #ifndef makeSolidThermo_H
-#define makesolidThermo_H
+#define makeSolidThermo_H
 
 #include "addToRunTimeSelectionTable.H"
 
