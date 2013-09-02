@@ -32,6 +32,7 @@ License
 #include "fvcVolumeIntegrate.H"
 #include "fvMatrices.H"
 #include "absorptionEmissionModel.H"
+#include "fvcLaplacian.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -320,10 +321,13 @@ void reactingOneDim::solveEnergy()
 
     tmp<volScalarField> alpha(solidThermo_.alpha());
 
+
     fvScalarMatrix hEqn
     (
         fvm::ddt(rho_, h_)
       - fvm::laplacian(alpha, h_)
+      + fvc::laplacian(alpha, h_)
+      - fvc::laplacian(kappa(), T())
      ==
         chemistrySh_
       - fvm::Sp(solidChemistry_->RRg(), h_)
