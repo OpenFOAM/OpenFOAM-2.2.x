@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -55,6 +55,17 @@ void Foam::multiComponentMixture<ThermoType>::correctMassFractions()
     for (label n=1; n<Y_.size(); n++)
     {
         Yt += Y_[n];
+    }
+
+    if (mag(max(Yt).value()) < ROOTVSMALL)
+    {
+        FatalErrorIn
+        (
+            "void Foam::multiComponentMixture<ThermoType>::"
+            "correctMassFractions()"
+        )
+            << "Sum of mass fractions is zero for species " << this->species()
+            << exit(FatalError);
     }
 
     forAll(Y_, n)
