@@ -165,6 +165,10 @@ surfaces
 
         //- Optional: restrict to a particular zone
         // zone        zone1;
+
+        //- Optional: do not triangulate (only for surfaceFormats that support
+        //            polygons)
+        //triangulate     false;
     }
 
     interpolatedPlane

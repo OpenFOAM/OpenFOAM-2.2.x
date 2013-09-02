@@ -25,7 +25,7 @@ Class
     Foam::sampledPlane
 
 Description
-    A sampledSurface defined by a cuttingPlane. Always triangulated.
+    A sampledSurface defined by a cuttingPlane. Triangulated by default.
 
 Note
     Does not actually cut until update() called.
@@ -60,6 +60,9 @@ class sampledPlane
         //- If restricted to zones, name of this zone or a regular expression
         keyType zoneKey_;
 
+        //- Triangulated faces or keep faces as is
+        const bool triangulate_;
+
         //- Track if the surface needs an update
         mutable bool needsUpdate_;
 
@@ -92,7 +95,8 @@ public:
             const word& name,
             const polyMesh& mesh,
             const plane& planeDesc,
-            const keyType& zoneKey = word::null
+            const keyType& zoneKey = word::null,
+            const bool triangulate = true
         );
 
         //- Construct from dictionary
