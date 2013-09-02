@@ -1,5 +1,4 @@
 EXE_INC = \
-    -I../rhoPorousMRFPimpleFoam \
     -I.. \
     -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
     -I$(LIB_SRC)/turbulenceModels/compressible/turbulenceModel \
