@@ -149,6 +149,15 @@ public:
 
         //- Calculates the reaction rates
         virtual void calculate() = 0;
+
+        //- Return const access to the total source terms
+        virtual const DimensionedField<scalar, volMesh>& RR
+        (
+            const label i
+        ) const;
+
+        //- Return non-const access to the total source terms
+        virtual DimensionedField<scalar, volMesh>& RR(const label i);
 };
 
 

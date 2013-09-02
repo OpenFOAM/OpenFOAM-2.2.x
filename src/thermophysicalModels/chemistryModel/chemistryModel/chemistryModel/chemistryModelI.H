@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -74,6 +74,16 @@ Foam::chemistryModel<CompType, ThermoType>::RR
 (
     const label i
 ) const
+{
+    return RR_[i];
+}
+
+template<class CompType, class ThermoType>
+Foam::DimensionedField<Foam::scalar, Foam::volMesh>&
+Foam::chemistryModel<CompType, ThermoType>::RR
+(
+    const label i
+)
 {
     return RR_[i];
 }
