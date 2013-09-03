@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -45,12 +45,14 @@ Foam::sampledPlane::sampledPlane
     const word& name,
     const polyMesh& mesh,
     const plane& planeDesc,
-    const keyType& zoneKey
+    const keyType& zoneKey,
+    const bool triangulate
 )
 :
     sampledSurface(name, mesh),
     cuttingPlane(planeDesc),
     zoneKey_(zoneKey),
+    triangulate_(triangulate),
     needsUpdate_(true)
 {
     if (debug && zoneKey_.size() && mesh.cellZones().findIndex(zoneKey_) < 0)
@@ -71,6 +73,7 @@ Foam::sampledPlane::sampledPlane
     sampledSurface(name, mesh, dict),
     cuttingPlane(plane(dict.lookup("basePoint"), dict.lookup("normalVector"))),
     zoneKey_(keyType::null),
+    triangulate_(dict.lookupOrDefault("triangulate", true)),
     needsUpdate_(true)
 {
     // make plane relative to the coordinateSystem (Cartesian)
@@ -138,11 +141,11 @@ bool Foam::sampledPlane::update()
 
     if (selectedCells.empty())
     {
-        reCut(mesh(), true);    // always triangulate. Note:Make option?
+        reCut(mesh(), triangulate_);
     }
     else
     {
-        reCut(mesh(), true, selectedCells);
+        reCut(mesh(), triangulate_, selectedCells);
     }
 
     if (debug)
@@ -250,6 +253,7 @@ void Foam::sampledPlane::print(Ostream& os) const
     os  << "sampledPlane: " << name() << " :"
         << "  base:" << refPoint()
         << "  normal:" << normal()
+        << "  triangulate:" << triangulate_
         << "  faces:" << faces().size()
         << "  points:" << points().size();
 }

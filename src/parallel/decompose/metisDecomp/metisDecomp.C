@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -328,7 +328,14 @@ Foam::labelList Foam::metisDecomp::decompose
     }
 
     CompactListList<label> cellCells;
-    calcCellCells(mesh, identity(mesh.nCells()), mesh.nCells(), cellCells);
+    calcCellCells
+    (
+        mesh,
+        identity(mesh.nCells()),
+        mesh.nCells(),
+        false,
+        cellCells
+    );
 
     // Decompose using default weights
     labelList decomp;
@@ -362,7 +369,14 @@ Foam::labelList Foam::metisDecomp::decompose
     //   xadj(celli) : start of information in adjncy for celli
 
     CompactListList<label> cellCells;
-    calcCellCells(mesh, agglom, agglomPoints.size(), cellCells);
+    calcCellCells
+    (
+        mesh,
+        agglom,
+        agglomPoints.size(),
+        false,
+        cellCells
+    );
 
     // Decompose using default weights
     labelList finalDecomp;
