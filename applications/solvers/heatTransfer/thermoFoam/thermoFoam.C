@@ -25,7 +25,7 @@ Application
     thermoFoam
 
 Description
-    Evolves the thermodynamics on a forzen flow field
+    Evolves the thermodynamics on a frozen flow field
 
 \*---------------------------------------------------------------------------*/
 

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -31,9 +31,9 @@ Description
     This boundary condition provides an oscillating condition in terms of
     amplitude and frequency.
 
-        /f[
+        \f[
             x_p = (1 + a sin(\pi f t))x_{ref} + x_o
-        /f]
+        \f]
 
     where
 
