@@ -2456,7 +2456,7 @@ void Foam::autoLayerDriver::mergePatchFacesUndo
         concaveCos,
         meshRefiner_.meshedPatches(),
         motionDict,
-        labelList(mesh.nFaces() -1)
+        labelList(mesh.nFaces(), -1)
     );
 
     nChanged += meshRefiner_.mergeEdgesUndo(minCos, motionDict);
