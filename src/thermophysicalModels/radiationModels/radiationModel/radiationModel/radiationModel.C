@@ -250,6 +250,17 @@ Foam::tmp<Foam::fvScalarMatrix> Foam::radiation::radiationModel::ST
 const Foam::radiation::absorptionEmissionModel&
 Foam::radiation::radiationModel::absorptionEmission() const
 {
+    if (!absorptionEmission_.valid())
+    {
+        FatalErrorIn
+        (
+            "const Foam::radiation::absorptionEmissionModel&"
+            "Foam::radiation::radiationModel::absorptionEmission() const"
+        )
+            << "Requested radiation absorptionEmission model, but model is "
+            << "not activate" << abort(FatalError);
+    }
+
     return absorptionEmission_();
 }
 
