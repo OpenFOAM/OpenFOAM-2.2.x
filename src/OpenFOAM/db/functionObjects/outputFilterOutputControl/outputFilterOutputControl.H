@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -40,6 +40,7 @@ SourceFiles
 #include "Time.H"
 #include "NamedEnum.H"
 
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
@@ -56,8 +57,12 @@ public:
     //- The output control options
     enum outputControls
     {
-        ocTimeStep,   /*!< execution is coupled to the time-step */
-        ocOutputTime  /*!< execution is coupled to the output-time */
+        ocTimeStep,       /*!< execution is coupled to the time-step */
+        ocOutputTime,     /*!< execution is coupled to the output-time */
+        ocAdjustableTime, /*!< Adjust time step for dumping */
+        ocRunTime,        /*!< run time for dumping */
+        ocClockTime,      /*!< clock time for dumping */
+        ocCpuTime,        /*!< cpu time for dumping */
     };
 
 
@@ -69,7 +74,7 @@ private:
         const Time& time_;
 
         //- String representation of outputControls enums
-        static const NamedEnum<outputControls, 2> outputControlNames_;
+        static const NamedEnum<outputControls, 6> outputControlNames_;
 
         //- Type of output
         outputControls outputControl_;
@@ -78,8 +83,11 @@ private:
         //  a value <= 1 means execute at every time step
         label outputInterval_;
 
-        //- Dumping counter for ocOutputTime
+        //- Dumping counter for ocOutputTime or index dump for ocAdjustableTime
         label outputTimeLastDump_;
+
+        //- Dump each deltaT (adjust Ttime)
+        scalar writeInterval_;
 
 
     // Private Member Functions
@@ -114,6 +122,24 @@ public:
 
         //- Flag to indicate whether to output
         bool output();
+
+        //- Return outputControl
+        outputControls outputControl()
+        {
+            return outputControl_;
+        }
+
+        //- Return writeInterval
+        scalar writeInterval()
+        {
+            return writeInterval_;
+        }
+
+        //- Return outputTimeLastDump
+        label outputTimeLastDump()
+        {
+            return outputTimeLastDump_;
+        }
 };
 
 

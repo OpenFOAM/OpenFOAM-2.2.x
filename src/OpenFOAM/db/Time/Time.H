@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -527,10 +527,18 @@ public:
             virtual void setEndTime(const scalar);
 
             //- Reset time step
-            virtual void setDeltaT(const dimensionedScalar&);
+            virtual void setDeltaT
+            (
+                const dimensionedScalar&,
+                const bool adjustDeltaT = true
+            );
 
             //- Reset time step
-            virtual void setDeltaT(const scalar);
+            virtual void setDeltaT
+            (
+                const scalar,
+                const bool adjustDeltaT = true
+            );
 
             //- Set time to sub-cycle for the given number of steps
             virtual TimeState subCycle(const label nSubCycles);

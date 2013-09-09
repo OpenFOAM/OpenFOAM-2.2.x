@@ -67,6 +67,7 @@ class functionObjectList
         //- Quick lookup of the index into functions/digests
         HashTable<label> indices_;
 
+        //- Time
         const Time& time_;
 
         //- The parent dictionary containing a "functions" entry
@@ -164,6 +165,9 @@ public:
 
         //- Called when time was set at the end of the Time::operator++
         virtual bool timeSet();
+
+        //- Called at the end of Time::adjustDeltaT() if adjustTime is true
+        virtual bool adjustTimeStep();
 
         //- Read and set the function objects if their data have changed
         virtual bool read();
