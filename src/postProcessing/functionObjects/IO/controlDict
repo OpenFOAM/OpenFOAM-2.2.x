@@ -71,8 +71,8 @@ functions
 
         outputControl   outputTime;
 
-        // The ownership passa to this function object?
-        ownObject       true;
+        // Is the object written by this function Object alone
+        exclusiveWriting       true;
 
         // Objects to write
         objectNames    ();

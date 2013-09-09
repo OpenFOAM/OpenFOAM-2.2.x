@@ -62,7 +62,7 @@ public:
         ocAdjustableTime, /*!< Adjust time step for dumping */
         ocRunTime,        /*!< run time for dumping */
         ocClockTime,      /*!< clock time for dumping */
-        ocCpuTime,        /*!< cpu time for dumping */
+        ocCpuTime         /*!< cpu time for dumping */
     };
 
 
