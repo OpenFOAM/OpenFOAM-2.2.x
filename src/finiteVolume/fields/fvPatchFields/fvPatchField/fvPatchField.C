@@ -76,7 +76,49 @@ Foam::fvPatchField<Type>::fvPatchField
     internalField_(iF),
     updated_(false),
     patchType_(ptf.patchType_)
-{}
+{
+    // For unmapped faces set to internal field value (zero-gradient)
+    if (&iF && iF.size())
+    {
+        Field<Type>& f = *this;
+
+        if
+        (
+            mapper.direct()
+         && &mapper.directAddressing()
+         && mapper.directAddressing().size()
+        )
+        {
+            Field<Type> pif(this->patchInternalField());
+
+            const labelList& mapAddressing = mapper.directAddressing();
+
+            forAll(mapAddressing, i)
+            {
+                if (mapAddressing[i] < 0)
+                {
+                    f[i] = pif[i];
+                }
+            }
+        }
+        else if (!mapper.direct() && mapper.addressing().size())
+        {
+            Field<Type> pif(this->patchInternalField());
+
+            const labelListList& mapAddressing = mapper.addressing();
+
+            forAll(mapAddressing, i)
+            {
+                const labelList& localAddrs = mapAddressing[i];
+
+                if (!localAddrs.size())
+                {
+                    f[i] = pif[i];
+                }
+            }
+        }
+    }
+}
 
 
 template<class Type>

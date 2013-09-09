@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -58,10 +58,8 @@ void Foam::layerAdditionRemoval::checkDefinition()
 {
     if (!faceZoneID_.active())
     {
-        FatalErrorIn
-        (
-            "void Foam::layerAdditionRemoval::checkDefinition()"
-        )   << "Master face zone named " << faceZoneID_.name()
+        FatalErrorIn("void Foam::layerAdditionRemoval::checkDefinition()")
+            << "Master face zone named " << faceZoneID_.name()
             << " cannot be found."
             << abort(FatalError);
     }
@@ -79,13 +77,15 @@ void Foam::layerAdditionRemoval::checkDefinition()
             << abort(FatalError);
     }
 
-    if (topoChanger().mesh().faceZones()[faceZoneID_.index()].empty())
+    label nFaces = topoChanger().mesh().faceZones()[faceZoneID_.index()].size();
+
+    reduce(nFaces, sumOp<label>());
+
+    if (nFaces == 0)
     {
-        FatalErrorIn
-        (
-            "void Foam::layerAdditionRemoval::checkDefinition()"
-        )   << "Face extrusion zone contains no faces. "
-            << " Please check your mesh definition."
+        FatalErrorIn("void Foam::layerAdditionRemoval::checkDefinition()")
+            << "Face extrusion zone contains no faces. "
+            << "Please check your mesh definition."
             << abort(FatalError);
     }
 
@@ -95,6 +95,7 @@ void Foam::layerAdditionRemoval::checkDefinition()
             << "    faceZoneID: " << faceZoneID_ << endl;
     }
 }
+
 
 Foam::scalar Foam::layerAdditionRemoval::readOldThickness
 (
@@ -115,21 +116,22 @@ void Foam::layerAdditionRemoval::clearAddressing() const
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-// Construct from components
 Foam::layerAdditionRemoval::layerAdditionRemoval
 (
     const word& name,
     const label index,
-    const polyTopoChanger& mme,
+    const polyTopoChanger& ptc,
     const word& zoneName,
     const scalar minThickness,
-    const scalar maxThickness
+    const scalar maxThickness,
+    const Switch thicknessFromVolume
 )
 :
-    polyMeshModifier(name, index, mme, true),
-    faceZoneID_(zoneName, mme.mesh().faceZones()),
+    polyMeshModifier(name, index, ptc, true),
+    faceZoneID_(zoneName, ptc.mesh().faceZones()),
     minLayerThickness_(minThickness),
     maxLayerThickness_(maxThickness),
+    thicknessFromVolume_(thicknessFromVolume),
     oldLayerThickness_(-1.0),
     pointsPairingPtr_(NULL),
     facesPairingPtr_(NULL),
@@ -140,19 +142,22 @@ Foam::layerAdditionRemoval::layerAdditionRemoval
 }
 
 
-// Construct from dictionary
 Foam::layerAdditionRemoval::layerAdditionRemoval
 (
     const word& name,
     const dictionary& dict,
     const label index,
-    const polyTopoChanger& mme
+    const polyTopoChanger& ptc
 )
 :
-    polyMeshModifier(name, index, mme, Switch(dict.lookup("active"))),
-    faceZoneID_(dict.lookup("faceZoneName"), mme.mesh().faceZones()),
+    polyMeshModifier(name, index, ptc, Switch(dict.lookup("active"))),
+    faceZoneID_(dict.lookup("faceZoneName"), ptc.mesh().faceZones()),
     minLayerThickness_(readScalar(dict.lookup("minLayerThickness"))),
     maxLayerThickness_(readScalar(dict.lookup("maxLayerThickness"))),
+    thicknessFromVolume_
+    (
+        dict.lookupOrDefault<Switch>("thicknessFromVolume", true)
+    ),
     oldLayerThickness_(readOldThickness(dict)),
     pointsPairingPtr_(NULL),
     facesPairingPtr_(NULL),
@@ -189,11 +194,13 @@ bool Foam::layerAdditionRemoval::changeTopology() const
     // Layer removal:
     //     When the min thickness falls below the threshold, trigger removal.
 
-    const faceZone& fz = topoChanger().mesh().faceZones()[faceZoneID_.index()];
+    const polyMesh& mesh = topoChanger().mesh();
+
+    const faceZone& fz = mesh.faceZones()[faceZoneID_.index()];
     const labelList& mc = fz.masterCells();
 
-    const scalarField& V = topoChanger().mesh().cellVolumes();
-    const vectorField& S = topoChanger().mesh().faceAreas();
+    const scalarField& V = mesh.cellVolumes();
+    const vectorField& S = mesh.faceAreas();
 
     if (min(V) < -VSMALL)
     {
@@ -206,63 +213,68 @@ bool Foam::layerAdditionRemoval::changeTopology() const
     scalar avgDelta = 0;
     scalar minDelta = GREAT;
     scalar maxDelta = 0;
+    label nDelta = 0;
 
-    forAll(fz, faceI)
+    if (thicknessFromVolume_)
     {
-        scalar curDelta = V[mc[faceI]]/mag(S[fz[faceI]]);
-        avgDelta += curDelta;
-        minDelta = min(minDelta, curDelta);
-        maxDelta = max(maxDelta, curDelta);
+        // Thickness calculated from cell volume/face area
+        forAll(fz, faceI)
+        {
+            scalar curDelta = V[mc[faceI]]/mag(S[fz[faceI]]);
+            avgDelta += curDelta;
+            minDelta = min(minDelta, curDelta);
+            maxDelta = max(maxDelta, curDelta);
+        }
+
+        nDelta = fz.size();
+    }
+    else
+    {
+        // Thickness calculated from edges on layer
+        const Map<label>& zoneMeshPointMap = fz().meshPointMap();
+
+        // Edges with only one point on zone
+        forAll(mc, faceI)
+        {
+            const cell& cFaces = mesh.cells()[mc[faceI]];
+            const edgeList cellEdges(cFaces.edges(mesh.faces()));
+
+            forAll(cellEdges, i)
+            {
+                const edge& e = cellEdges[i];
+
+                if (zoneMeshPointMap.found(e[0]))
+                {
+                    if (!zoneMeshPointMap.found(e[1]))
+                    {
+                        scalar curDelta = e.mag(mesh.points());
+                        avgDelta += curDelta;
+                        nDelta++;
+                        minDelta = min(minDelta, curDelta);
+                        maxDelta = max(maxDelta, curDelta);
+                    }
+                }
+                else
+                {
+                    if (zoneMeshPointMap.found(e[1]))
+                    {
+                        scalar curDelta = e.mag(mesh.points());
+                        avgDelta += curDelta;
+                        nDelta++;
+                        minDelta = min(minDelta, curDelta);
+                        maxDelta = max(maxDelta, curDelta);
+                    }
+                }
+            }
+        }
     }
 
-    avgDelta /= fz.size();
+    reduce(minDelta, minOp<scalar>());
+    reduce(maxDelta, maxOp<scalar>());
+    reduce(avgDelta, sumOp<scalar>());
+    reduce(nDelta, sumOp<label>());
 
-    ////MJ Alternative thickness determination
-    //{
-    //    // Edges on layer.
-    //    const Map<label>& zoneMeshPointMap = fz().meshPointMap();
-    //
-    //    label nDelta = 0;
-    //
-    //    // Edges with only one point on zone
-    //    const polyMesh& mesh = topoChanger().mesh();
-    //
-    //    forAll(mc, faceI)
-    //    {
-    //        const cell& cFaces = mesh.cells()[mc[faceI]];
-    //        const edgeList cellEdges(cFaces.edges(mesh.faces()));
-    //
-    //        forAll(cellEdges, i)
-    //        {
-    //            const edge& e = cellEdges[i];
-    //
-    //            if (zoneMeshPointMap.found(e[0]))
-    //            {
-    //                if (!zoneMeshPointMap.found(e[1]))
-    //                {
-    //                    scalar curDelta = e.mag(mesh.points());
-    //                    avgDelta += curDelta;
-    //                    nDelta++;
-    //                    minDelta = min(minDelta, curDelta);
-    //                    maxDelta = max(maxDelta, curDelta);
-    //                }
-    //            }
-    //            else
-    //            {
-    //                if (zoneMeshPointMap.found(e[1]))
-    //                {
-    //                    scalar curDelta = e.mag(mesh.points());
-    //                    avgDelta += curDelta;
-    //                    nDelta++;
-    //                    minDelta = min(minDelta, curDelta);
-    //                    maxDelta = max(maxDelta, curDelta);
-    //                }
-    //            }
-    //        }
-    //    }
-    //
-    //    avgDelta /= nDelta;
-    //}
+    avgDelta /= nDelta;
 
     if (debug)
     {
@@ -287,7 +299,6 @@ bool Foam::layerAdditionRemoval::changeTopology() const
         }
 
         // No topological changes allowed before first mesh motion
-        //
         oldLayerThickness_ = avgDelta;
 
         topologicalChange = false;
@@ -315,7 +326,7 @@ bool Foam::layerAdditionRemoval::changeTopology() const
                             << "Triggering layer removal" << endl;
                     }
 
-                    triggerRemoval_ = topoChanger().mesh().time().timeIndex();
+                    triggerRemoval_ = mesh.time().timeIndex();
 
                     // Old thickness looses meaning.
                     // Set it up to indicate layer removal
@@ -347,7 +358,7 @@ bool Foam::layerAdditionRemoval::changeTopology() const
                     << "Triggering layer addition" << endl;
             }
 
-            triggerAddition_ = topoChanger().mesh().time().timeIndex();
+            triggerAddition_ = mesh.time().timeIndex();
 
             // Old thickness looses meaning.
             // Set it up to indicate layer removal
@@ -377,9 +388,9 @@ void Foam::layerAdditionRemoval::setRefinement(polyTopoChange& ref) const
         // Clear addressing.  This also resets the addition/removal data
         if (debug)
         {
-            Pout<< "layerAdditionRemoval::setRefinement(polyTopoChange& ref) "
-                << " for object " << name() << " : "
-                << "Clearing addressing after layer removal. " << endl;
+            Pout<< "layerAdditionRemoval::setRefinement(polyTopoChange&) "
+                << "for object " << name() << " : "
+                << "Clearing addressing after layer removal" << endl;
         }
 
         triggerRemoval_ = -1;
@@ -393,9 +404,9 @@ void Foam::layerAdditionRemoval::setRefinement(polyTopoChange& ref) const
         // Clear addressing.  This also resets the addition/removal data
         if (debug)
         {
-            Pout<< "layerAdditionRemoval::setRefinement(polyTopoChange& ref) "
-                << " for object " << name() << " : "
-                << "Clearing addressing after layer addition. " << endl;
+            Pout<< "layerAdditionRemoval::setRefinement(polyTopoChange&) "
+                << "for object " << name() << " : "
+                << "Clearing addressing after layer addition" << endl;
         }
 
         triggerAddition_ = -1;
@@ -409,8 +420,8 @@ void Foam::layerAdditionRemoval::updateMesh(const mapPolyMesh&)
     if (debug)
     {
         Pout<< "layerAdditionRemoval::updateMesh(const mapPolyMesh&) "
-            << " for object " << name() << " : "
-            << "Clearing addressing on external request. ";
+            << "for object " << name() << " : "
+            << "Clearing addressing on external request";
 
         if (pointsPairingPtr_ || facesPairingPtr_)
         {
@@ -431,16 +442,14 @@ void Foam::layerAdditionRemoval::updateMesh(const mapPolyMesh&)
 
 void Foam::layerAdditionRemoval::setMinLayerThickness(const scalar t) const
 {
-    if
-    (
-        t < VSMALL
-     || maxLayerThickness_ < t
-    )
+    if (t < VSMALL || maxLayerThickness_ < t)
     {
         FatalErrorIn
         (
-            "void layerAdditionRemoval::setMinLayerThickness("
-            "const scalar t) const"
+            "void layerAdditionRemoval::setMinLayerThickness"
+            "("
+                "const scalar"
+            ") const"
         )   << "Incorrect layer thickness definition."
             << abort(FatalError);
     }
@@ -451,15 +460,14 @@ void Foam::layerAdditionRemoval::setMinLayerThickness(const scalar t) const
 
 void Foam::layerAdditionRemoval::setMaxLayerThickness(const scalar t) const
 {
-    if
-    (
-        t < minLayerThickness_
-    )
+    if (t < minLayerThickness_)
     {
         FatalErrorIn
         (
-            "void layerAdditionRemoval::setMaxLayerThickness("
-            "const scalar t) const"
+            "void layerAdditionRemoval::setMaxLayerThickness"
+            "("
+                "const scalar"
+            ") const"
         )   << "Incorrect layer thickness definition."
             << abort(FatalError);
     }
@@ -475,7 +483,8 @@ void Foam::layerAdditionRemoval::write(Ostream& os) const
         << faceZoneID_ << nl
         << minLayerThickness_ << nl
         << oldLayerThickness_ << nl
-        << maxLayerThickness_ << endl;
+        << maxLayerThickness_ << nl
+        << thicknessFromVolume_ << endl;
 }
 
 
@@ -489,6 +498,8 @@ void Foam::layerAdditionRemoval::writeDict(Ostream& os) const
         << "    minLayerThickness " << minLayerThickness_
         << token::END_STATEMENT << nl
         << "    maxLayerThickness " << maxLayerThickness_
+        << token::END_STATEMENT << nl
+        << "    thicknessFromVolume " << thicknessFromVolume_
         << token::END_STATEMENT << nl
         << "    oldLayerThickness " << oldLayerThickness_
         << token::END_STATEMENT << nl

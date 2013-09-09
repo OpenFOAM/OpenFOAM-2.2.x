@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -71,13 +71,8 @@ private:
 
         // Model constants
 
-            // Cmu_ and Comega_ are the same as in the TAB model
-            scalar Cmu_;
-            scalar Comega_;
-
             scalar k1_;
             scalar k2_;
-            scalar WeCrit_;
             scalar WeTransition_;
             scalar AWe_;
 

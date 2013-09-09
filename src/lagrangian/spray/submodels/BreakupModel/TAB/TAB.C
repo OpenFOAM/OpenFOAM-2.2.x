@@ -34,10 +34,7 @@ Foam::TAB<CloudType>::TAB
     CloudType& owner
 )
 :
-    BreakupModel<CloudType>(dict, owner, typeName),
-    Cmu_(BreakupModel<CloudType>::TABCmu_),
-    Comega_(BreakupModel<CloudType>::TABComega_),
-    WeCrit_(BreakupModel<CloudType>::TABWeCrit_),
+    BreakupModel<CloudType>(dict, owner, typeName, true),
     SMDCalcMethod_(this->coeffDict().lookup("SMDCalculationMethod"))
 {
     // calculate the inverse function of the Rossin-Rammler Distribution
@@ -50,16 +47,6 @@ Foam::TAB<CloudType>::TAB
         scalar xx = 0.12*(n + 1);
         rrd_[n] =
             (1.0 - exp(-xx)*(1.0 + xx + sqr(xx)/2.0 + pow3(xx)/6.0))*rrd100;
-    }
-
-    if (!BreakupModel<CloudType>::solveOscillationEq_)
-    {
-        WarningIn("Foam::TAB<CloudType>::TAB(const dictionary&, CloudType&)")
-            << "solveOscillationEq is set to "
-            << BreakupModel<CloudType>::solveOscillationEq_ << nl
-            << " Setting it to true in order for the TAB model to work."
-            << endl;
-        BreakupModel<CloudType>::solveOscillationEq_ = true;
     }
 
     if (SMDCalcMethod_ == "method1")
@@ -84,9 +71,6 @@ template<class CloudType>
 Foam::TAB<CloudType>::TAB(const TAB<CloudType>& bum)
 :
     BreakupModel<CloudType>(bum),
-    Cmu_(bum.Cmu_),
-    Comega_(bum.Comega_),
-    WeCrit_(bum.WeCrit_),
     SMDCalcMethod_(bum.SMDCalcMethod_)
 {}
 
@@ -135,16 +119,16 @@ bool Foam::TAB<CloudType>::update
     scalar semiMass = nParticle*pow3(d);
 
     // inverse of characteristic viscous damping time
-    scalar rtd = 0.5*Cmu_*mu/(rho*r2);
+    scalar rtd = 0.5*this->TABCmu_*mu/(rho*r2);
 
     // oscillation frequency (squared)
-    scalar omega2 = Comega_*sigma/(rho*r3) - rtd*rtd;
+    scalar omega2 = this->TABComega_*sigma/(rho*r3) - rtd*rtd;
 
     if (omega2 > 0)
     {
         scalar omega = sqrt(omega2);
         scalar We = rhoc*sqr(Urmag)*r/sigma;
-        scalar Wetmp = We/WeCrit_;
+        scalar Wetmp = We/this->TABWeCrit_;
 
         scalar y1 = y - Wetmp;
         scalar y2 = yDot/omega;
