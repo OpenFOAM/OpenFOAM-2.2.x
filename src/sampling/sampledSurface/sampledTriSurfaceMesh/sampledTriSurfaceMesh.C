@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -188,6 +188,36 @@ Foam::sampledTriSurfaceMesh::sampledTriSurfaceMesh
         )
     ),
     sampleSource_(samplingSourceNames_[dict.lookup("source")]),
+    needsUpdate_(true),
+    sampleElements_(0),
+    samplePoints_(0)
+{}
+
+
+Foam::sampledTriSurfaceMesh::sampledTriSurfaceMesh
+(
+    const word& name,
+    const polyMesh& mesh,
+    const triSurface& surface,
+    const word& sampleSourceName
+)
+:
+    sampledSurface(name, mesh),
+    surface_
+    (
+        IOobject
+        (
+            name,
+            mesh.time().constant(), // instance
+            "triSurface",           // local
+            mesh,                  // registry
+            IOobject::NO_READ,
+            IOobject::NO_WRITE,
+            false
+        ),
+        surface
+    ),
+    sampleSource_(samplingSourceNames_[sampleSourceName]),
     needsUpdate_(true),
     sampleElements_(0),
     samplePoints_(0)
