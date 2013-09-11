@@ -128,9 +128,10 @@ tmp<GeometricField<Type, fvPatchField, volMesh> > fvMeshSubset::interpolate
                 }
                 else
                 {
-                    // Mapped from internal face. Do what? Leave up to
-                    // fvPatchField
-                    directAddressing[i] = -1;
+                    // Mapped from internal face. Do what? For now use
+                    // patch face 0
+                    //directAddressing[i] = -1;
+                    directAddressing[i] = 0;
                 }
             }
 
@@ -388,7 +389,7 @@ fvMeshSubset::interpolate
             const labelList& subMeshPoints = subPatch.meshPoints();
 
             // If mapped from outside patch leave handling up to patchField
-            labelList directAddressing(subPatch.size(), -1);
+            labelList directAddressing(subPatch.size(), 0); //-1);
 
             forAll(subMeshPoints, localI)
             {
