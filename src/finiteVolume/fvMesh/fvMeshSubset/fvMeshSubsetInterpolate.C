@@ -116,22 +116,29 @@ tmp<GeometricField<Type, fvPatchField, volMesh> > fvMeshSubset::interpolate
             const label baseStart = basePatch.start();
             const label baseSize = basePatch.size();
 
-            labelList directAddressing(subPatch.size());
+            labelList directAddressing(subPatch.size(), -1);
 
-            forAll(directAddressing, i)
+            if (baseSize > 0)
             {
-                label baseFaceI = faceMap[subPatch.start()+i];
+                forAll(directAddressing, i)
+                {
+                    label baseFaceI = faceMap[subPatch.start()+i];
 
-                if (baseFaceI >= baseStart && baseFaceI < baseStart+baseSize)
-                {
-                    directAddressing[i] = baseFaceI-baseStart;
-                }
-                else
-                {
-                    // Mapped from internal face. Do what? For now use
-                    // patch face 0
-                    //directAddressing[i] = -1;
-                    directAddressing[i] = 0;
+                    if
+                    (
+                        baseFaceI >= baseStart
+                     && baseFaceI < baseStart+baseSize
+                    )
+                    {
+                        directAddressing[i] = baseFaceI-baseStart;
+                    }
+                    else
+                    {
+                        // Mapped from internal face. Do what? For now use
+                        // patch face 0
+                        //directAddressing[i] = -1;
+                        directAddressing[i] = 0;
+                    }
                 }
             }
 
@@ -259,24 +266,31 @@ tmp<GeometricField<Type, fvsPatchField, surfaceMesh> > fvMeshSubset::interpolate
             const label baseStart = basePatch.start();
             const label baseSize = basePatch.size();
 
-            labelList directAddressing(subPatch.size());
+            labelList directAddressing(subPatch.size(), -1);
 
-            forAll(directAddressing, i)
+            if (baseSize > 0)
             {
-                label baseFaceI = faceMap[subPatch.start()+i];
+                forAll(directAddressing, i)
+                {
+                    label baseFaceI = faceMap[subPatch.start()+i];
 
-                if (baseFaceI >= baseStart && baseFaceI < baseStart+baseSize)
-                {
-                    directAddressing[i] = baseFaceI-baseStart;
-                }
-                else
-                {
-                    // Mapped from internal face. Do what? Leave up to
-                    // patchField. This would require also to pass in
-                    // original internal field so for now keep original
-                    // behaviour of mapping original patch face 0
-                    //directAddressing[i] = -1;
-                    directAddressing[i] = 0;
+                    if
+                    (
+                        baseFaceI >= baseStart
+                     && baseFaceI < baseStart+baseSize
+                    )
+                    {
+                        directAddressing[i] = baseFaceI-baseStart;
+                    }
+                    else
+                    {
+                        // Mapped from internal face. Do what? Leave up to
+                        // patchField. This would require also to pass in
+                        // original internal field so for now keep original
+                        // behaviour of mapping original patch face 0
+                        //directAddressing[i] = -1;
+                        directAddressing[i] = 0;
+                    }
                 }
             }
 
