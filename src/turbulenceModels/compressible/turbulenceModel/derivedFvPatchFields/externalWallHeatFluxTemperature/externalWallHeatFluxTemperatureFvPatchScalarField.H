@@ -26,8 +26,9 @@ Class
 
 Description
     This boundary condition supplies a heat flux condition for temperature
-    on an external wall. Optional thin thermal layer resistance can be
-    specified through thicknessLayer and kappaLayer entries.
+    on an external wall. Optional thin thermal layer resistances can be
+    specified through thicknessLayers and kappaLayers entries for the
+    fixed heat transfer coefficient mode.
 
     The condition can operate in two modes:
         \li fixed heat transfer coefficient: supply h and Ta
@@ -51,9 +52,9 @@ Description
                                                // lookup
             q               uniform 1000;      // heat flux / [W/m2]
             Ta              uniform 300.0;     // ambient temperature /[K]
-            h               uniform 10.0;      // heat transfer coeff /[W/Km2]
-            thicknessLayer  0.001              // thickness of layer [m]
-            kappaLayer      0.0                // thermal conductivity of
+            h               uniform 10.0;      // heat transfer coeff /[W/K/m2]
+            thicknessLayers (0.1 0.2 0.3 0.4); // thickness of layer [m]
+            kappaLayers     (1 2 3 4)          // thermal conductivity of
                                                // layer [W/m/K]
             value           uniform 300.0;     // initial temperature / [K]
             kappaName       none;
@@ -92,6 +93,7 @@ public:
 
     // Public data
 
+
         //- Operation mode enumeration
         enum operationMode
         {
@@ -118,11 +120,11 @@ private:
         //- Ambient temperature / [K]
         scalarField Ta_;
 
-        //- Thickness of the thin wall
-        scalar thicknessLayer_;
+        //- Thickness of layers
+        scalarList thicknessLayers_;
 
-        //- Thermal conductivity of the thin wall
-        scalar kappaLayer_;
+        //- Conductivity of layers
+        scalarList kappaLayers_;
 
 
 public:

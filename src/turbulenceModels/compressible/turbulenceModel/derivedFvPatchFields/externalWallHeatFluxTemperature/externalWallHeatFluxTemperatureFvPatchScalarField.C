@@ -69,8 +69,8 @@ externalWallHeatFluxTemperatureFvPatchScalarField
     q_(p.size(), 0.0),
     h_(p.size(), 0.0),
     Ta_(p.size(), 0.0),
-    thicknessLayer_(0),
-    kappaLayer_(0)
+    thicknessLayers_(),
+    kappaLayers_()
 {
     this->refValue() = 0.0;
     this->refGrad() = 0.0;
@@ -93,8 +93,8 @@ externalWallHeatFluxTemperatureFvPatchScalarField
     q_(ptf.q_, mapper),
     h_(ptf.h_, mapper),
     Ta_(ptf.Ta_, mapper),
-    thicknessLayer_(ptf.thicknessLayer_),
-    kappaLayer_(ptf.kappaLayer_)
+    thicknessLayers_(ptf.thicknessLayers_),
+    kappaLayers_(ptf.kappaLayers_)
 {}
 
 
@@ -112,8 +112,8 @@ externalWallHeatFluxTemperatureFvPatchScalarField
     q_(p.size(), 0.0),
     h_(p.size(), 0.0),
     Ta_(p.size(), 0.0),
-    thicknessLayer_(dict.lookupOrDefault<scalar>("thicknessLayer", 0.0)),
-    kappaLayer_(dict.lookupOrDefault<scalar>("kappaLayer", 0.0))
+    thicknessLayers_(),
+    kappaLayers_()
 {
     if (dict.found("q") && !dict.found("h") && !dict.found("Ta"))
     {
@@ -125,6 +125,11 @@ externalWallHeatFluxTemperatureFvPatchScalarField
         oldMode_ = fixedHeatTransferCoeff;
         h_ = scalarField("h", dict, p.size());
         Ta_ = scalarField("Ta", dict, p.size());
+        if (dict.found("thicknessLayers"))
+        {
+            dict.lookup("thicknessLayers") >> thicknessLayers_;
+            dict.lookup("kappaLayers") >> kappaLayers_;
+        }
     }
     else
     {
@@ -176,8 +181,8 @@ externalWallHeatFluxTemperatureFvPatchScalarField
     q_(tppsf.q_),
     h_(tppsf.h_),
     Ta_(tppsf.Ta_),
-    thicknessLayer_(tppsf.thicknessLayer_),
-    kappaLayer_(tppsf.kappaLayer_)
+    thicknessLayers_(tppsf.thicknessLayers_),
+    kappaLayers_(tppsf.kappaLayers_)
 {}
 
 
@@ -194,8 +199,8 @@ externalWallHeatFluxTemperatureFvPatchScalarField
     q_(tppsf.q_),
     h_(tppsf.h_),
     Ta_(tppsf.Ta_),
-    thicknessLayer_(tppsf.thicknessLayer_),
-    kappaLayer_(tppsf.kappaLayer_)
+    thicknessLayers_(tppsf.thicknessLayers_),
+    kappaLayers_(tppsf.kappaLayers_)
 {}
 
 
@@ -248,7 +253,19 @@ void Foam::externalWallHeatFluxTemperatureFvPatchScalarField::updateCoeffs()
     }
     else if (oldMode_ == fixedHeatTransferCoeff)
     {
-        q = (Ta_ - Tc)/(1.0/h_ + thicknessLayer_/(kappaLayer_ + VSMALL));
+        scalar totalSolidRes = 0.0;
+        if (thicknessLayers_.size() > 0)
+        {
+            forAll (thicknessLayers_, iLayer)
+            {
+                const scalar l = thicknessLayers_[iLayer];
+                if (l > 0.0)
+                {
+                    totalSolidRes += kappaLayers_[iLayer]/l;
+                }
+            }
+        }
+        q = (Ta_ - Tc)/(1.0/h_ + totalSolidRes);
     }
     else
     {
@@ -302,9 +319,6 @@ void Foam::externalWallHeatFluxTemperatureFvPatchScalarField::write
 {
     mixedFvPatchScalarField::write(os);
     temperatureCoupledBase::write(os);
-    os.writeKeyword("thicknessLayer")<< thicknessLayer_
-        << token::END_STATEMENT << nl;
-    os.writeKeyword("kappaLayer")<< kappaLayer_ << token::END_STATEMENT << nl;
 
     switch (oldMode_)
     {
@@ -317,6 +331,10 @@ void Foam::externalWallHeatFluxTemperatureFvPatchScalarField::write
         {
             h_.writeEntry("h", os);
             Ta_.writeEntry("Ta", os);
+            os.writeKeyword("thicknessLayers")<< thicknessLayers_
+                << token::END_STATEMENT << nl;
+            os.writeKeyword("kappaLayers")<< kappaLayers_
+                << token::END_STATEMENT << nl;
             break;
         }
         default:
