@@ -2454,7 +2454,6 @@ int main(int argc, char *argv[])
 
         // Enforce actual point posititions according to extrudeModel (model)
         // (extruder.setRefinement only does fixed expansionRatio)
-
         // The regionPoints and nLayers are looped in the same way as in
         // createShellMesh
         DynamicList<point>& newPoints = const_cast<DynamicList<point>&>
