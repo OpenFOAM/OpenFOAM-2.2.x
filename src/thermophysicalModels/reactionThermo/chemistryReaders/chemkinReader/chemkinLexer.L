@@ -158,13 +158,15 @@ reactionCoeff         {space}{floatNum}{space}
 calPerMol             {space}"CAL/MOLE"{space}
 kcalPerMol            {space}"KCAL/MOLE"{space}
 joulePerMol           {space}"JOULES/MOLE"{space}
-otherReactionsUnit    {space}("KELVINS"|"EVOLTS"|"MOLES"|"MOLECULES"){space}
+kelvins               {space}"KELVINS"{space}
+otherReactionsUnit    {space}("EVOLTS"|"MOLES"|"MOLECULES"){space}
 
 cal                   {space}"CAL"{space}
 kcal                  {space}"KCAL"{space}
 joule                 {space}"JOUL"{space}
 kjoule                {space}"KJOU"{space}
-otherReactionUnit     {space}("MOLE"|"MOLECULE"|"KELV"|"KELVIN"|"EVOL"|"EVOLTS"){space}
+kelvin                {space}("KELV"|"KELVIN"){space}
+otherReactionUnit     {space}("MOLE"|"MOLECULE"|"EVOL"|"EVOLTS"){space}
 
 
  /* ------------------------------------------------------------------------- *\
@@ -675,6 +677,10 @@ bool finishReaction = false;
 
 <readReactionsUnits>{joulePerMol} {
         RRreactions = RRjoule;
+    }
+
+<readReactionsUnits>{kelvins} {
+        RRreactions = 1.0;
     }
 
 <readReactionsUnits>{otherReactionsUnit} {
@@ -1481,6 +1487,10 @@ bool finishReaction = false;
 
 <readReactionUnit>{kjoule} {
         RRreaction = RRjoule/1000.0;
+    }
+
+<readReactionUnit>{kelvin} {
+        RRreaction = 1.0;
     }
 
 <readReactionUnit>{otherReactionsUnit} {
