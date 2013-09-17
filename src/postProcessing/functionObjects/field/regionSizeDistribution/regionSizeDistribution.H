@@ -104,6 +104,7 @@ SourceFiles
 #include "Map.H"
 #include "volFieldsFwd.H"
 #include "wordReList.H"
+#include "coordinateSystem.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -158,6 +159,9 @@ class regionSizeDistribution
 
         //- Output formatter to write
         autoPtr<writer<scalar> > formatterPtr_;
+
+        //- Optional coordinate system
+        autoPtr<coordinateSystem> coordSysPtr_;
 
 
     // Private Member Functions
