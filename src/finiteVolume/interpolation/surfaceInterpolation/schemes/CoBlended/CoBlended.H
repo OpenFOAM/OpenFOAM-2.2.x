@@ -28,15 +28,31 @@ Description
     Two-scheme Courant number based blending differencing scheme.
 
     Similar to localBlended but uses a blending factor computed from the
-    face-based Courant number and the alpha factor supplied:
+    face-based Courant number and the lower and upper Courant number limits
+    supplied:
+    \f[
+        weight = 1 - max(min((Co - Co1)/(Co2 - Co1), 1), 0)
+    \f]
+    where
+    \vartable
+        Co1 | Courant number below which scheme1 is used
+        Co2 | Courant number above which scheme2 is used
+    \endvartable
 
-    weight = 1 - Co/alpha
+    The weight applies to the first scheme and 1-weight to the second scheme.
 
-    The weight applies to the first scheme and 1-factor to the second scheme.
-
-    The face-based Courant number is obtained from the convection volumetric
-    flux.  If a mass-flux is provided it is converted into a volumetric using
-    the density field named "rho" obtained from the database.
+    Example of the CoBlended scheme specification using LUST for Courant numbers
+    less than 1 and linearUpwind for Courant numbers greater than 10:
+    \verbatim
+    divSchemes
+    {
+        .
+        .
+        div(phi,U)      Gauss CoBlended 1 LUST grad(U) 10 linearUpwind grad(U);
+        .
+        .
+    }
+    \endverbatim
 
 SourceFiles
     CoBlended.C
@@ -47,7 +63,6 @@ SourceFiles
 #define CoBlended_H
 
 #include "surfaceInterpolationScheme.H"
-#include "surfaceInterpolate.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -65,12 +80,14 @@ class CoBlended
 {
     // Private data
 
-        const scalar alpha_;
-
-    // Private Member Functions
+        //- Courant number below which scheme1 is used
+        const scalar Co1_;
 
         //- Scheme 1
         tmp<surfaceInterpolationScheme<Type> > tScheme1_;
+
+        //- Courant number above which scheme2 is used
+        const scalar Co2_;
 
         //- Scheme 2
         tmp<surfaceInterpolationScheme<Type> > tScheme2_;
@@ -78,6 +95,8 @@ class CoBlended
         //- The face-flux used to compute the face Courant number
         const surfaceScalarField& faceFlux_;
 
+
+    // Private Member Functions
 
         //- Disallow default bitwise copy construct
         CoBlended(const CoBlended&);
@@ -104,11 +123,12 @@ public:
         )
         :
             surfaceInterpolationScheme<Type>(mesh),
-            alpha_(readScalar(is)),
+            Co1_(readScalar(is)),
             tScheme1_
             (
                 surfaceInterpolationScheme<Type>::New(mesh, is)
             ),
+            Co2_(readScalar(is)),
             tScheme2_
             (
                 surfaceInterpolationScheme<Type>::New(mesh, is)
@@ -121,11 +141,11 @@ public:
                 )
             )
         {
-            if (alpha_ <= 0 )
+            if (Co1_ < 0 || Co2_ < 0 || Co1_ >= Co2_)
             {
                 FatalIOErrorIn("CoBlended(const fvMesh&, Istream&)", is)
-                    << "coefficient = " << alpha_
-                    << " should be > 0"
+                    << "coefficients = " << Co1_ << " and " << Co2_
+                    << " should be > 0 and Co2 > Co1"
                     << exit(FatalIOError);
             }
         }
@@ -140,22 +160,23 @@ public:
         )
         :
             surfaceInterpolationScheme<Type>(mesh),
-            alpha_(readScalar(is)),
+            Co1_(readScalar(is)),
             tScheme1_
             (
                 surfaceInterpolationScheme<Type>::New(mesh, faceFlux, is)
             ),
+            Co2_(readScalar(is)),
             tScheme2_
             (
                 surfaceInterpolationScheme<Type>::New(mesh, faceFlux, is)
             ),
-            faceFlux_(faceFlux)
+             faceFlux_(faceFlux)
         {
-            if (alpha_ <= 0)
+            if (Co1_ < 0 || Co2_ < 0 || Co1_ >= Co2_)
             {
                 FatalIOErrorIn("CoBlended(const fvMesh&, Istream&)", is)
-                    << "coefficient = " << alpha_
-                    << " should be > 0"
+                    << "coefficients = " << Co1_ << " and " << Co2_
+                    << " should be > 0 and Co2 > Co1"
                     << exit(FatalIOError);
             }
         }
@@ -167,34 +188,21 @@ public:
         tmp<surfaceScalarField> blendingFactor() const
         {
             const fvMesh& mesh = faceFlux_.mesh();
-            tmp<surfaceScalarField> tUflux = faceFlux_;
-
-            if (faceFlux_.dimensions() == dimDensity*dimVelocity*dimArea)
-            {
-                // Currently assume that the density field
-                // corresponding to the mass-flux is named "rho"
-                const volScalarField& rho =
-                    mesh.objectRegistry::template lookupObject<volScalarField>
-                    ("rho");
-
-                tUflux = faceFlux_/fvc::interpolate(rho);
-            }
-            else if (faceFlux_.dimensions() != dimVelocity*dimArea)
-            {
-                FatalErrorIn
-                (
-                    "CoBlended::blendingFactor()"
-                )   << "dimensions of faceFlux are not correct"
-                    << exit(FatalError);
-            }
 
             return
             (
+                scalar(1) -
                 max
                 (
-                    scalar(1)
-                  - mesh.time().deltaT()*mesh.deltaCoeffs()*mag(tUflux)
-                   /(mesh.magSf()*alpha_),
+                    min
+                    (
+                        (
+                            mesh.time().deltaT()*mesh.deltaCoeffs()
+                           *mag(faceFlux_)/mesh.magSf()
+                          - Co1_
+                        )/(Co2_ - Co1_),
+                        scalar(1)
+                    ),
                     scalar(0)
                 )
             );
@@ -209,6 +217,8 @@ public:
         ) const
         {
             surfaceScalarField bf(blendingFactor());
+
+            Info<< "weights " << max(bf) << " " << min(bf) << endl;
 
             return
                 bf*tScheme1_().weights(vf)
