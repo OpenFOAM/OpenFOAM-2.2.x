@@ -33,6 +33,7 @@ laplacianSchemes
 {
     default         none;
     laplacian(thermo:alpha,h) Gauss linear uncorrected;
+    laplacian(kappa,T)  Gauss harmonic uncorrected
 }
 
 interpolationSchemes

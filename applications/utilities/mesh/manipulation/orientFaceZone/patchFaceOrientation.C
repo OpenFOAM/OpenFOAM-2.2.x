@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -23,42 +23,28 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+#include "patchFaceOrientation.H"
 
-namespace Foam
+// * * * * * * * * * * * * * * * Friend Operators  * * * * * * * * * * * * * //
+
+Foam::Ostream& Foam::operator<<
+(
+    Foam::Ostream& os,
+    const Foam::patchFaceOrientation& wDist
+)
 {
-
-// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
-
-inline STLpoint::STLpoint()
-{}
-
-inline STLpoint::STLpoint(float x, float y, float z)
-:
-    Vector<float>(x, y, z)
-{}
-
-inline STLpoint::STLpoint(const point& pt)
-:
-    Vector<float>(float(pt.x()), float(pt.y()), float(pt.z()))
-{}
-
-inline STLpoint::STLpoint(Istream& is)
-:
-    Vector<float>(is)
-{}
-
-
-// * * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * //
-
-inline STLpoint::operator point() const
-{
-    return point(x(), y(), z());
+    return os << wDist.flipStatus_;
 }
 
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Foam::Istream& Foam::operator>>
+(
+    Foam::Istream& is,
+    Foam::patchFaceOrientation& wDist
+)
+{
+    return is >> wDist.flipStatus_;
+}
 
-} // End namespace Foam
 
 // ************************************************************************* //

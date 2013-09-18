@@ -368,6 +368,14 @@ void Foam::regionSizeDistribution::read(const dictionary& dict)
 
         word format(dict.lookup("setFormat"));
         formatterPtr_ = writer<scalar>::New(format);
+
+        if (dict.found("coordinateSystem"))
+        {
+            coordSysPtr_.reset(new coordinateSystem(dict, obr_));
+
+            Info<< "Transforming all vectorFields with coordinate system "
+                << coordSysPtr_().name() << endl;
+        }
     }
 }
 
@@ -795,10 +803,20 @@ void Foam::regionSizeDistribution::write()
                     const word& fldName = vectorNames[selected[i]];
                     Info<< "Vector field " << fldName << endl;
 
-                    const vectorField& fld = obr_.lookupObject
+                    vectorField fld = obr_.lookupObject
                     <
                         volVectorField
                     >(fldName).internalField();
+
+                    if (coordSysPtr_.valid())
+                    {
+                        Info<< "Transforming vector field " << fldName
+                            << " with coordinate system "
+                            << coordSysPtr_().name()
+                            << endl;
+
+                        fld = coordSysPtr_().localVector(fld);
+                    }
 
 
                     // Components

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -34,6 +34,7 @@ Description
 
 #include "point.H"
 #include "extrudeModel.H"
+#include "scalarList.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -54,6 +55,12 @@ class linearNormal
 
         //- layer thickness
         scalar thickness_;
+
+        //- first cell thickness
+        scalar firstCellThickness_;
+
+        //- layer cell distibution
+        scalarList layerPoints_;
 
 
 public:

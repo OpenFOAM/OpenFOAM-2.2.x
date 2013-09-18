@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -45,13 +45,43 @@ addToRunTimeSelectionTable(extrudeModel, linearNormal, dictionary);
 linearNormal::linearNormal(const dictionary& dict)
 :
     extrudeModel(typeName, dict),
-    thickness_(readScalar(coeffDict_.lookup("thickness")))
+    thickness_(readScalar(coeffDict_.lookup("thickness"))),
+    firstCellThickness_(0),
+    layerPoints_(nLayers_)
 {
     if (thickness_ <= 0)
     {
         FatalErrorIn("linearNormal(const dictionary&)")
             << "thickness should be positive : " << thickness_
             << exit(FatalError);
+    }
+
+    coeffDict_.readIfPresent("firstCellThickness", firstCellThickness_);
+
+    if (firstCellThickness_ >= thickness_)
+    {
+        FatalErrorIn("linearNormal(const dictionary&)")
+            << "firstCellThickness is larger than thickness"
+            << exit(FatalError);
+    }
+
+    if (firstCellThickness_ > 0)
+    {
+        layerPoints_[0] = firstCellThickness_;
+
+        for (label layerI = 1; layerI < nLayers_; layerI++)
+        {
+            layerPoints_[layerI] =
+                (thickness_ - layerPoints_[0])
+                *sumThickness(layerI) + layerPoints_[0];
+        }
+    }
+    else
+    {
+        for (label layerI = 0; layerI < nLayers_; layerI++)
+        {
+            layerPoints_[layerI] = thickness_*sumThickness(layerI + 1);
+        }
     }
 }
 
@@ -71,9 +101,7 @@ point linearNormal::operator()
     const label layer
 ) const
 {
-    //scalar d = thickness_*layer/nLayers_;
-    scalar d = thickness_*sumThickness(layer);
-    return surfacePoint + d*surfaceNormal;
+    return surfacePoint + layerPoints_[layer - 1]*surfaceNormal;
 }
 
 

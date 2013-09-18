@@ -146,7 +146,7 @@ bool Foam::entry::New(dictionary& parentDict, Istream& is)
                 if (ePtr)
                 {
                     // Read as primitiveEntry
-                    const word newKeyword(ePtr->stream());
+                    const keyType newKeyword(ePtr->stream());
 
                     return parentDict.add
                     (

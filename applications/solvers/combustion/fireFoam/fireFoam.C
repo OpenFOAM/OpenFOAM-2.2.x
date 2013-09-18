@@ -75,7 +75,6 @@ int main(int argc, char *argv[])
         #include "compressibleCourantNo.H"
         #include "solidRegionDiffusionNo.H"
         #include "setMultiRegionDeltaT.H"
-        #include "setDeltaT.H"
 
         runTime++;
 

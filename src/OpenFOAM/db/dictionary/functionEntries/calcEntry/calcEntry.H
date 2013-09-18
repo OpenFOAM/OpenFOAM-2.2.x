@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -89,6 +89,9 @@ public:
     // Member Functions
 
         //- Execute the functionEntry in a sub-dict context
+        static bool execute(dictionary& parentDict, Istream&);
+
+        //- Execute the functionEntry in a primitiveEntry context
         static bool execute
         (
             const dictionary& parentDict,

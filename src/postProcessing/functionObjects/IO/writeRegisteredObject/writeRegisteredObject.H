@@ -28,8 +28,15 @@ Group
     grpIOFunctionObjects
 
 Description
-    This function object takes-over the writing of objects registered to the
-    database.
+    This function object allows specification of different writing frequency
+    of objects registered to the database. It has similar functionality
+    as the main time database through the outputControl setting:
+        timeStep
+        outputTime
+        adjustableTime
+        runTime
+        clockTime
+        cpuTime
 
     Example of function object specification:
     \verbatim
@@ -37,6 +44,7 @@ Description
     {
         type        writeRegisteredObject;
         functionObjectLibs ("libIOFunctionObjects.so");
+        exclusiveWriting     true;
         ...
         objectNames (obj1 obj2);
     }
@@ -47,7 +55,11 @@ Description
         Property     | Description             | Required    | Default value
         type         | type name: writeRegisteredObject | yes |
         objectNames  | objects to write        | yes         |
+        exclusiveWriting    | Takes over object writing | no | yes
     \endtable
+
+    exclusiveWriting disables automatic writing (i.e through database) of the
+    objects to avoid duplicate writing.
 
 SeeAlso
     Foam::functionObject
@@ -89,6 +101,10 @@ protected:
         //- Name of this set of writeRegisteredObject
         word name_;
 
+        //- Takes over the writing from Db
+        bool exclusiveWriting_;
+
+        //- Refererence to Db
         const objectRegistry& obr_;
 
         // Read from dictionary

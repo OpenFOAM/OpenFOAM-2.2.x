@@ -46,6 +46,7 @@ Foam::writeRegisteredObject::writeRegisteredObject
 )
 :
     name_(name),
+    exclusiveWriting_(true),
     obr_(obr),
     objectNames_()
 {
@@ -64,6 +65,7 @@ Foam::writeRegisteredObject::~writeRegisteredObject()
 void Foam::writeRegisteredObject::read(const dictionary& dict)
 {
     dict.lookup("objectNames") >> objectNames_;
+    dict.readIfPresent("exclusiveWriting", exclusiveWriting_);
 }
 
 
@@ -96,8 +98,13 @@ void Foam::writeRegisteredObject::write()
                 (
                     obr_.lookupObject<regIOobject>(objectNames_[i])
                 );
-            // Switch off automatic writing to prevent double write
-            obj.writeOpt() = IOobject::NO_WRITE;
+
+            if (exclusiveWriting_)
+            {
+                // Switch off automatic writing to prevent double write
+                obj.writeOpt() = IOobject::NO_WRITE;
+            }
+
             obj.write();
         }
         else

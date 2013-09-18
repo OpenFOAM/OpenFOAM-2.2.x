@@ -69,6 +69,13 @@ Description
         maxDiameter     0.5e-4;
         minDiameter     0;
         setFormat       gnuplot;
+        coordinateSystem
+        {
+            type            cartesian;
+            origin          (0 0 0);
+            e3              (0 1 1);
+            e1              (1 0 0);
+        }
     }
     \endverbatim
 
@@ -84,6 +91,7 @@ Description
         maxDiameter  | maximum region equivalent diameter | yes |
         minDiameter  | minimum region equivalent diameter | no  | 0
         setFormat    | writing format          | yes         |
+        coordinateSystem | transformation for vector fields | no         |
     \endtable
 
 SeeAlso
@@ -104,6 +112,7 @@ SourceFiles
 #include "Map.H"
 #include "volFieldsFwd.H"
 #include "wordReList.H"
+#include "coordinateSystem.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -158,6 +167,9 @@ class regionSizeDistribution
 
         //- Output formatter to write
         autoPtr<writer<scalar> > formatterPtr_;
+
+        //- Optional coordinate system
+        autoPtr<coordinateSystem> coordSysPtr_;
 
 
     // Private Member Functions

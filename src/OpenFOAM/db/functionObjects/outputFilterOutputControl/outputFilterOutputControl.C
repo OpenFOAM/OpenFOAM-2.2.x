@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -24,21 +24,27 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "outputFilterOutputControl.H"
+#include "PstreamReduceOps.H"
+
 
 // * * * * * * * * * * * * * Static Member Data  * * * * * * * * * * * * * * //
 
 namespace Foam
 {
     template<>
-    const char* NamedEnum<outputFilterOutputControl::outputControls, 2>::
+    const char* NamedEnum<outputFilterOutputControl::outputControls, 6>::
     names[] =
     {
         "timeStep",
-        "outputTime"
+        "outputTime",
+        "adjustableTime",
+        "runTime",
+        "clockTime",
+        "cpuTime"
     };
 }
 
-const Foam::NamedEnum<Foam::outputFilterOutputControl::outputControls, 2>
+const Foam::NamedEnum<Foam::outputFilterOutputControl::outputControls, 6>
     Foam::outputFilterOutputControl::outputControlNames_;
 
 
@@ -53,7 +59,8 @@ Foam::outputFilterOutputControl::outputFilterOutputControl
     time_(t),
     outputControl_(ocTimeStep),
     outputInterval_(0),
-    outputTimeLastDump_(0)
+    outputTimeLastDump_(0),
+    writeInterval_(-1)
 {
     read(dict);
 }
@@ -86,9 +93,19 @@ void Foam::outputFilterOutputControl::read(const dictionary& dict)
             break;
         }
 
+
         case ocOutputTime:
         {
             outputInterval_ = dict.lookupOrDefault<label>("outputInterval", 1);
+            break;
+        }
+
+        case ocClockTime:
+        case ocRunTime:
+        case ocCpuTime:
+        case ocAdjustableTime:
+        {
+            writeInterval_ = readScalar(dict.lookup("writeInterval"));
             break;
         }
 
@@ -121,6 +138,56 @@ bool Foam::outputFilterOutputControl::output()
             {
                 outputTimeLastDump_ ++;
                 return !(outputTimeLastDump_ % outputInterval_);
+            }
+            break;
+        }
+
+        case ocRunTime:
+        case ocAdjustableTime:
+        {
+            label outputIndex = label
+            (
+                (
+                    (time_.value() - time_.startTime().value())
+                  + 0.5*time_.deltaTValue()
+                )
+                / writeInterval_
+            );
+
+            if (outputIndex > outputTimeLastDump_)
+            {
+                outputTimeLastDump_ = outputIndex;
+                return true;
+            }
+            break;
+        }
+
+        case ocCpuTime:
+        {
+            label outputIndex = label
+            (
+                returnReduce(time_.elapsedCpuTime(), maxOp<double>())
+                / writeInterval_
+            );
+            if (outputIndex > outputTimeLastDump_)
+            {
+                outputTimeLastDump_ = outputIndex;
+                return true;
+            }
+            break;
+        }
+
+        case ocClockTime:
+        {
+            label outputIndex = label
+            (
+                returnReduce(label(time_.elapsedClockTime()), maxOp<label>())
+                / writeInterval_
+            );
+            if (outputIndex > outputTimeLastDump_)
+            {
+                outputTimeLastDump_ = outputIndex;
+                return true;
             }
             break;
         }

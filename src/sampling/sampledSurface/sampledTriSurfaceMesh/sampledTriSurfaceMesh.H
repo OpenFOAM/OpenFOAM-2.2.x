@@ -161,6 +161,15 @@ public:
             const dictionary& dict
         );
 
+        //- Construct from triSurface
+        sampledTriSurfaceMesh
+        (
+            const word& name,
+            const polyMesh& mesh,
+            const triSurface& surface,
+            const word& sampleSourceName
+        );
+
 
     //- Destructor
     virtual ~sampledTriSurfaceMesh();

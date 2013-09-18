@@ -160,6 +160,9 @@ public:
         //- Called when time was set at the end of the Time::operator++
         virtual bool timeSet();
 
+        //- Called at the end of Time::adjustDeltaT() if adjustTime is true
+        virtual bool adjustTimeStep();
+
         //- Read and set the function object if its data have changed
         virtual bool read(const dictionary&) = 0;
 

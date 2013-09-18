@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -88,7 +88,7 @@ inline Foam::scalar Foam::powerSeriesReactionRate::operator()
 
     forAll(coeffs_, n)
     {
-        expArg += coeffs_[n]/pow(T, n);
+        expArg += coeffs_[n]/pow(T, n + 1);
     }
 
     lta *= exp(expArg);

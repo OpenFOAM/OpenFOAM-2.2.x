@@ -2452,6 +2452,27 @@ int main(int argc, char *argv[])
             meshMod
         );
 
+        // Enforce actual point posititions according to extrudeModel (model)
+        // (extruder.setRefinement only does fixed expansionRatio)
+        // The regionPoints and nLayers are looped in the same way as in
+        // createShellMesh
+        DynamicList<point>& newPoints = const_cast<DynamicList<point>&>
+        (
+            meshMod.points()
+        );
+        label meshPointI = extrudePatch.localPoints().size();
+        forAll(localRegionPoints, regionI)
+        {
+            label pointI = localRegionPoints[regionI];
+            point pt = extrudePatch.localPoints()[pointI];
+            const vector& n = localRegionNormals[regionI];
+
+            for (label layerI = 1; layerI <= model().nLayers(); layerI++)
+            {
+                newPoints[meshPointI++] = model()(pt, n, layerI);
+            }
+        }
+
         shellMap = meshMod.changeMesh
         (
             regionMesh,     // mesh to change

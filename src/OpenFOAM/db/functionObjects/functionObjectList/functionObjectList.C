@@ -211,6 +211,27 @@ bool Foam::functionObjectList::timeSet()
 }
 
 
+bool Foam::functionObjectList::adjustTimeStep()
+{
+    bool ok = true;
+
+    if (execution_)
+    {
+        if (!updated_)
+        {
+            read();
+        }
+
+        forAll(*this, objectI)
+        {
+            ok = operator[](objectI).adjustTimeStep() && ok;
+        }
+    }
+
+    return ok;
+}
+
+
 bool Foam::functionObjectList::read()
 {
     bool ok = true;
