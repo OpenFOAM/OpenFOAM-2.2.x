@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -63,23 +63,23 @@ bool Foam::IOobject::IOobject::fileNameComponents
     // called with directory
     if (isDir(path))
     {
-        WarningIn("IOobject::fileNameComponents(const fileName&, ...)")
-            << " called with directory: " << path << "\n";
+        WarningIn
+        (
+            "IOobject::fileNameComponents"
+            "("
+                "const fileName&, "
+                "fileName&, "
+                "fileName&, "
+                "word&"
+            ")"
+        )
+            << " called with directory: " << path << endl;
+
         return false;
     }
 
-    string::size_type first = path.find('/');
-
-    if (first == string::npos)
+    if (path.isAbsolute())
     {
-        // no '/' found - no instance or local
-
-        // check afterwards
-        name.string::operator=(path);
-    }
-    else if (first == 0)
-    {
-        // Leading '/'. Absolute fileName
         string::size_type last = path.rfind('/');
         instance = path.substr(0, last);
 
@@ -88,26 +88,48 @@ bool Foam::IOobject::IOobject::fileNameComponents
     }
     else
     {
-        instance = path.substr(0, first);
+        string::size_type first = path.find('/');
 
-        string::size_type last = path.rfind('/');
-        if (last > first)
+        if (first == string::npos)
         {
-            // with local
-            local = path.substr(first+1, last-first-1);
-        }
+            // no '/' found - no instance or local
 
-        // check afterwards
-        name.string::operator=(path.substr(last+1));
+            // check afterwards
+            name.string::operator=(path);
+        }
+        else
+        {
+            instance = path.substr(0, first);
+
+            string::size_type last = path.rfind('/');
+            if (last > first)
+            {
+                // with local
+                local = path.substr(first+1, last-first-1);
+            }
+
+            // check afterwards
+            name.string::operator=(path.substr(last+1));
+        }
     }
 
 
     // check for valid (and stripped) name, regardless of the debug level
     if (name.empty() || string::stripInvalid<word>(name))
     {
-        WarningIn("IOobject::fileNameComponents(const fileName&, ...)")
+        WarningIn
+        (
+            "IOobject::fileNameComponents"
+            "("
+                "const fileName&, "
+                "fileName&, "
+                "fileName&, "
+                "word&"
+            ")"
+        )
             << "has invalid word for name: \"" << name
-            << "\"\nwhile processing path: " << path << "\n";
+            << "\"\nwhile processing path: " << path << endl;
+
         return false;
     }
 
@@ -202,9 +224,16 @@ Foam::IOobject::IOobject
     {
         FatalErrorIn
         (
-            "IOobject::IOobject" "(const fileName&, const objectRegistry&, ...)"
+            "IOobject::IOobject"
+            "("
+                "const fileName&, "
+                "const objectRegistry&, "
+                "readOption, "
+                "writeOption, "
+                "bool"
+            ")"
         )
-            << " invalid path specification\n"
+            << " invalid path specification"
             << exit(FatalError);
     }
 
