@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -38,7 +38,9 @@ Foam::ParticleForceList<CloudType>::ParticleForceList
     PtrList<ParticleForce<CloudType> >(),
     owner_(owner),
     mesh_(mesh),
-    dict_(dictionary::null)
+    dict_(dictionary::null),
+    calcCoupled_(true),
+    calcNonCoupled_(true)
 {}
 
 
@@ -54,7 +56,9 @@ Foam::ParticleForceList<CloudType>::ParticleForceList
     PtrList<ParticleForce<CloudType> >(),
     owner_(owner),
     mesh_(mesh),
-    dict_(dict)
+    dict_(dict),
+    calcCoupled_(true),
+    calcNonCoupled_(true)
 {
     if (readFields)
     {
@@ -151,9 +155,13 @@ Foam::forceSuSp Foam::ParticleForceList<CloudType>::calcCoupled
 ) const
 {
     forceSuSp value(vector::zero, 0.0);
-    forAll(*this, i)
+
+    if (calcCoupled_)
     {
-        value += this->operator[](i).calcCoupled(p, dt, mass, Re, muc);
+        forAll(*this, i)
+        {
+            value += this->operator[](i).calcCoupled(p, dt, mass, Re, muc);
+        }
     }
 
     return value;
@@ -171,9 +179,13 @@ Foam::forceSuSp Foam::ParticleForceList<CloudType>::calcNonCoupled
 ) const
 {
     forceSuSp value(vector::zero, 0.0);
-    forAll(*this, i)
+
+    if (calcNonCoupled_)
     {
-        value += this->operator[](i).calcNonCoupled(p, dt, mass, Re, muc);
+        forAll(*this, i)
+        {
+            value += this->operator[](i).calcNonCoupled(p, dt, mass, Re, muc);
+        }
     }
 
     return value;

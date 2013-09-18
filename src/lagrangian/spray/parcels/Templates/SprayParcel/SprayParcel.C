@@ -68,13 +68,11 @@ void Foam::SprayParcel<ParcelType>::calc
     const CompositionModel<reactingCloudType>& composition =
         td.cloud().composition();
 
-    const bool coupled = td.cloud().solution().coupled();
-
     // check if parcel belongs to liquid core
     if (liquidCore() > 0.5)
     {
-        // liquid core parcels should not interact with the gas
-        td.cloud().solution().coupled() = false;
+        // liquid core parcels should not experience coupled forces
+        td.cloud().forces().setCalcCoupled(false);
     }
 
     // get old mixture composition
@@ -130,8 +128,8 @@ void Foam::SprayParcel<ParcelType>::calc
         }
     }
 
-    // restore coupled
-    td.cloud().solution().coupled() = coupled;
+    // restore coupled forces
+    td.cloud().forces().setCalcCoupled(true);
 }
 
 

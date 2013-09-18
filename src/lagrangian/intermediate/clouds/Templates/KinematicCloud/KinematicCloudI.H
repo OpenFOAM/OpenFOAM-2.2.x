@@ -157,6 +157,14 @@ Foam::KinematicCloud<CloudType>::forces() const
 
 
 template<class CloudType>
+inline typename Foam::KinematicCloud<CloudType>::forceType&
+Foam::KinematicCloud<CloudType>::forces()
+{
+    return forces_;
+}
+
+
+template<class CloudType>
 inline typename Foam::KinematicCloud<CloudType>::functionType&
 Foam::KinematicCloud<CloudType>::functions()
 {

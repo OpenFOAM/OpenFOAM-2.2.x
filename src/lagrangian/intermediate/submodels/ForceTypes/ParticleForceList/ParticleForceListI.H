@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -50,6 +50,20 @@ template<class CloudType>
 inline const Foam::dictionary& Foam::ParticleForceList<CloudType>::dict() const
 {
     return dict_;
+}
+
+
+template<class CloudType>
+inline void Foam::ParticleForceList<CloudType>::setCalcCoupled(bool flag)
+{
+    calcCoupled_ = flag;
+}
+
+
+template<class CloudType>
+inline void Foam::ParticleForceList<CloudType>::setCalcNonCoupled(bool flag)
+{
+    calcNonCoupled_ = flag;
 }
 
 
