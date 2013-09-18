@@ -86,6 +86,10 @@ public:
         //  enumeration element
         Enum read(Istream&) const;
 
+        //- Read a word from Istream and return the corresponding
+        //  enumeration element or default if not valid
+        Enum readOrDefault(const word&, const Enum e) const;
+
         //- Write the name representation of the enumeration to an Ostream
         void write(const Enum e, Ostream&) const;
 
