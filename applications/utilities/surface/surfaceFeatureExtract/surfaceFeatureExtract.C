@@ -693,7 +693,19 @@ int main(int argc, char *argv[])
 
     forAllConstIter(dictionary, dict, iter)
     {
+        if (!iter().isDict())
+        {
+            continue;
+        }
+
         const dictionary& surfaceDict = iter().dict();
+
+        if (!surfaceDict.found("extractionMethod"))
+        {
+            continue;
+        }
+
+        const word extractionMethod = surfaceDict.lookup("extractionMethod");
 
         const fileName surfFileName = iter().keyword();
         const fileName sFeatFileName = surfFileName.lessExt().name();
@@ -711,8 +723,6 @@ int main(int argc, char *argv[])
             surfaceDict.lookupOrDefault<Switch>("featureProximity", "off");
         const Switch closeness =
             surfaceDict.lookupOrDefault<Switch>("closeness", "off");
-
-        const word extractionMethod = surfaceDict.lookup("extractionMethod");
 
 
 #ifndef ENABLE_CURVATURE
