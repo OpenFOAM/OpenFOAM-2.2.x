@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -64,6 +64,12 @@ class ParticleForceList
         //- Forces dictionary
         const dictionary dict_;
 
+        //- Calculate coupled forces flag
+        bool calcCoupled_;
+
+        //- Calculate non-coupled forces flag
+        bool calcNonCoupled_;
+
 
 public:
 
@@ -104,6 +110,12 @@ public:
 
             //- Return the forces dictionary
             inline const dictionary& dict() const;
+
+            //- Set the calcCoupled flag
+            inline void setCalcCoupled(bool flag);
+
+            //- Set the calcNonCoupled flag
+            inline void setCalcNonCoupled(bool flag);
 
 
         // Evaluation

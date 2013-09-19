@@ -68,13 +68,11 @@ void Foam::SprayParcel<ParcelType>::calc
     const CompositionModel<reactingCloudType>& composition =
         td.cloud().composition();
 
-    const bool coupled = td.cloud().solution().coupled();
-
     // check if parcel belongs to liquid core
     if (liquidCore() > 0.5)
     {
-        // liquid core parcels should not interact with the gas
-        td.cloud().solution().coupled() = false;
+        // liquid core parcels should not experience coupled forces
+        td.cloud().forces().setCalcCoupled(false);
     }
 
     // get old mixture composition
@@ -130,8 +128,8 @@ void Foam::SprayParcel<ParcelType>::calc
         }
     }
 
-    // restore coupled
-    td.cloud().solution().coupled() = coupled;
+    // restore coupled forces
+    td.cloud().forces().setCalcCoupled(true);
 }
 
 
@@ -259,7 +257,7 @@ void Foam::SprayParcel<ParcelType>::calcBreakup
     const scalar mass = p.mass();
     const forceSuSp Fcp = forces.calcCoupled(p, dt, mass, Re, muAv);
     const forceSuSp Fncp = forces.calcNonCoupled(p, dt, mass, Re, muAv);
-    scalar tMom = mass/(Fcp.Sp() + Fncp.Sp());
+    this->tMom() = mass/(Fcp.Sp() + Fncp.Sp());
 
     const vector g = td.cloud().g().value();
 
@@ -287,7 +285,7 @@ void Foam::SprayParcel<ParcelType>::calcBreakup
             muAv,
             Urel,
             Urmag,
-            tMom,
+            this->tMom(),
             dChild,
             massChild
         )

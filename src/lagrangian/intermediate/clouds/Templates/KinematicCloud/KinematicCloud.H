@@ -389,6 +389,9 @@ public:
 //            inline const typename parcelType::forceType& forces() const;
             inline const forceType& forces() const;
 
+            //- Return the optional particle forces
+            inline forceType& forces();
+
             //- Optional cloud function objects
             inline functionType& functions();
 

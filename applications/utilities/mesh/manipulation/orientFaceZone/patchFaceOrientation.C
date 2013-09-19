@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -23,47 +23,27 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+#include "patchFaceOrientation.H"
 
-template<class CloudType>
-inline const CloudType& Foam::ParticleForceList<CloudType>::owner() const
+// * * * * * * * * * * * * * * * Friend Operators  * * * * * * * * * * * * * //
+
+Foam::Ostream& Foam::operator<<
+(
+    Foam::Ostream& os,
+    const Foam::patchFaceOrientation& wDist
+)
 {
-    return owner_;
+    return os << wDist.flipStatus_;
 }
 
 
-template<class CloudType>
-inline CloudType& Foam::ParticleForceList<CloudType>::owner()
+Foam::Istream& Foam::operator>>
+(
+    Foam::Istream& is,
+    Foam::patchFaceOrientation& wDist
+)
 {
-    return owner_;
-}
-
-
-template<class CloudType>
-inline const Foam::fvMesh& Foam::ParticleForceList<CloudType>::mesh() const
-{
-    return mesh_;
-}
-
-
-template<class CloudType>
-inline const Foam::dictionary& Foam::ParticleForceList<CloudType>::dict() const
-{
-    return dict_;
-}
-
-
-template<class CloudType>
-inline void Foam::ParticleForceList<CloudType>::setCalcCoupled(bool flag)
-{
-    calcCoupled_ = flag;
-}
-
-
-template<class CloudType>
-inline void Foam::ParticleForceList<CloudType>::setCalcNonCoupled(bool flag)
-{
-    calcNonCoupled_ = flag;
+    return is >> wDist.flipStatus_;
 }
 
 
