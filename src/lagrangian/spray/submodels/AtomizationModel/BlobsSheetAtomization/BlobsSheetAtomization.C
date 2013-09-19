@@ -48,7 +48,7 @@ Foam::BlobsSheetAtomization<CloudType>::BlobsSheetAtomization
 :
     AtomizationModel<CloudType>(am),
     B_(am.B_),
-    angle_(am.B_)
+    angle_(am.angle_)
 {}
 
 

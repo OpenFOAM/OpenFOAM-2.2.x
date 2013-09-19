@@ -78,6 +78,24 @@ Enum Foam::NamedEnum<Enum, nEnum>::read(Istream& is) const
 
 
 template<class Enum, int nEnum>
+Enum Foam::NamedEnum<Enum, nEnum>::readOrDefault
+(
+    const word& name,
+    const Enum e
+) const
+{
+    HashTable<int>::const_iterator iter = find(name);
+
+    if (iter == HashTable<int>::end())
+    {
+        return e;
+    }
+
+    return Enum(iter());
+}
+
+
+template<class Enum, int nEnum>
 void Foam::NamedEnum<Enum, nEnum>::write(const Enum e, Ostream& os) const
 {
     os  << operator[](e);
