@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -20,7 +20,6 @@ License
 
     You should have received a copy of the GNU General Public License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
-    Dimensioned tensor obtained from generic dimensioned type.
 
 \*---------------------------------------------------------------------------*/
 
@@ -96,7 +95,7 @@ dimensionedTensor cof(const dimensionedTensor& dt)
     return dimensionedTensor
     (
         "cof("+dt.name()+')',
-        dt.dimensions(),
+        pow(dt.dimensions(), tensor::dim - 1),
         cof(dt.value())
     );
 }
@@ -107,7 +106,7 @@ dimensionedTensor inv(const dimensionedTensor& dt)
     return dimensionedTensor
     (
         "inv("+dt.name()+')',
-        dimless/dt.dimensions(),
+        inv(dt.dimensions()),
         inv(dt.value())
     );
 }
