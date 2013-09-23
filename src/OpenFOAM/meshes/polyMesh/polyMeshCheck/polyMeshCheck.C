@@ -105,7 +105,8 @@ bool Foam::polyMesh::checkFaceOrthogonality
                         << faceI
                         << " between cells " << own[faceI]
                         << " and " << nei[faceI]
-                        << ": Angle = " << radToDeg(::acos(ortho[faceI]))
+                        << ": Angle = "
+                        << radToDeg(::acos(min(1.0, max(-1.0, ortho[faceI]))))
                         << " deg." << endl;
                 }
 
@@ -134,15 +135,17 @@ bool Foam::polyMesh::checkFaceOrthogonality
             if (debug || report)
             {
                 Info<< "    Mesh non-orthogonality Max: "
-                    << radToDeg(::acos(minDDotS))
-                    << " average: " << radToDeg(::acos(sumDDotS/nSummed))
+                    << radToDeg(::acos(min(1.0, max(-1.0, minDDotS))))
+                    << " average: "
+                    << radToDeg(::acos(min(1.0, max(-1.0, sumDDotS/nSummed))))
                     << endl;
             }
         }
 
         if (severeNonOrth > 0)
         {
-            Info<< "   *Number of severely non-orthogonal faces: "
+            Info<< "   *Number of severely non-orthogonal (> "
+                << primitiveMesh::nonOrthThreshold_ << " degrees) faces: "
                 << severeNonOrth << "." << endl;
         }
     }
@@ -427,6 +430,8 @@ bool Foam::polyMesh::checkCellDeterminant
     const Vector<label>& meshD
 ) const
 {
+    const scalar warnDet = 1e-3;
+
     if (debug)
     {
         Info<< "bool polyMesh::checkCellDeterminant(const bool"
@@ -450,7 +455,7 @@ bool Foam::polyMesh::checkCellDeterminant
 
     forAll (cellDeterminant, cellI)
     {
-        if (cellDeterminant[cellI] < 1e-3)
+        if (cellDeterminant[cellI] < warnDet)
         {
             if (setPtr)
             {
@@ -480,7 +485,8 @@ bool Foam::polyMesh::checkCellDeterminant
     {
         if (debug || report)
         {
-            Info<< " ***Cells with small determinant found, number of cells: "
+            Info<< " ***Cells with small determinant (< "
+                << warnDet << ") found, number of cells: "
                 << nErrorCells << endl;
         }
 
@@ -620,7 +626,7 @@ bool Foam::polyMesh::checkMeshMotion
     // Check face areas
     bool areaError = checkFaceAreas
     (
-        faceAreas(),
+        fAreas,
         report,         // report
         detailedReport, // detailedReport,
         NULL            // setPtr
