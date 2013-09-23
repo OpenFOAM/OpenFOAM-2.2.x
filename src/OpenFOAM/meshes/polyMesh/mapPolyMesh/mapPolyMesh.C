@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -26,11 +26,8 @@ License
 #include "mapPolyMesh.H"
 #include "polyMesh.H"
 
-// * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
-
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-// Construct from components
 Foam::mapPolyMesh::mapPolyMesh
 (
     const polyMesh& mesh,
@@ -59,7 +56,8 @@ Foam::mapPolyMesh::mapPolyMesh
     const labelListList& cellZoneMap,
     const pointField& preMotionPoints,
     const labelList& oldPatchStarts,
-    const labelList& oldPatchNMeshPoints
+    const labelList& oldPatchNMeshPoints,
+    const autoPtr<scalarField>& oldCellVolumesPtr
 )
 :
     mesh_(mesh),
@@ -89,7 +87,8 @@ Foam::mapPolyMesh::mapPolyMesh
     preMotionPoints_(preMotionPoints),
     oldPatchSizes_(oldPatchStarts.size()),
     oldPatchStarts_(oldPatchStarts),
-    oldPatchNMeshPoints_(oldPatchNMeshPoints)
+    oldPatchNMeshPoints_(oldPatchNMeshPoints),
+    oldCellVolumesPtr_(oldCellVolumesPtr)
 {
     // Calculate old patch sizes
     for (label patchI = 0; patchI < oldPatchStarts_.size() - 1; patchI++)
@@ -115,7 +114,6 @@ Foam::mapPolyMesh::mapPolyMesh
 }
 
 
-// Construct from components and optionally reuse storage
 Foam::mapPolyMesh::mapPolyMesh
 (
     const polyMesh& mesh,
@@ -145,6 +143,7 @@ Foam::mapPolyMesh::mapPolyMesh
     pointField& preMotionPoints,
     labelList& oldPatchStarts,
     labelList& oldPatchNMeshPoints,
+    autoPtr<scalarField>& oldCellVolumesPtr,
     const bool reUse
 )
 :
@@ -175,33 +174,35 @@ Foam::mapPolyMesh::mapPolyMesh
     preMotionPoints_(preMotionPoints, reUse),
     oldPatchSizes_(oldPatchStarts.size()),
     oldPatchStarts_(oldPatchStarts, reUse),
-    oldPatchNMeshPoints_(oldPatchNMeshPoints, reUse)
+    oldPatchNMeshPoints_(oldPatchNMeshPoints, reUse),
+    oldCellVolumesPtr_(oldCellVolumesPtr, reUse)
 {
-    // Calculate old patch sizes
-    for (label patchI = 0; patchI < oldPatchStarts_.size() - 1; patchI++)
+    if (oldPatchStarts_.size() > 0)
     {
-        oldPatchSizes_[patchI] =
-            oldPatchStarts_[patchI + 1] - oldPatchStarts_[patchI];
-    }
-
-    // Set the last one by hand
-    const label lastPatchID = oldPatchStarts_.size() - 1;
-
-    oldPatchSizes_[lastPatchID] = nOldFaces_ - oldPatchStarts_[lastPatchID];
-
-    if (polyMesh::debug)
-    {
-        if (min(oldPatchSizes_) < 0)
+        // Calculate old patch sizes
+        for (label patchI = 0; patchI < oldPatchStarts_.size() - 1; patchI++)
         {
-            FatalErrorIn("mapPolyMesh::mapPolyMesh(...)")
-                << "Calculated negative old patch size.  Error in mapping data"
-                << abort(FatalError);
+            oldPatchSizes_[patchI] =
+                oldPatchStarts_[patchI + 1] - oldPatchStarts_[patchI];
+        }
+
+        // Set the last one by hand
+        const label lastPatchID = oldPatchStarts_.size() - 1;
+
+        oldPatchSizes_[lastPatchID] = nOldFaces_ - oldPatchStarts_[lastPatchID];
+
+        if (polyMesh::debug)
+        {
+            if (min(oldPatchSizes_) < 0)
+            {
+                FatalErrorIn("mapPolyMesh::mapPolyMesh(...)")
+                    << "Calculated negative old patch size."
+                    << "  Error in mapping data"
+                    << abort(FatalError);
+            }
         }
     }
 }
-
-
-// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 
 // ************************************************************************* //

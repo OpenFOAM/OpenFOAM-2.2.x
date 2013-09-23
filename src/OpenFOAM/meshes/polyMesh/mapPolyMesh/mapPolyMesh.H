@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -268,6 +268,9 @@ class mapPolyMesh
         //- List of numbers of mesh points per old patch
         const labelList oldPatchNMeshPoints_;
 
+        //- Optional old cell volumes (for mapping)
+        autoPtr<scalarField> oldCellVolumesPtr_;
+
 
     // Private Member Functions
 
@@ -282,7 +285,7 @@ public:
 
     // Constructors
 
-        //- Construct from components
+        //- Construct from components. Copy (except for oldCellVolumes).
         mapPolyMesh
         (
             const polyMesh& mesh,
@@ -311,7 +314,8 @@ public:
             const labelListList& cellZoneMap,
             const pointField& preMotionPoints,
             const labelList& oldPatchStarts,
-            const labelList& oldPatchNMeshPoints
+            const labelList& oldPatchNMeshPoints,
+            const autoPtr<scalarField>& oldCellVolumesPtr
         );
 
         //- Construct from components and optionally reuse storage
@@ -344,6 +348,7 @@ public:
             pointField& preMotionPoints,
             labelList& oldPatchStarts,
             labelList& oldPatchNMeshPoints,
+            autoPtr<scalarField>& oldCellVolumesPtr,
             const bool reUse
         );
 
@@ -631,6 +636,20 @@ public:
             {
                 return oldPatchNMeshPoints_;
             }
+
+
+            // Geometric mapping data
+
+                bool hasOldCellVolumes() const
+                {
+                    return oldCellVolumesPtr_.valid();
+                }
+
+                const scalarField& oldCellVolumes() const
+                {
+                    return oldCellVolumesPtr_();
+                }
+
 };
 
 
