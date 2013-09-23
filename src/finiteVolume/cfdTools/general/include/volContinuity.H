@@ -1,5 +1,5 @@
 {
-    volScalarField conserve = -fvc::div(mesh.phi());
+    volScalarField conserve(-fvc::div(mesh.phi()));
     // The ddt term constructed by hand because it would be wrong for
     // Backward Differencing in time.
 
