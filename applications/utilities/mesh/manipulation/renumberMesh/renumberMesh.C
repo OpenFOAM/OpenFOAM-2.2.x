@@ -555,7 +555,8 @@ autoPtr<mapPolyMesh> reorderMesh
             labelListList(0),           // cellZoneMap,
             pointField(0),              // preMotionPoints,
             patchStarts,                // oldPatchStarts,
-            oldPatchNMeshPoints         // oldPatchNMeshPoints
+            oldPatchNMeshPoints,        // oldPatchNMeshPoints
+            autoPtr<scalarField>()
         )
     );
 }

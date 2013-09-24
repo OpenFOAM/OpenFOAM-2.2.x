@@ -107,6 +107,9 @@ void Foam::layerAdditionRemoval::removeCellLayer
 
     const polyMesh& mesh = topoChanger().mesh();
 
+    const labelList& own = mesh.faceOwner();
+    const labelList& nei = mesh.faceNeighbour();
+
     const labelList& ptc = pointsPairing();
     const labelList& ftc = facesPairing();
 
@@ -114,9 +117,18 @@ void Foam::layerAdditionRemoval::removeCellLayer
     const labelList& mc =
         topoChanger().mesh().faceZones()[faceZoneID_.index()].masterCells();
 
-    forAll(mc, cellI)
+    forAll(mc, faceI)
     {
-        ref.setAction(polyRemoveCell(mc[cellI]));
+        label slaveSideCell = own[ftc[faceI]];
+
+        if (mesh.isInternalFace(ftc[faceI]) && slaveSideCell == mc[faceI])
+        {
+            // Owner cell of the face is being removed.
+            // Grab the neighbour instead
+            slaveSideCell = nei[ftc[faceI]];
+        }
+
+        ref.setAction(polyRemoveCell(mc[faceI], slaveSideCell));
     }
 
     // Remove all the faces from the master layer cells which are not in
@@ -174,8 +186,6 @@ void Foam::layerAdditionRemoval::removeCellLayer
     const labelListList& pf = mesh.pointFaces();
 
     const faceList& faces = mesh.faces();
-    const labelList& own = mesh.faceOwner();
-    const labelList& nei = mesh.faceNeighbour();
 
     // Make a list of faces to be modified using the map to avoid duplicates
     labelHashSet facesToModify(ptc.size()*primitiveMesh::facesPerPoint_);

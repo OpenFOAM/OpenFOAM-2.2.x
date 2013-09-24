@@ -118,6 +118,73 @@ void Foam::fvMesh::clearAddressing()
 }
 
 
+void Foam::fvMesh::storeOldVol(const scalarField& V)
+{
+    if (curTimeIndex_ < time().timeIndex())
+    {
+        if (debug)
+        {
+            Info<< "fvMesh::storeOldVol(const scalarField&) :"
+                << " Storing old time volumes since from time " << curTimeIndex_
+                << " and time now " << time().timeIndex()
+                << " V:" << V.size()
+                << endl;
+        }
+
+
+        if (V00Ptr_ && V0Ptr_)
+        {
+            // Copy V0 into V00 storage
+            *V00Ptr_ = *V0Ptr_;
+        }
+
+        if (V0Ptr_)
+        {
+            // Copy V into V0 storage
+            V0Ptr_->scalarField::operator=(V);
+        }
+        else
+        {
+            // Allocate V0 storage, fill with V
+            V0Ptr_ = new DimensionedField<scalar, volMesh>
+            (
+                IOobject
+                (
+                    "V0",
+                    time().timeName(),
+                    *this,
+                    IOobject::NO_READ,
+                    IOobject::NO_WRITE,
+                    false
+                ),
+                *this,
+                dimVolume
+            );
+            scalarField& V0 = *V0Ptr_;
+            // Note: V0 now sized with current mesh, not with (potentially
+            //       different size) V.
+            V0.setSize(V.size());
+            V0 = V;
+        }
+
+        curTimeIndex_ = time().timeIndex();
+
+        if (debug)
+        {
+            Info<< "fvMesh::storeOldVol() :"
+                << " Stored old time volumes V0:" << V0Ptr_->size()
+                << endl;
+            if (V00Ptr_)
+            {
+                Info<< "fvMesh::storeOldVol() :"
+                    << " Stored oldold time volumes V00:" << V00Ptr_->size()
+                    << endl;
+            }
+        }
+    }
+}
+
+
 void Foam::fvMesh::clearOut()
 {
     clearGeom();
@@ -458,6 +525,35 @@ const Foam::lduAddressing& Foam::fvMesh::lduAddr() const
 
 void Foam::fvMesh::mapFields(const mapPolyMesh& meshMap)
 {
+    if (debug)
+    {
+        Info<< "fvMesh::mapFields :"
+            << " nOldCells:" << meshMap.nOldCells()
+            << " nCells:" << nCells()
+            << " nOldFaces:" << meshMap.nOldFaces()
+            << " nFaces:" << nFaces()
+            << endl;
+    }
+
+
+    // We require geometric properties valid for the old mesh
+    if
+    (
+        meshMap.cellMap().size() != nCells()
+     || meshMap.faceMap().size() != nFaces()
+    )
+    {
+        FatalErrorIn("fvMesh::mapFields(const mapPolyMesh&)")
+            << "mapPolyMesh does not correspond to the old mesh."
+            << " nCells:" << nCells()
+            << " cellMap:" << meshMap.cellMap().size()
+            << " nOldCells:" << meshMap.nOldCells()
+            << " nFaces:" << nFaces()
+            << " faceMap:" << meshMap.faceMap().size()
+            << " nOldFaces:" << meshMap.nOldFaces()
+            << exit(FatalError);
+    }
+
     // Create a mapper
     const fvMeshMapper mapper(*this, meshMap);
 
@@ -517,7 +613,30 @@ void Foam::fvMesh::mapFields(const mapPolyMesh& meshMap)
                 V0[i] = 0.0;
             }
         }
+
+        // Inject volume of merged cells
+        label nMerged = 0;
+        forAll(meshMap.reverseCellMap(), oldCellI)
+        {
+            label index = meshMap.reverseCellMap()[oldCellI];
+
+            if (index < -1)
+            {
+                label cellI = -index-2;
+
+                V0[cellI] += savedV0[oldCellI];
+
+                nMerged++;
+            }
+        }
+
+        if (debug)
+        {
+            Info<< "Mapping old time volume V0. Merged "
+                << nMerged << " out of " << nCells() << " cells" << endl;
+        }
     }
+
 
     // Map the old-old volume. Just map to new cell labels.
     if (V00Ptr_)
@@ -538,6 +657,27 @@ void Foam::fvMesh::mapFields(const mapPolyMesh& meshMap)
                 V00[i] = 0.0;
             }
         }
+
+        // Inject volume of merged cells
+        label nMerged = 0;
+        forAll(meshMap.reverseCellMap(), oldCellI)
+        {
+            label index = meshMap.reverseCellMap()[oldCellI];
+
+            if (index < -1)
+            {
+                label cellI = -index-2;
+
+                V00[cellI] += savedV00[oldCellI];
+                nMerged++;
+            }
+        }
+
+        if (debug)
+        {
+            Info<< "Mapping old time volume V00. Merged "
+                << nMerged << " out of " << nCells() << " cells" << endl;
+        }
     }
 }
 
@@ -545,37 +685,11 @@ void Foam::fvMesh::mapFields(const mapPolyMesh& meshMap)
 Foam::tmp<Foam::scalarField> Foam::fvMesh::movePoints(const pointField& p)
 {
     // Grab old time volumes if the time has been incremented
+    // This will update V0, V00
     if (curTimeIndex_ < time().timeIndex())
     {
-        if (V00Ptr_ && V0Ptr_)
-        {
-            *V00Ptr_ = *V0Ptr_;
-        }
-
-        if (V0Ptr_)
-        {
-            *V0Ptr_ = V();
-        }
-        else
-        {
-            V0Ptr_ = new DimensionedField<scalar, volMesh>
-            (
-                IOobject
-                (
-                    "V0",
-                    time().timeName(),
-                    *this,
-                    IOobject::NO_READ,
-                    IOobject::NO_WRITE,
-                    false
-                ),
-                V()
-            );
-        }
-
-        curTimeIndex_ = time().timeIndex();
+        storeOldVol(V());
     }
-
 
     if (!phiPtr_)
     {
@@ -649,10 +763,44 @@ void Foam::fvMesh::updateMesh(const mapPolyMesh& mpm)
     // Update polyMesh. This needs to keep volume existent!
     polyMesh::updateMesh(mpm);
 
+    if (VPtr_)
+    {
+        // Grab old time volumes if the time has been incremented
+        // This will update V0, V00
+        storeOldVol(mpm.oldCellVolumes());
+
+        // Few checks
+        if (VPtr_ && (V().size() != mpm.nOldCells()))
+        {
+            FatalErrorIn("fvMesh::updateMesh(const mapPolyMesh&)")
+                << "V:" << V().size()
+                << " not equal to the number of old cells "
+                << mpm.nOldCells()
+                << exit(FatalError);
+        }
+        if (V0Ptr_ && (V0Ptr_->size() != mpm.nOldCells()))
+        {
+            FatalErrorIn("fvMesh::updateMesh(const mapPolyMesh&)")
+                << "V0:" << V0Ptr_->size()
+                << " not equal to the number of old cells "
+                << mpm.nOldCells()
+                << exit(FatalError);
+        }
+        if (V00Ptr_ && (V00Ptr_->size() != mpm.nOldCells()))
+        {
+            FatalErrorIn("fvMesh::updateMesh(const mapPolyMesh&)")
+                << "V0:" << V00Ptr_->size()
+                << " not equal to the number of old cells "
+                << mpm.nOldCells()
+                << exit(FatalError);
+        }
+    }
+
+
     // Clear the sliced fields
     clearGeomNotOldVol();
 
-    // Map all fields using current (i.e. not yet mapped) volume
+    // Map all fields
     mapFields(mpm);
 
     // Clear the current volume and other geometry factors

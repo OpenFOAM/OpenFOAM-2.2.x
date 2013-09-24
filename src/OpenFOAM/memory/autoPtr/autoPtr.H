@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -63,9 +63,13 @@ public:
         //- Store object pointer
         inline explicit autoPtr(T* = 0);
 
-        //- Construct as copy by transfering pointer to this autoPtr and
+        //- Construct as copy by transferring pointer to this autoPtr and
         //  setting the arguments pointer to NULL
         inline autoPtr(const autoPtr<T>&);
+
+        //- Construct either by transferring pointer or cloning. Should
+        //  only be called with type that supports cloning.
+        inline autoPtr(const autoPtr<T>&, const bool reUse);
 
 
     //- Destructor, delete object if pointer is not NULL
