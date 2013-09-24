@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -358,15 +358,13 @@ void Foam::chemistryModel<CompType, ThermoType>::derivatives
         cSum += c[i];
         rho += W*c[i];
     }
-    const scalar mw = rho/cSum;
+
     scalar cp = 0.0;
     for (label i=0; i<nSpecie_; i++)
     {
-        const scalar cpi = specieThermo_[i].cp(p, T);
-        const scalar Xi = c[i]/rho;
-        cp += Xi*cpi;
+        cp += c[i]*specieThermo_[i].cp(p, T);
     }
-    cp /= mw;
+    cp /= rho;
 
     scalar dT = 0.0;
     for (label i = 0; i < nSpecie_; i++)
@@ -811,6 +809,7 @@ Foam::scalar Foam::chemistryModel<CompType, ThermoType>::solve
 
             // update the temperature
             const scalar cTot = sum(c);
+
             ThermoType mixture(0.0*specieThermo_[0]);
             for (label i=0; i<nSpecie_; i++)
             {
