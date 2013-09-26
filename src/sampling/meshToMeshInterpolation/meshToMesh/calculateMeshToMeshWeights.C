@@ -65,15 +65,31 @@ void Foam::meshToMesh::calculateInverseDistanceWeights() const
 
             // if the nearest cell is a boundary cell or there is a direct hit,
             // pick up the value
-            if
-            (
-                m < directHitTol                            // Direct hit
-             || neighbours.empty()
-            )
+            label directCelli = -1;
+            if (m < directHitTol || neighbours.empty())
             {
-                invDistCoeffs[celli].setSize(1);
-                invDistCoeffs[celli][0] = 1.0;
-                V_ += fromMesh_.V()[cellAddressing_[celli]];
+                directCelli = celli;
+            }
+            else
+            {
+                forAll(neighbours, ni)
+                {
+                    scalar nm = mag(target - centreFrom[neighbours[ni]]);
+                    if (nm < directHitTol)
+                    {
+                        directCelli = neighbours[ni];
+                        break;
+                    }
+                }
+            }
+
+
+            if (directCelli != -1)
+            {
+                // Direct hit
+                invDistCoeffs[directCelli].setSize(1);
+                invDistCoeffs[directCelli][0] = 1.0;
+                V_ += fromMesh_.V()[cellAddressing_[directCelli]];
             }
             else
             {

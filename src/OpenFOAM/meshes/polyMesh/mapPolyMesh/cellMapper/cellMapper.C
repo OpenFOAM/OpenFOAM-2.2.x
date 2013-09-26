@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -27,9 +27,6 @@ License
 #include "demandDrivenData.H"
 #include "polyMesh.H"
 #include "mapPolyMesh.H"
-
-// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
-
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
@@ -152,6 +149,8 @@ void Foam::cellMapper::calcAddressing() const
             w[cellI] = scalarList(mo.size(), 1.0/mo.size());
         }
 
+        // Volume conservative mapping if possible
+
         const List<objectMap>& cfc = mpm_.cellsFromCellsMap();
 
         forAll(cfc, cfcI)
@@ -166,12 +165,73 @@ void Foam::cellMapper::calcAddressing() const
                 FatalErrorIn("void cellMapper::calcAddressing() const")
                     << "Master cell " << cellI
                     << " mapped from cell cells " << mo
-                    << " already destination of mapping." << abort(FatalError);
+                    << " already destination of mapping."
+                    << abort(FatalError);
             }
 
-            // Map from masters, uniform weights
+            // Map from masters
             addr[cellI] = mo;
-            w[cellI] = scalarList(mo.size(), 1.0/mo.size());
+        }
+
+        if (mpm_.hasOldCellVolumes())
+        {
+            // Volume weighted
+
+            const scalarField& V = mpm_.oldCellVolumes();
+
+            if (V.size() != sizeBeforeMapping())
+            {
+                FatalErrorIn("void cellMapper::calcAddressing() const")
+                    << "cellVolumes size " << V.size()
+                    << " is not the old number of cells " << sizeBeforeMapping()
+                    << ". Are your cellVolumes already mapped?"
+                    << " (new number of cells " << size() << ")"
+                    << abort(FatalError);
+            }
+
+            forAll(cfc, cfcI)
+            {
+                const labelList& mo = cfc[cfcI].masterObjects();
+
+                label cellI = cfc[cfcI].index();
+
+                w[cellI].setSize(mo.size());
+
+                if (mo.size())
+                {
+                    scalar sumV = 0;
+                    forAll(mo, ci)
+                    {
+                        w[cellI][ci] = V[mo[ci]];
+                        sumV += V[mo[ci]];
+                    }
+                    if (sumV > VSMALL)
+                    {
+                        forAll(mo, ci)
+                        {
+                            w[cellI][ci] /= sumV;
+                        }
+                    }
+                    else
+                    {
+                        // Exception: zero volume. Use uniform mapping
+                        w[cellI] = scalarList(mo.size(), 1.0/mo.size());
+                    }
+                }
+            }
+        }
+        else
+        {
+            // Uniform weighted
+
+            forAll(cfc, cfcI)
+            {
+                const labelList& mo = cfc[cfcI].masterObjects();
+
+                label cellI = cfc[cfcI].index();
+
+                w[cellI] = scalarList(mo.size(), 1.0/mo.size());
+            }
         }
 
 
@@ -411,15 +471,6 @@ const Foam::labelList& Foam::cellMapper::insertedObjectLabels() const
 
     return *insertedCellLabelsPtr_;
 }
-
-
-// * * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * //
-
-
-// * * * * * * * * * * * * * * * Friend Functions  * * * * * * * * * * * * * //
-
-
-// * * * * * * * * * * * * * * * Friend Operators  * * * * * * * * * * * * * //
 
 
 // ************************************************************************* //

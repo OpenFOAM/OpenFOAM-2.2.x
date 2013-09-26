@@ -818,22 +818,25 @@ void Foam::polyTopoChange::getFaceOrder
     patchSizes.setSize(nPatches_);
     patchSizes = 0;
 
-    patchStarts[0] = newFaceI;
-
-    for (label faceI = 0; faceI < nActiveFaces; faceI++)
+    if (nPatches_ > 0)
     {
-        if (region_[faceI] >= 0)
+        patchStarts[0] = newFaceI;
+
+        for (label faceI = 0; faceI < nActiveFaces; faceI++)
         {
-            patchSizes[region_[faceI]]++;
+            if (region_[faceI] >= 0)
+            {
+                patchSizes[region_[faceI]]++;
+            }
         }
-    }
 
-    label faceI = patchStarts[0];
+        label faceI = patchStarts[0];
 
-    forAll(patchStarts, patchI)
-    {
-        patchStarts[patchI] = faceI;
-        faceI += patchSizes[patchI];
+        forAll(patchStarts, patchI)
+        {
+            patchStarts[patchI] = faceI;
+            faceI += patchSizes[patchI];
+        }
     }
 
     //if (debug)
@@ -3142,6 +3145,7 @@ Foam::autoPtr<Foam::mapPolyMesh> Foam::polyTopoChange::changeMesh
     const label nOldPoints(mesh.nPoints());
     const label nOldFaces(mesh.nFaces());
     const label nOldCells(mesh.nCells());
+    autoPtr<scalarField> oldCellVolumes(new scalarField(mesh.cellVolumes()));
 
 
     // Change the mesh
@@ -3320,6 +3324,9 @@ Foam::autoPtr<Foam::mapPolyMesh> Foam::polyTopoChange::changeMesh
             newPoints,          // if empty signals no inflation.
             oldPatchStarts,
             oldPatchNMeshPoints,
+
+            oldCellVolumes,
+
             true                // steal storage.
         )
     );
@@ -3405,6 +3412,7 @@ Foam::autoPtr<Foam::mapPolyMesh> Foam::polyTopoChange::makeMesh
     const label nOldPoints(mesh.nPoints());
     const label nOldFaces(mesh.nFaces());
     const label nOldCells(mesh.nCells());
+    autoPtr<scalarField> oldCellVolumes(new scalarField(mesh.cellVolumes()));
 
 
     // Create the mesh
@@ -3614,6 +3622,7 @@ Foam::autoPtr<Foam::mapPolyMesh> Foam::polyTopoChange::makeMesh
             newPoints,          // if empty signals no inflation.
             oldPatchStarts,
             oldPatchNMeshPoints,
+            oldCellVolumes,
             true                // steal storage.
         )
     );

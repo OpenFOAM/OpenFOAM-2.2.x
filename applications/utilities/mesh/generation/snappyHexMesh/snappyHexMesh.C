@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
 
     const bool overwrite = args.optionFound("overwrite");
     const bool checkGeometry = args.optionFound("checkGeometry");
-    const bool writeLevel = args.optionFound("writeLevel");
+    bool writeLevel = args.optionFound("writeLevel");
 
     // Check patches and faceZones are synchronised
     mesh.boundaryMesh().checkParallelSync(true);
@@ -225,6 +225,7 @@ int main(int argc, char *argv[])
         autoLayerDriver::debug  = debug;
     }
 
+    writeLevel = meshDict.lookupOrDefault<bool>("writeLevel", writeLevel);
 
     // Read geometry
     // ~~~~~~~~~~~~~

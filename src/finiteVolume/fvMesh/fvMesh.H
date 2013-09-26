@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -142,6 +142,9 @@ class fvMesh
 
             //- Clear addressing
             void clearAddressing();
+
+            //- Preserve old volume(s)
+            void storeOldVol(const scalarField&);
 
 
        // Make geometric data

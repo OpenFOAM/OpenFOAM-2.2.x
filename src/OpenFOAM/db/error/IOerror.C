@@ -255,28 +255,31 @@ void Foam::IOerror::abort()
 
 Foam::Ostream& Foam::operator<<(Ostream& os, const IOerror& ioErr)
 {
-    os  << endl
-        << ioErr.title().c_str() << endl
-        << ioErr.message().c_str() << endl << endl;
-
-    os  << "file: " << ioErr.ioFileName().c_str();
-
-    if (ioErr.ioStartLineNumber() >= 0 && ioErr.ioEndLineNumber() >= 0)
+    if (!os.bad())
     {
-        os  << " from line " << ioErr.ioStartLineNumber()
-            << " to line " << ioErr.ioEndLineNumber() << '.';
-    }
-    else if (ioErr.ioStartLineNumber() >= 0)
-    {
-        os  << " at line " << ioErr.ioStartLineNumber() << '.';
-    }
+        os  << endl
+            << ioErr.title().c_str() << endl
+            << ioErr.message().c_str() << endl << endl;
 
-    if (IOerror::level >= 2 && ioErr.sourceFileLineNumber())
-    {
-        os  << endl << endl
-            << "    From function " << ioErr.functionName().c_str() << endl
-            << "    in file " << ioErr.sourceFileName().c_str()
-            << " at line " << ioErr.sourceFileLineNumber() << '.';
+        os  << "file: " << ioErr.ioFileName().c_str();
+
+        if (ioErr.ioStartLineNumber() >= 0 && ioErr.ioEndLineNumber() >= 0)
+        {
+            os  << " from line " << ioErr.ioStartLineNumber()
+                << " to line " << ioErr.ioEndLineNumber() << '.';
+        }
+        else if (ioErr.ioStartLineNumber() >= 0)
+        {
+            os  << " at line " << ioErr.ioStartLineNumber() << '.';
+        }
+
+        if (IOerror::level >= 2 && ioErr.sourceFileLineNumber())
+        {
+            os  << endl << endl
+                << "    From function " << ioErr.functionName().c_str() << endl
+                << "    in file " << ioErr.sourceFileName().c_str()
+                << " at line " << ioErr.sourceFileLineNumber() << '.';
+        }
     }
 
     return os;
