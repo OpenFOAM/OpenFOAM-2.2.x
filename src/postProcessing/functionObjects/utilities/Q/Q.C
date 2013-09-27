@@ -64,7 +64,7 @@ Foam::Q::Q
                 "const dictionary&, "
                 "const bool"
             ")"
-        )   << "No fvMesh available, deactivating." << nl
+        )   << "No fvMesh available, deactivating " << name_ << nl
             << endl;
     }
 
@@ -124,6 +124,7 @@ void Foam::Q::end()
     // Do nothing - only valid on write
 }
 
+
 void Foam::Q::timeSet()
 {
     // Do nothing - only valid on write
@@ -149,10 +150,11 @@ void Foam::Q::write()
 
         Q = 0.5*(sqr(tr(gradU)) - tr(((gradU) & (gradU))));
 
-        Q.write();
+        Info<< type() << " " << name_ << " output:" << nl
+            << "    writing field " << Q.name() << nl
+            << endl;
 
-        Info<< type() << " output:" << nl
-            << "    writing " << Q.name() << " field" << nl << endl;
+        Q.write();
     }
 }
 

@@ -50,7 +50,11 @@ Foam::nearWallFields::nearWallFields
     fieldSet_()
 {
     // Check if the available mesh is an fvMesh otherise deactivate
-    if (!isA<fvMesh>(obr_))
+    if (isA<fvMesh>(obr_))
+    {
+        read(dict);
+    }
+    else
     {
         active_ = false;
         WarningIn
@@ -62,11 +66,10 @@ Foam::nearWallFields::nearWallFields
                 "const dictionary&, "
                 "const bool"
             ")"
-        )   << "No fvMesh available, deactivating."
+        )   << "No fvMesh available, deactivating " << name_
             << endl;
     }
 
-    read(dict);
 }
 
 
@@ -124,12 +127,16 @@ void Foam::nearWallFields::read(const dictionary& dict)
             reverseFieldMap_.insert(sampleFldName, fldName);
         }
 
-        Info<< "Creating " << fieldMap_.size() << " fields" << endl;
+        Info<< type() << " " << name_ << ": Creating " << fieldMap_.size()
+            << " fields" << endl;
+
         createFields(vsf_);
         createFields(vvf_);
         createFields(vSpheretf_);
         createFields(vSymmtf_);
         createFields(vtf_);
+
+        Info<< endl;
     }
 }
 
@@ -179,7 +186,9 @@ void Foam::nearWallFields::write()
     // Do nothing
     if (active_)
     {
-        Info<< "Writing sampled fields to " << obr_.time().timeName()
+        Info<< type() << " " << name_ << " output:" << nl;
+
+        Info<< "    Writing sampled fields to " << obr_.time().timeName()
             << endl;
 
         sampleFields(vsf_);
@@ -209,6 +218,8 @@ void Foam::nearWallFields::write()
         {
             vtf_[i].write();
         }
+
+        Info<< endl;
     }
 }
 

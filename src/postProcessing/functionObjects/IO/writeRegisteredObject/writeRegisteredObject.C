@@ -89,6 +89,8 @@ void Foam::writeRegisteredObject::timeSet()
 
 void Foam::writeRegisteredObject::write()
 {
+    Info<< type() << " " << name_ << " output:" << nl;
+
     forAll(objectNames_, i)
     {
         if (obr_.foundObject<regIOobject>(objectNames_[i]))
@@ -104,6 +106,8 @@ void Foam::writeRegisteredObject::write()
                 // Switch off automatic writing to prevent double write
                 obj.writeOpt() = IOobject::NO_WRITE;
             }
+
+            Info<< "    writing object " << obj.name() << nl << endl;
 
             obj.write();
         }

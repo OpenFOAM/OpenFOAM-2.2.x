@@ -457,13 +457,13 @@ Foam::wallBoundedStreamLine::wallBoundedStreamLine
         WarningIn
         (
             "wallBoundedStreamLine::wallBoundedStreamLine\n"
-            "(\n"
-                "const word&,\n"
-                "const objectRegistry&,\n"
-                "const dictionary&,\n"
-                "const bool\n"
+            "("
+                "const word&, "
+                "const objectRegistry&, "
+                "const dictionary&, "
+                "const bool "
             ")"
-        )   << "No fvMesh available, deactivating."
+        )   << "No fvMesh available, deactivating " << name_
             << nl << endl;
     }
 }
@@ -584,11 +584,11 @@ void Foam::wallBoundedStreamLine::read(const dictionary& dict)
             {
                 label nFaces = returnReduce(faces.size(), sumOp<label>());
 
-                WarningIn("wallBoundedStreamLine::track()")
+                WarningIn("wallBoundedStreamLine::read(const dictionary&)")
                     << "Found " << nFaces
                     <<" faces with low quality or negative volume "
                     << "decomposition tets. Writing to faceSet " << faces.name()
-                    << endl;    //exit(FatalError);
+                    << endl;
             }
 
             // 2. all edges on a cell having two faces
@@ -625,7 +625,7 @@ void Foam::wallBoundedStreamLine::read(const dictionary& dict)
                     {
                         FatalErrorIn
                         (
-                            "wallBoundedStreamLine::read(..)"
+                            "wallBoundedStreamLine::read(const dictionary&)"
                         )   << "problem cell:" << cellI
                             << abort(FatalError);
                     }
@@ -643,9 +643,9 @@ void Foam::wallBoundedStreamLine::execute()
 void Foam::wallBoundedStreamLine::end()
 {}
 
+
 void Foam::wallBoundedStreamLine::timeSet()
 {}
-
 
 
 void Foam::wallBoundedStreamLine::write()

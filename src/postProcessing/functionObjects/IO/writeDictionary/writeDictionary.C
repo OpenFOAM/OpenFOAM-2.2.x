@@ -63,7 +63,7 @@ bool Foam::writeDictionary::tryFolder
         {
             if (firstDict)
             {
-                Info<< type() << " output:" << nl << endl;
+                Info<< type() << " " << name_ << " output:" << nl << endl;
 
                 IOobject::writeDivider(Info);
                 Info<< endl;
@@ -121,7 +121,7 @@ void Foam::writeDictionary::read(const dictionary& dict)
 
     digests_.setSize(dictNames_.size(), SHA1Digest());
 
-    Info<< type() << ": monitoring dictionaries:" << nl;
+    Info<< type() << " " << name_ << ": monitoring dictionaries:" << nl;
     if (dictNames_.size())
     {
         forAll(dictNames_, i)
@@ -151,7 +151,7 @@ void Foam::writeDictionary::execute()
             {
                 if (firstDict)
                 {
-                    Info<< type() << " output:" << nl << endl;
+                    Info<< type() << " " << name_ << " output:" << nl << endl;
 
                     IOobject::writeDivider(Info);
                     Info<< endl;
@@ -197,6 +197,7 @@ void Foam::writeDictionary::end()
 {
     // do nothing
 }
+
 
 void Foam::writeDictionary::timeSet()
 {

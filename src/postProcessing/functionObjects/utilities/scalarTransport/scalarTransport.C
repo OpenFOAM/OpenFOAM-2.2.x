@@ -302,6 +302,7 @@ void Foam::scalarTransport::end()
     // Do nothing
 }
 
+
 void Foam::scalarTransport::timeSet()
 {
     // Do nothing

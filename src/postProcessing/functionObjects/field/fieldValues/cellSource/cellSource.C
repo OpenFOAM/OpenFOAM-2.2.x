@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -222,11 +222,22 @@ void Foam::fieldValues::cellSource::write()
 
         forAll(fields_, i)
         {
-            writeValues<scalar>(fields_[i]);
-            writeValues<vector>(fields_[i]);
-            writeValues<sphericalTensor>(fields_[i]);
-            writeValues<symmTensor>(fields_[i]);
-            writeValues<tensor>(fields_[i]);
+            const word& fieldName = fields_[i];
+            bool processed = false;
+
+            processed = processed || writeValues<scalar>(fieldName);
+            processed = processed || writeValues<vector>(fieldName);
+            processed = processed || writeValues<sphericalTensor>(fieldName);
+            processed = processed || writeValues<symmTensor>(fieldName);
+            processed = processed || writeValues<tensor>(fieldName);
+
+            if (!processed)
+            {
+                WarningIn("void Foam::fieldValues::cellSource::write()")
+                    << "Requested field " << fieldName
+                    << " not found in database and not processed"
+                    << endl;
+            }
         }
 
         if (Pstream::master())

@@ -62,7 +62,7 @@ Foam::DESModelRegions::DESModelRegions
     name_(name),
     obr_(obr),
     active_(true),
-    log_(false)
+    log_(true)
 {
     // Check if the available mesh is an fvMesh, otherwise deactivate
     if (!isA<fvMesh>(obr_))
@@ -77,8 +77,32 @@ Foam::DESModelRegions::DESModelRegions
                 "const dictionary&, "
                 "const bool"
             ")"
-        )   << "No fvMesh available, deactivating." << nl
+        )   << "No fvMesh available, deactivating " << name_ << nl
             << endl;
+    }
+
+    if (active_)
+    {
+        const fvMesh& mesh = refCast<const fvMesh>(obr_);
+
+        volScalarField* DESModelRegionsPtr
+        (
+            new volScalarField
+            (
+                IOobject
+                (
+                    type(),
+                    mesh.time().timeName(),
+                    mesh,
+                    IOobject::NO_READ,
+                    IOobject::NO_WRITE
+                ),
+                mesh,
+                dimensionedScalar("0", dimless, 0.0)
+            )
+        );
+
+        mesh.objectRegistry::store(DESModelRegionsPtr);
     }
 
     read(dict);
@@ -97,7 +121,7 @@ void Foam::DESModelRegions::read(const dictionary& dict)
 {
     if (active_)
     {
-        log_ = dict.lookupOrDefault<Switch>("log", false);
+        log_ = dict.lookupOrDefault<Switch>("log", true);
     }
 }
 
@@ -136,10 +160,15 @@ void Foam::DESModelRegions::write()
 
         if (log_)
         {
-            Info<< type() << " output:" << nl;
+            Info<< type() << " " << name_ << " output:" << nl;
         }
 
-        tmp<volScalarField> tresult;
+        volScalarField& DESModelRegions =
+            const_cast<volScalarField&>
+            (
+                mesh.lookupObject<volScalarField>(type())
+            );
+
 
         label DESpresent = false;
         if (mesh.foundObject<icoModel>("turbulenceModel"))
@@ -151,7 +180,7 @@ void Foam::DESModelRegions::write()
             {
                 const icoDESModel& des =
                     dynamic_cast<const icoDESModel&>(model);
-                tresult = des.LESRegion();
+                DESModelRegions == des.LESRegion();
                 DESpresent = true;
             }
         }
@@ -164,17 +193,16 @@ void Foam::DESModelRegions::write()
             {
                 const cmpDESModel& des =
                     dynamic_cast<const cmpDESModel&>(model);
-                tresult = des.LESRegion();
+                DESModelRegions == des.LESRegion();
                 DESpresent = true;
             }
         }
 
         if (DESpresent)
         {
-            const volScalarField& result = tresult();
-
             scalar prc =
-                gSum(result.internalField()*mesh.V())/gSum(mesh.V())*100.0;
+                gSum(DESModelRegions.internalField()*mesh.V())
+               /gSum(mesh.V())*100.0;
 
             if (Pstream::master())
             {
@@ -186,10 +214,11 @@ void Foam::DESModelRegions::write()
             {
                 Info<< "    LES = " << prc << " % (volume)" << nl
                     << "    RAS = " << 100.0 - prc << " % (volume)" << nl
+                    << "    writing field " << DESModelRegions.name() << nl
                     << endl;
             }
 
-            result.write();
+            DESModelRegions.write();
         }
         else
         {
