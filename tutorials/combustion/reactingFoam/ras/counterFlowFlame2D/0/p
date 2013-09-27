@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.2.1                                 |
+|  \\    /   O peration     | Version:  2.2.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -14,7 +14,6 @@ FoamFile
     object      p;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
 
 dimensions      [1 -1 -2 0 0 0 0];
 
@@ -30,14 +29,16 @@ boundaryField
     {
         type            zeroGradient;
     }
-    inlet2
-    {
-        type            zeroGradient;
-    }
     outlet
     {
-        type            fixedValue;
-        value           uniform 1e5;
+        type            totalPressure;
+        p0              $internalField;
+        U               U;
+        phi             phi;
+        rho             none;
+        psi             none;
+        gamma           1;
+        value           $internalField;
     }
     frontAndBack
     {

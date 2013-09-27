@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.2.1                                 |
+|  \\    /   O peration     | Version:  2.2.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -17,21 +17,26 @@ FoamFile
 
 dimensions      [0 0 0 0 0 0 0];
 
-internalField   uniform 0.77;
+internalField   uniform 1;
 
 boundaryField
 {
     fuel
     {
-        type            calculated;
+        type            fixedValue;
+        value           uniform 0.0;
     }
     air
     {
-        type            calculated;
+        type            fixedValue;
+        value           uniform 0.77;
     }
     outlet
     {
-        type            calculated;
+        type            inletOutlet;
+        inletValue      uniform 1;
+        value           uniform 1;
+
     }
     frontAndBack
     {
