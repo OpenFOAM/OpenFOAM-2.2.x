@@ -38,7 +38,7 @@ EulerImplicitCoeffs
 
 odeCoeffs
 {
-    solver          SIBS;
+    solver          KRR4;
     eps             0.05;
     scale           1;
 }
