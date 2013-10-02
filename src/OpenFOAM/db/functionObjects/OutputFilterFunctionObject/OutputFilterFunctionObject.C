@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -180,7 +180,9 @@ bool Foam::OutputFilterFunctionObject<OutputFilter>::execute
 template<class OutputFilter>
 bool Foam::OutputFilterFunctionObject<OutputFilter>::end()
 {
-    if (active())
+    // note: use enabled_ here instead of active() since end should be called
+    // even if out of time bounds
+    if (enabled_)
     {
         if (!storeFilter_)
         {
@@ -251,15 +253,15 @@ bool Foam::OutputFilterFunctionObject<OutputFilter>::adjustTimeStep()
         scalar nSteps = timeToNextWrite/deltaT - SMALL;
 
         // function objects modify deltaT inside nStepsToStartTimeChange range
-        // NOTE: Potential problem if two function objects dump inside the same
-        //interval
+        // note: Potential problem if two function objects dump inside the same
+        // interval
         if (nSteps < nStepsToStartTimeChange_)
         {
             label nStepsToNextWrite = label(nSteps) + 1;
 
             scalar newDeltaT = timeToNextWrite/nStepsToNextWrite;
 
-            //Adjust time step
+            // adjust time step
             if (newDeltaT < deltaT)
             {
                 deltaT = max(newDeltaT, 0.2*deltaT);
