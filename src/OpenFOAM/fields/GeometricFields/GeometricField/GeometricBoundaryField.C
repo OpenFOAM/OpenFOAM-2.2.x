@@ -36,6 +36,9 @@ readField
     const dictionary& dict
 )
 {
+    // Clear the boundary field if already initialised
+    this->clear();
+
     this->setSize(bmesh_.size());
 
     if (debug)
