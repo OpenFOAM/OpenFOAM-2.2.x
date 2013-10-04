@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -25,7 +25,8 @@ License
 
 #include "nearWallFields.H"
 #include "mappedFieldFvPatchFields.H"
-#include "interpolationCellPoint.H"
+//#include "interpolationCellPoint.H"
+#include "cachedInterpolationCellPoint.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -87,7 +88,7 @@ void Foam::nearWallFields::createFields
                             sampleFld.name(),       // fieldName
                             false,                  // setAverage
                             pTraits<Type>::zero,    // average
-                            interpolationCellPoint<Type>::typeName
+                            cachedInterpolationCellPoint<Type>::typeName
                         )
                     );
                 }

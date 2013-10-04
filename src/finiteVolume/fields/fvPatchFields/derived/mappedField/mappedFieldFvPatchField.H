@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -109,17 +109,11 @@ class mappedFieldFvPatchField
         //- Interpolation scheme to use for nearestCell mode
         word interpolationScheme_;
 
-        //- Pointer to the cell interpolator
-        mutable autoPtr<interpolation<Type> > interpolator_;
-
 
     // Private Member Functions
 
         //- Field to sample. Either on my or nbr mesh
         const GeometricField<Type, fvPatchField, volMesh>& sampleField() const;
-
-        //- Access the interpolation method
-        const interpolation<Type>& interpolator() const;
 
 
 public:
