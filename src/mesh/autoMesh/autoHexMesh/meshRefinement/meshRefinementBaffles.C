@@ -44,6 +44,10 @@ License
 #include "regionSplit.H"
 #include "removeCells.H"
 #include "unitConversion.H"
+#include "OBJstream.H"
+#include "patchFaceOrientation.H"
+#include "PatchEdgeFaceWave.H"
+#include "patchEdgeFaceRegion.H"
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
@@ -1829,6 +1833,499 @@ void Foam::meshRefinement::makeConsistentFaceIndex
 }
 
 
+Foam::labelList Foam::meshRefinement::freeStandingBaffleFaces
+(
+    const labelList& namedSurfaceIndex,
+    const labelList& cellToZone,
+    const labelList& neiCellZone
+) const
+{
+    const polyBoundaryMesh& patches = mesh_.boundaryMesh();
+    const labelList& faceOwner = mesh_.faceOwner();
+    const labelList& faceNeighbour = mesh_.faceNeighbour();
+
+
+    DynamicList<label> faceLabels(mesh_.nFaces()/20);
+
+    for (label faceI = 0; faceI < mesh_.nInternalFaces(); faceI++)
+    {
+        label surfI = namedSurfaceIndex[faceI];
+        if (surfI != -1)
+        {
+            // Free standing baffle?
+            label ownZone = cellToZone[faceOwner[faceI]];
+            label neiZone = cellToZone[faceNeighbour[faceI]];
+            if (max(ownZone, neiZone) == -1)
+            {
+                faceLabels.append(faceI);
+            }
+        }
+    }
+    forAll(patches, patchI)
+    {
+        const polyPatch& pp = patches[patchI];
+
+        forAll(pp, i)
+        {
+            label faceI = pp.start()+i;
+            label surfI = namedSurfaceIndex[faceI];
+            if (surfI != -1)
+            {
+                // Free standing baffle?
+                label ownZone = cellToZone[faceOwner[faceI]];
+                label neiZone = neiCellZone[faceI-mesh_.nInternalFaces()];
+                if (max(ownZone, neiZone) == -1)
+                {
+                    faceLabels.append(faceI);
+                }
+            }
+        }
+    }
+    return faceLabels.shrink();
+}
+
+
+void Foam::meshRefinement::calcPatchNumMasterFaces
+(
+    const PackedBoolList& isMasterFace,
+    const indirectPrimitivePatch& patch,
+    labelList& nMasterFacesPerEdge
+) const
+{
+    // Number of (master)faces per edge
+    nMasterFacesPerEdge.setSize(patch.nEdges());
+    nMasterFacesPerEdge = 0;
+
+    forAll(patch.addressing(), faceI)
+    {
+        const label meshFaceI = patch.addressing()[faceI];
+
+        if (isMasterFace[meshFaceI])
+        {
+            const labelList& fEdges = patch.faceEdges()[faceI];
+            forAll(fEdges, fEdgeI)
+            {
+                nMasterFacesPerEdge[fEdges[fEdgeI]]++;
+            }
+        }
+    }
+
+    syncTools::syncEdgeList
+    (
+        mesh_,
+        patch.meshEdges(mesh_.edges(), mesh_.pointEdges()),
+        nMasterFacesPerEdge,
+        plusEqOp<label>(),
+        0
+    );
+}
+
+
+Foam::label Foam::meshRefinement::markPatchZones
+(
+    const indirectPrimitivePatch& patch,
+    const labelList& nMasterFacesPerEdge,
+    labelList& faceToZone
+) const
+{
+    List<patchEdgeFaceRegion> allEdgeInfo(patch.nEdges());
+    List<patchEdgeFaceRegion> allFaceInfo(patch.size());
+
+
+    // Protect all non-manifold edges
+    {
+        label nProtected = 0;
+
+        forAll(nMasterFacesPerEdge, edgeI)
+        {
+            if (nMasterFacesPerEdge[edgeI] > 2)
+            {
+                allEdgeInfo[edgeI] = -2;
+                nProtected++;
+            }
+        }
+        //Info<< "Protected from visiting "
+        //    << returnReduce(nProtected, sumOp<label>())
+        //    << " non-manifold edges" << nl << endl;
+    }
+
+
+    // Hand out zones
+
+    DynamicList<label> changedEdges;
+    DynamicList<patchEdgeFaceRegion> changedInfo;
+
+    const scalar tol = PatchEdgeFaceWave
+    <
+        indirectPrimitivePatch,
+        patchEdgeFaceRegion
+    >::propagationTol();
+
+    int dummyTrackData;
+
+    const globalIndex globalFaces(patch.size());
+
+    label faceI = 0;
+
+    label currentZoneI = 0;
+
+    while (true)
+    {
+        // Pick an unset face
+        label globalSeed = labelMax;
+        for (; faceI < allFaceInfo.size(); faceI++)
+        {
+            if (!allFaceInfo[faceI].valid(dummyTrackData))
+            {
+                globalSeed = globalFaces.toGlobal(faceI);
+                break;
+            }
+        }
+
+        reduce(globalSeed, minOp<label>());
+
+        if (globalSeed == labelMax)
+        {
+            break;
+        }
+
+        label procI = globalFaces.whichProcID(globalSeed);
+        label seedFaceI = globalFaces.toLocal(procI, globalSeed);
+
+        //Info<< "Seeding zone " << currentZoneI
+        //    << " from processor " << procI << " face " << seedFaceI
+        //    << endl;
+
+        if (procI == Pstream::myProcNo())
+        {
+            patchEdgeFaceRegion& faceInfo = allFaceInfo[seedFaceI];
+
+
+            // Set face
+            faceInfo = currentZoneI;
+
+            // .. and seed its edges
+            const labelList& fEdges = patch.faceEdges()[seedFaceI];
+            forAll(fEdges, fEdgeI)
+            {
+                label edgeI = fEdges[fEdgeI];
+
+                patchEdgeFaceRegion& edgeInfo = allEdgeInfo[edgeI];
+
+                if
+                (
+                    edgeInfo.updateEdge<int>
+                    (
+                        mesh_,
+                        patch,
+                        edgeI,
+                        seedFaceI,
+                        faceInfo,
+                        tol,
+                        dummyTrackData
+                    )
+                )
+                {
+                    changedEdges.append(edgeI);
+                    changedInfo.append(edgeInfo);
+                }
+            }
+        }
+
+
+        if (returnReduce(changedEdges.size(), sumOp<label>()) == 0)
+        {
+            break;
+        }
+
+
+        // Walk
+        PatchEdgeFaceWave
+        <
+            indirectPrimitivePatch,
+            patchEdgeFaceRegion
+        > calc
+        (
+            mesh_,
+            patch,
+            changedEdges,
+            changedInfo,
+            allEdgeInfo,
+            allFaceInfo,
+            returnReduce(patch.nEdges(), sumOp<label>())
+        );
+
+        currentZoneI++;
+    }
+
+
+    faceToZone.setSize(patch.size());
+    forAll(allFaceInfo, faceI)
+    {
+        if (!allFaceInfo[faceI].valid(dummyTrackData))
+        {
+            FatalErrorIn("meshRefinement::markPatchZones(..)")
+                << "Problem: unvisited face " << faceI
+                << " at " << patch.faceCentres()[faceI]
+                << exit(FatalError);
+        }
+        faceToZone[faceI] = allFaceInfo[faceI].region();
+    }
+
+    return currentZoneI;
+}
+
+
+void Foam::meshRefinement::consistentOrientation
+(
+    const PackedBoolList& isMasterFace,
+    const indirectPrimitivePatch& patch,
+    const labelList& nMasterFacesPerEdge,
+    const labelList& faceToZone,
+    const Map<label>& zoneToOrientation,
+    boolList& meshFlipMap
+) const
+{
+    const polyBoundaryMesh& bm = mesh_.boundaryMesh();
+
+    // Data on all edges and faces
+    List<patchFaceOrientation> allEdgeInfo(patch.nEdges());
+    List<patchFaceOrientation> allFaceInfo(patch.size());
+
+    // Make sure we don't walk through
+    // - slaves of coupled faces
+    // - non-manifold edges
+    {
+        label nProtected = 0;
+
+        forAll(patch.addressing(), faceI)
+        {
+            const label meshFaceI = patch.addressing()[faceI];
+            const label patchI = bm.whichPatch(meshFaceI);
+
+            if
+            (
+                patchI != -1
+             && bm[patchI].coupled()
+             && !isMasterFace[meshFaceI]
+            )
+            {
+                // Slave side. Mark so doesn't get visited.
+                allFaceInfo[faceI] = orientedSurface::NOFLIP;
+                nProtected++;
+            }
+        }
+        //Info<< "Protected from visiting "
+        //    << returnReduce(nProtected, sumOp<label>())
+        //    << " slaves of coupled faces" << nl << endl;
+    }
+    {
+        label nProtected = 0;
+
+        forAll(nMasterFacesPerEdge, edgeI)
+        {
+            if (nMasterFacesPerEdge[edgeI] > 2)
+            {
+                allEdgeInfo[edgeI] = orientedSurface::NOFLIP;
+                nProtected++;
+            }
+        }
+
+        Info<< "Protected from visiting "
+            << returnReduce(nProtected, sumOp<label>())
+            << " non-manifold edges" << nl << endl;
+    }
+
+
+
+    DynamicList<label> changedEdges;
+    DynamicList<patchFaceOrientation> changedInfo;
+
+    const scalar tol = PatchEdgeFaceWave
+    <
+        indirectPrimitivePatch,
+        patchFaceOrientation
+    >::propagationTol();
+
+    int dummyTrackData;
+
+    globalIndex globalFaces(patch.size());
+
+    while (true)
+    {
+        // Pick an unset face
+        label globalSeed = labelMax;
+        forAll(allFaceInfo, faceI)
+        {
+            if (allFaceInfo[faceI] == orientedSurface::UNVISITED)
+            {
+                globalSeed = globalFaces.toGlobal(faceI);
+                break;
+            }
+        }
+
+        reduce(globalSeed, minOp<label>());
+
+        if (globalSeed == labelMax)
+        {
+            break;
+        }
+
+        label procI = globalFaces.whichProcID(globalSeed);
+        label seedFaceI = globalFaces.toLocal(procI, globalSeed);
+
+        //Info<< "Seeding from processor " << procI << " face " << seedFaceI
+        //    << endl;
+
+        if (procI == Pstream::myProcNo())
+        {
+            // Determine orientation of seedFace
+
+            patchFaceOrientation& faceInfo = allFaceInfo[seedFaceI];
+
+            // Start off with correct orientation
+            faceInfo = orientedSurface::NOFLIP;
+
+            if (zoneToOrientation[faceToZone[seedFaceI]] < 0)
+            {
+                faceInfo.flip();
+            }
+
+
+            const labelList& fEdges = patch.faceEdges()[seedFaceI];
+            forAll(fEdges, fEdgeI)
+            {
+                label edgeI = fEdges[fEdgeI];
+
+                patchFaceOrientation& edgeInfo = allEdgeInfo[edgeI];
+
+                if
+                (
+                    edgeInfo.updateEdge<int>
+                    (
+                        mesh_,
+                        patch,
+                        edgeI,
+                        seedFaceI,
+                        faceInfo,
+                        tol,
+                        dummyTrackData
+                    )
+                )
+                {
+                    changedEdges.append(edgeI);
+                    changedInfo.append(edgeInfo);
+                }
+            }
+        }
+
+
+        if (returnReduce(changedEdges.size(), sumOp<label>()) == 0)
+        {
+            break;
+        }
+
+
+
+        // Walk
+        PatchEdgeFaceWave
+        <
+            indirectPrimitivePatch,
+            patchFaceOrientation
+        > calc
+        (
+            mesh_,
+            patch,
+            changedEdges,
+            changedInfo,
+            allEdgeInfo,
+            allFaceInfo,
+            returnReduce(patch.nEdges(), sumOp<label>())
+        );
+    }
+
+
+    // Push master zone info over to slave (since slave faces never visited)
+    {
+        labelList neiStatus
+        (
+            mesh_.nFaces()-mesh_.nInternalFaces(),
+            orientedSurface::UNVISITED
+        );
+
+        forAll(patch.addressing(), i)
+        {
+            const label meshFaceI = patch.addressing()[i];
+            if (!mesh_.isInternalFace(meshFaceI))
+            {
+                neiStatus[meshFaceI-mesh_.nInternalFaces()] =
+                    allFaceInfo[i].flipStatus();
+            }
+        }
+        syncTools::swapBoundaryFaceList(mesh_, neiStatus);
+
+        forAll(patch.addressing(), i)
+        {
+            const label meshFaceI = patch.addressing()[i];
+            const label patchI = bm.whichPatch(meshFaceI);
+
+            if
+            (
+                patchI != -1
+             && bm[patchI].coupled()
+             && !isMasterFace[meshFaceI]
+            )
+            {
+                // Slave side. Take flipped from neighbour
+                label bFaceI = meshFaceI-mesh_.nInternalFaces();
+
+                if (neiStatus[bFaceI] == orientedSurface::NOFLIP)
+                {
+                    allFaceInfo[i] = orientedSurface::FLIP;
+                }
+                else if (neiStatus[bFaceI] == orientedSurface::FLIP)
+                {
+                    allFaceInfo[i] = orientedSurface::NOFLIP;
+                }
+                else
+                {
+                    FatalErrorIn("meshRefinement::consistentOrientation(..)")
+                        << "Incorrect status for face " << meshFaceI
+                        << abort(FatalError);
+                }
+            }
+        }
+    }
+
+
+    // Convert to meshFlipMap and adapt faceZones
+
+    meshFlipMap.setSize(mesh_.nFaces());
+    meshFlipMap = false;
+
+    forAll(allFaceInfo, faceI)
+    {
+        label meshFaceI = patch.addressing()[faceI];
+
+        if (allFaceInfo[faceI] == orientedSurface::NOFLIP)
+        {
+            meshFlipMap[meshFaceI] = false;
+        }
+        else if (allFaceInfo[faceI] == orientedSurface::FLIP)
+        {
+            meshFlipMap[meshFaceI] = true;
+        }
+        else
+        {
+            FatalErrorIn("meshRefinement::consistentOrientation(..)")
+                << "Problem : unvisited face " << faceI
+                << " centre:" << mesh_.faceCentres()[meshFaceI]
+                << abort(FatalError);
+        }
+    }
+}
+
+
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 // Split off unreachable areas of mesh.
@@ -2574,6 +3071,7 @@ Foam::autoPtr<Foam::mapPolyMesh> Foam::meshRefinement::zonify
 
     // Like surfaceIndex_ but only for named surfaces.
     labelList namedSurfaceIndex(mesh_.nFaces(), -1);
+    PackedBoolList posOrientation(mesh_.nFaces());
 
     {
         // Statistics: number of faces per faceZone
@@ -2647,15 +3145,19 @@ Foam::autoPtr<Foam::mapPolyMesh> Foam::meshRefinement::zonify
                 surface1,
                 hit1,
                 region1,
+                normal1,
+
                 surface2,
                 hit2,
-                region2
+                region2,
+                normal2
             );
         }
 
         forAll(testFaces, i)
         {
             label faceI = testFaces[i];
+            const vector& area = mesh_.faceAreas()[faceI];
 
             if (surface1[i] != -1)
             {
@@ -2682,23 +3184,26 @@ Foam::autoPtr<Foam::mapPolyMesh> Foam::meshRefinement::zonify
                 )
                 {
                     namedSurfaceIndex[faceI] = surface2[i];
+                    posOrientation[faceI] = ((area&normal2[i]) > 0);
                     nSurfFaces[surface2[i]]++;
                 }
                 else
                 {
                     namedSurfaceIndex[faceI] = surface1[i];
+                    posOrientation[faceI] = ((area&normal1[i]) > 0);
                     nSurfFaces[surface1[i]]++;
                 }
             }
             else if (surface2[i] != -1)
             {
                 namedSurfaceIndex[faceI] = surface2[i];
+                posOrientation[faceI] = ((area&normal2[i]) > 0);
                 nSurfFaces[surface2[i]]++;
             }
         }
 
 
-        // surfaceIndex migh have different surfaces on both sides if
+        // surfaceIndex might have different surfaces on both sides if
         // there happen to be a (obviously thin) surface with different
         // regions between the cell centres. If one is on a named surface
         // and the other is not this might give problems so sync.
@@ -2813,6 +3318,152 @@ Foam::autoPtr<Foam::mapPolyMesh> Foam::meshRefinement::zonify
     polyTopoChange meshMod(mesh_);
 
 
+
+    // Get coupled neighbour cellZone. Set to -1 on non-coupled patches.
+    labelList neiCellZone(mesh_.nFaces()-mesh_.nInternalFaces(), -1);
+    forAll(patches, patchI)
+    {
+        const polyPatch& pp = patches[patchI];
+
+        if (pp.coupled())
+        {
+            forAll(pp, i)
+            {
+                label faceI = pp.start()+i;
+                neiCellZone[faceI-mesh_.nInternalFaces()] =
+                    cellToZone[mesh_.faceOwner()[faceI]];
+            }
+        }
+    }
+    syncTools::swapBoundaryFaceList(mesh_, neiCellZone);
+
+    // Get per face whether is it master (of a coupled set of faces)
+    const PackedBoolList isMasterFace(syncTools::getMasterFaces(mesh_));
+
+
+
+    // faceZones
+    // ~~~~~~~~~
+    // Faces on faceZones come in two variants:
+    // - faces on the outside of a cellZone. They will be oriented to
+    //   point out of the maximum cellZone.
+    // - free-standing faces. These will be oriented according to the
+    //   local surface normal. We do this in a two step algorithm:
+    //      - do a consistent orientation
+    //      - check number of faces with consistent orientation
+    //      - if <0 flip the whole patch
+    boolList meshFlipMap(mesh_.nFaces(), false);
+    {
+        // Collect all data on zone faces without cellZones on either side.
+        const indirectPrimitivePatch patch
+        (
+            IndirectList<face>
+            (
+                mesh_.faces(),
+                freeStandingBaffleFaces
+                (
+                    namedSurfaceIndex,
+                    cellToZone,
+                    neiCellZone
+                )
+            ),
+            mesh_.points()
+        );
+
+        label nFreeStanding = returnReduce(patch.size(), sumOp<label>());
+        if (nFreeStanding > 0)
+        {
+            Info<< "Detected " << nFreeStanding << " free-standing zone faces"
+                << endl;
+
+            // Detect non-manifold edges
+            labelList nMasterFacesPerEdge;
+            calcPatchNumMasterFaces(isMasterFace, patch, nMasterFacesPerEdge);
+
+            // Mark zones. Even a single original surface might create multiple
+            // disconnected/non-manifold-connected zones
+            labelList faceToZone;
+            const label nZones = markPatchZones
+            (
+                patch,
+                nMasterFacesPerEdge,
+                faceToZone
+            );
+
+            Map<label> nPosOrientation(2*nZones);
+            for (label zoneI = 0; zoneI < nZones; zoneI++)
+            {
+                nPosOrientation.insert(zoneI, 0);
+            }
+
+            // Make orientations consistent in a topological way. This just
+            // checks  the first face per zone for whether nPosOrientation
+            // is negative (which it never is at this point)
+            consistentOrientation
+            (
+                isMasterFace,
+                patch,
+                nMasterFacesPerEdge,
+                faceToZone,
+                nPosOrientation,
+
+                meshFlipMap
+            );
+
+            // Count per region the number of orientations (taking the new
+            // flipMap into account)
+            forAll(patch.addressing(), faceI)
+            {
+                label meshFaceI = patch.addressing()[faceI];
+
+                if (isMasterFace[meshFaceI])
+                {
+                    label n = 1;
+                    if
+                    (
+                        bool(posOrientation[meshFaceI])
+                     == meshFlipMap[meshFaceI]
+                    )
+                    {
+                        n = -1;
+                    }
+
+                    nPosOrientation.find(faceToZone[faceI])() += n;
+                }
+            }
+            Pstream::mapCombineGather(nPosOrientation, plusEqOp<label>());
+            Pstream::mapCombineScatter(nPosOrientation);
+
+
+            Info<< "Split " << nFreeStanding << " free-standing zone faces"
+                << " into " << nZones << " disconnected regions with size"
+                << " (negative denotes wrong orientation) :"
+                << endl;
+
+            for (label zoneI = 0; zoneI < nZones; zoneI++)
+            {
+                Info<< "    " << zoneI << "\t" << nPosOrientation[zoneI]
+                    << endl;
+            }
+            Info<< endl;
+
+
+            // Reapply with new counts (in nPosOrientation). This will cause
+            // zones with a negative count to be flipped.
+            consistentOrientation
+            (
+                isMasterFace,
+                patch,
+                nMasterFacesPerEdge,
+                faceToZone,
+                nPosOrientation,
+
+                meshFlipMap
+            );
+        }
+    }
+
+
     // Put the faces into the correct zone
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -2827,7 +3478,15 @@ Foam::autoPtr<Foam::mapPolyMesh> Foam::meshRefinement::zonify
             label neiZone = cellToZone[faceNeighbour[faceI]];
 
             bool flip;
-            if (ownZone == max(ownZone, neiZone))
+
+            label maxZone = max(ownZone, neiZone);
+
+            if (maxZone == -1)
+            {
+                // free-standing face. Use geometrically derived orientation
+                flip = meshFlipMap[faceI];
+            }
+            else if (ownZone == maxZone)
             {
                 flip = false;
             }
@@ -2854,26 +3513,6 @@ Foam::autoPtr<Foam::mapPolyMesh> Foam::meshRefinement::zonify
         }
     }
 
-    // Get coupled neighbour cellZone. Set to -1 on non-coupled patches.
-    labelList neiCellZone(mesh_.nFaces()-mesh_.nInternalFaces(), -1);
-    forAll(patches, patchI)
-    {
-        const polyPatch& pp = patches[patchI];
-
-        if (pp.coupled())
-        {
-            forAll(pp, i)
-            {
-                label faceI = pp.start()+i;
-                neiCellZone[faceI-mesh_.nInternalFaces()] =
-                    cellToZone[mesh_.faceOwner()[faceI]];
-            }
-        }
-    }
-    syncTools::swapBoundaryFaceList(mesh_, neiCellZone);
-
-    // Get per face whether is it master (of a coupled set of faces)
-    PackedBoolList isMasterFace(syncTools::getMasterFaces(mesh_));
 
     // Set owner as no-flip
     forAll(patches, patchI)
@@ -2897,7 +3536,8 @@ Foam::autoPtr<Foam::mapPolyMesh> Foam::meshRefinement::zonify
 
                 if (maxZone == -1)
                 {
-                    flip = false;
+                    // free-standing face. Use geometrically derived orientation
+                    flip = meshFlipMap[faceI];
                 }
                 else if (ownZone == neiZone)
                 {

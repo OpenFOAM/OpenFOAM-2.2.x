@@ -293,11 +293,13 @@ Foam::label Foam::meshRefinement::mergePatchFacesUndo
         )
     );
 
+    // Filter out any set that contains any preserveFace
     label compactI = 0;
     forAll(allFaceSets, i)
     {
-        bool keep = true;
         const labelList& set = allFaceSets[i];
+
+        bool keep = true;
         forAll(set, j)
         {
             if (preserveFaces[set[j]] != -1)

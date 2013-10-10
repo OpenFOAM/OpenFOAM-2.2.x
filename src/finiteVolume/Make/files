@@ -225,6 +225,7 @@ $(interpolation)/interpolationCell/makeInterpolationCell.C
 $(interpolation)/interpolationCellPatchConstrained/makeInterpolationCellPatchConstrained.C
 $(interpolation)/interpolationCellPoint/cellPointWeight/cellPointWeight.C
 $(interpolation)/interpolationCellPoint/makeInterpolationCellPoint.C
+$(interpolation)/cachedInterpolationCellPoint/makeCachedInterpolationCellPoint.C
 $(interpolation)/interpolationCellPointFace/makeInterpolationCellPointFace.C
 $(interpolation)/interpolationCellPointWallModified/cellPointWeightWallModified/cellPointWeightWallModified.C
 $(interpolation)/interpolationCellPointWallModified/makeInterpolationCellPointWallModified.C

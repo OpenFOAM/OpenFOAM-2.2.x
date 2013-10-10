@@ -72,6 +72,7 @@ namespace Foam
 {
 
 class treeDataFace;
+class meshSearch;
 
 /*---------------------------------------------------------------------------*\
                        Class sampledTriSurfaceMesh Declaration
@@ -136,6 +137,8 @@ private:
         tmp<Field<Type> >
         interpolateField(const interpolation<Type>&) const;
 
+        bool update(const meshSearch& meshSearcher);
+
 public:
 
     //- Runtime type information
@@ -189,6 +192,10 @@ public:
         //  Do nothing (and return false) if no update was needed
         virtual bool update();
 
+        //- Update the surface using a bound box to limit the searching.
+        //  For direct use, i.e. not through sample.
+        //  Do nothing (and return false) if no update was needed
+        bool update(const treeBoundBox&);
 
         //- Points of surface
         virtual const pointField& points() const

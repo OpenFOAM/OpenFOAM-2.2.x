@@ -204,22 +204,6 @@ mappedFixedValueFvPatchField<Type>::sampleField() const
 
 
 template<class Type>
-const interpolation<Type>&
-mappedFixedValueFvPatchField<Type>::interpolator() const
-{
-    if (!interpolator_.valid())
-    {
-        interpolator_ = interpolation<Type>::New
-        (
-            interpolationScheme_,
-            sampleField()
-        );
-    }
-    return interpolator_();
-}
-
-
-template<class Type>
 void mappedFixedValueFvPatchField<Type>::updateCoeffs()
 {
     if (this->updated())
@@ -263,6 +247,14 @@ void mappedFixedValueFvPatchField<Type>::updateCoeffs()
                     samples
                 );
 
+                autoPtr<interpolation<Type> > interpolator
+                (
+                    interpolation<Type>::New
+                    (
+                        interpolationScheme_,
+                        sampleField()
+                    )
+                );
                 const interpolation<Type>& interp = interpolator();
 
                 newValues.setSize(samples.size(), pTraits<Type>::max);

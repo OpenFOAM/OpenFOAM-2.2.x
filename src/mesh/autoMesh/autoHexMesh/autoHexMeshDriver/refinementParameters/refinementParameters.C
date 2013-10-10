@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -74,7 +74,7 @@ Foam::refinementParameters::refinementParameters(const dictionary& dict)
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 Foam::labelList Foam::refinementParameters::findCells(const polyMesh& mesh)
- const
+const
 {
     // Force calculation of tet-diag decomposition (for use in findCell)
     (void)mesh.tetBasePtIs();
@@ -95,8 +95,6 @@ Foam::labelList Foam::refinementParameters::findCells(const polyMesh& mesh)
 
         if (localCellI != -1)
         {
-            Pout<< "Found point " << keepPoint << " in cell " << localCellI
-                << " on processor " << Pstream::myProcNo() << endl;
             globalCellI = globalCells.toGlobal(localCellI);
         }
 
@@ -112,6 +110,14 @@ Foam::labelList Foam::refinementParameters::findCells(const polyMesh& mesh)
                 << "Bounding box of the mesh:" << mesh.bounds()
                 << exit(FatalError);
         }
+
+
+        label procI = globalCells.whichProcID(globalCellI);
+        label procCellI = globalCells.toLocal(procI, globalCellI);
+
+        Info<< "Found point " << keepPoint << " in cell " << procCellI
+            << " on processor " << procI << endl;
+
 
         if (globalCells.isLocal(globalCellI))
         {

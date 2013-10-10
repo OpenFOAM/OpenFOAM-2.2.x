@@ -42,7 +42,11 @@ geometry
         //maxTreeDepth 10;    // optional:depth of octree. Decrease only in case
                               // of memory limitations.
 
-        // Per region the patchname. If not provided will be <name>_<region>.
+        // Per region the patchname. If not provided will be <surface>_<region>.
+        // Note: this name cannot be used to identity this region in any
+        //       other part of this dictionary; it is only a name
+        //       for the combination of surface+region (which is only used
+        //       when creating patches)
         regions
         {
             secondSolid
@@ -161,6 +165,10 @@ castellatedMeshControls
             //- Optional faceZone and (for closed surface) cellZone with
             //  how to select the cells that are in the cellZone
             //  (inside / outside / specified insidePoint)
+            //  The orientation of the faceZone is
+            //  - if on cellZone(s) : point out of (maximum) cellZone
+            //  - if freestanding   : oriented according to surface
+
             //faceZone sphere;
             //cellZone sphere;
             //cellZoneInside inside;  //outside/insidePoint
