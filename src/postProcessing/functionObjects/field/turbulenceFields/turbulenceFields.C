@@ -101,7 +101,11 @@ Foam::turbulenceFields::turbulenceFields
     fieldSet_()
 {
     // Check if the available mesh is an fvMesh otherise deactivate
-    if (!isA<fvMesh>(obr_))
+    if (isA<fvMesh>(obr_))
+    {
+        read(dict);
+    }
+    else
     {
         active_ = false;
         WarningIn
@@ -113,11 +117,9 @@ Foam::turbulenceFields::turbulenceFields
                 "const dictionary&, "
                 "const bool"
             ")"
-        )   << "No fvMesh available, deactivating."
+        )   << "No fvMesh available, deactivating " << name_
             << endl;
     }
-
-    read(dict);
 }
 
 
@@ -135,7 +137,7 @@ void Foam::turbulenceFields::read(const dictionary& dict)
     {
         fieldSet_.insert(wordList(dict.lookup("fields")));
 
-        Info<< type() << ": ";
+        Info<< type() << " " << name_ << ": ";
         if (fieldSet_.size())
         {
             Info<< "storing fields:" << nl;
@@ -258,10 +260,12 @@ void Foam::turbulenceFields::end()
     // Do nothing
 }
 
+
 void Foam::turbulenceFields::timeSet()
 {
     // Do nothing
 }
+
 
 void Foam::turbulenceFields::write()
 {

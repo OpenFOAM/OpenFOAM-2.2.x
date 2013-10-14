@@ -97,6 +97,8 @@ void Foam::functionObjectFile::createFiles()
                 filePtrs_.set(i, new OFstream(outputDir/(fName + ".dat")));
 
                 writeFileHeader(i);
+
+                i++;
             }
         }
     }
@@ -240,6 +242,13 @@ Foam::OFstream& Foam::functionObjectFile::file()
             << endl;
     }
 
+    if (!filePtrs_.set(0))
+    {
+        FatalErrorIn("Foam::OFstream& Foam::functionObjectFile::file()")
+            << "File pointer at index " << 0 << " not allocated"
+            << abort(FatalError);
+    }
+
     return filePtrs_[0];
 }
 
@@ -266,6 +275,13 @@ Foam::OFstream& Foam::functionObjectFile::file(const label i)
             "Foam::OFstream& Foam::functionObjectFile::file(const label)"
         )
             << "Request for file(i) can only be done by the master process"
+            << abort(FatalError);
+    }
+
+    if (!filePtrs_.set(i))
+    {
+        FatalErrorIn("Foam::OFstream& Foam::functionObjectFile::file()")
+            << "File pointer at index " << i << " not allocated"
             << abort(FatalError);
     }
 

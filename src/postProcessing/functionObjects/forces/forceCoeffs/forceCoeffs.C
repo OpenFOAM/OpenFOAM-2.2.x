@@ -37,6 +37,55 @@ defineTypeNameAndDebug(forceCoeffs, 0);
 }
 
 
+// * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
+
+void Foam::forceCoeffs::writeFileHeader(const label i)
+{
+    if (i == 0)
+    {
+        // force coeff data
+
+        file(i)
+            << "# liftDir   : " << liftDir_ << nl
+            << "# dragDir   : " << dragDir_ << nl
+            << "# pitchAxis : " << pitchAxis_ << nl
+            << "# magUInf   : " << magUInf_ << nl
+            << "# lRef      : " << lRef_ << nl
+            << "# Aref      : " << Aref_ << nl
+            << "# CofR      : " << coordSys_.origin() << nl
+            << "# Time" << tab << "Cm" << tab << "Cd" << tab << "Cl" << tab
+            << "Cl(f)" << tab << "Cl(r)";
+    }
+    else if (i == 1)
+    {
+        // bin coeff data
+
+        file(i)
+            << "# bins      : " << nBin_ << nl
+            << "# start     : " << binMin_ << nl
+            << "# delta     : " << binDx_ << nl
+            << "# direction : " << binDir_ << nl
+            << "# Time";
+
+        for (label j = 0; j < nBin_; j++)
+        {
+            const word jn('[' + Foam::name(j) + ']');
+
+            file(i)
+                << tab << "Cm" << jn << tab << "Cd" << jn << tab << "Cl" << jn;
+        }
+    }
+    else
+    {
+        FatalErrorIn("void Foam::forces::writeFileHeader(const label)")
+            << "Unhandled file index: " << i
+            << abort(FatalError);
+    }
+
+    file(i)<< endl;
+}
+
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::forceCoeffs::forceCoeffs
@@ -47,7 +96,7 @@ Foam::forceCoeffs::forceCoeffs
     const bool loadFromFiles
 )
 :
-    forces(name, obr, dict, loadFromFiles),
+    forces(name, obr, dict, loadFromFiles, false),
     liftDir_(vector::zero),
     dragDir_(vector::zero),
     pitchAxis_(vector::zero),
@@ -56,6 +105,8 @@ Foam::forceCoeffs::forceCoeffs
     Aref_(0.0)
 {
     read(dict);
+
+    Info<< endl;
 }
 
 
@@ -88,14 +139,6 @@ void Foam::forceCoeffs::read(const dictionary& dict)
 }
 
 
-void Foam::forceCoeffs::writeFileHeader(const label i)
-{
-    file()
-        << "# Time" << tab << "Cm" << tab << "Cd" << tab << "Cl" << tab
-        << "Cl(f)" << "Cl(r)" << endl;
-}
-
-
 void Foam::forceCoeffs::execute()
 {
     // Do nothing - only valid on write
@@ -116,92 +159,82 @@ void Foam::forceCoeffs::timeSet()
 
 void Foam::forceCoeffs::write()
 {
-    if (active_)
+    forces::calcForcesMoment();
+
+    if (!active_)
     {
-        forces::calcForcesMoment();
+        return;
+    }
 
-        if (Pstream::master())
+    if (Pstream::master())
+    {
+        functionObjectFile::write();
+
+        scalar pDyn = 0.5*rhoRef_*magUInf_*magUInf_;
+
+        Field<vector> totForce(force_[0] + force_[1] + force_[2]);
+        Field<vector> totMoment(moment_[0] + moment_[1] + moment_[2]);
+
+        List<Field<scalar> > coeffs(3);
+        coeffs[0].setSize(nBin_);
+        coeffs[1].setSize(nBin_);
+        coeffs[2].setSize(nBin_);
+
+        // lift, drag and moment
+        coeffs[0] = (totForce & liftDir_)/(Aref_*pDyn);
+        coeffs[1] = (totForce & dragDir_)/(Aref_*pDyn);
+        coeffs[2] = (totMoment & pitchAxis_)/(Aref_*lRef_*pDyn);
+
+        scalar Cl = sum(coeffs[0]);
+        scalar Cd = sum(coeffs[1]);
+        scalar Cm = sum(coeffs[2]);
+
+        scalar Clf = Cl/2.0 + Cm;
+        scalar Clr = Cl/2.0 - Cm;
+
+        file(0)
+            << obr_.time().value() << tab
+            << Cm << tab << Cd << tab << Cl << tab << Clf << tab << Clr
+            << endl;
+
+        if (log_)
         {
-            functionObjectFile::write();
+            Info<< type() << " " << name_ << " output:" << nl
+                << "    Cm    = " << Cm << nl
+                << "    Cd    = " << Cd << nl
+                << "    Cl    = " << Cl << nl
+                << "    Cl(f) = " << Clf << nl
+                << "    Cl(r) = " << Clr << endl;
+        }
 
-            scalar pDyn = 0.5*rhoRef_*magUInf_*magUInf_;
-
-            Field<vector> totForce(force_[0] + force_[1] + force_[2]);
-            Field<vector> totMoment(moment_[0] + moment_[1] + moment_[2]);
-
-            List<Field<scalar> > coeffs(3);
-            coeffs[0].setSize(nBin_);
-            coeffs[1].setSize(nBin_);
-            coeffs[2].setSize(nBin_);
-
-            // lift, drag and moment
-            coeffs[0] = (totForce & liftDir_)/(Aref_*pDyn);
-            coeffs[1] = (totForce & dragDir_)/(Aref_*pDyn);
-            coeffs[2] = (totMoment & pitchAxis_)/(Aref_*lRef_*pDyn);
-
-            scalar Cl = sum(coeffs[0]);
-            scalar Cd = sum(coeffs[1]);
-            scalar Cm = sum(coeffs[2]);
-
-            scalar Clf = Cl/2.0 + Cm;
-            scalar Clr = Cl/2.0 - Cm;
-
-            file()
-                << obr_.time().value() << tab
-                << Cm << tab << Cd << tab << Cl << tab << Clf << tab << Clr
-                << endl;
-
-            if (log_)
+        if (nBin_ > 1)
+        {
+            if (binCumulative_)
             {
-                Info<< type() << " output:" << nl
-                    << "    Cm    = " << Cm << nl
-                    << "    Cd    = " << Cd << nl
-                    << "    Cl    = " << Cl << nl
-                    << "    Cl(f) = " << Clf << nl
-                    << "    Cl(r) = " << Clr << endl;
-            }
-
-            if (nBin_ > 1)
-            {
-                autoPtr<writer<scalar> >
-                    binWriterPtr(writer<scalar>::New(binFormat_));
-                wordList fieldNames(IStringStream("(lift drag moment)")());
-
-                coordSet axis
-                (
-                    "forceCoeffs",
-                    "distance",
-                    binPoints_,
-                    mag(binPoints_)
-                );
-
-                fileName forcesDir = baseTimeDir();
-                mkDir(forcesDir);
-
-                if (log_)
+                for (label i = 1; i < coeffs[0].size(); i++)
                 {
-                    Info<< "    Writing bins to " << forcesDir << endl;
+                    coeffs[0][i] += coeffs[0][i-1];
+                    coeffs[1][i] += coeffs[1][i-1];
+                    coeffs[2][i] += coeffs[2][i-1];
                 }
-
-                OFstream osCoeffs(forcesDir/"forceCoeffs_bins");
-
-                if (binCumulative_)
-                {
-                    for (label i = 1; i < coeffs[0].size(); i++)
-                    {
-                        coeffs[0][i] += coeffs[0][i-1];
-                        coeffs[1][i] += coeffs[1][i-1];
-                        coeffs[2][i] += coeffs[2][i-1];
-                    }
-                }
-
-                binWriterPtr->write(axis, fieldNames, coeffs, osCoeffs);
             }
 
-            if (log_)
+            file(1)<< obr_.time().value();
+
+            forAll(coeffs[0], i)
             {
-                Info<< endl;
+                file(1)
+                    << tab << coeffs[2][i]
+                    << tab << coeffs[1][i]
+                    << tab << coeffs[0][i];
             }
+
+            file(1) << endl;
+        }
+
+        if (log_)
+        {
+            Info<< endl;
         }
     }
 }

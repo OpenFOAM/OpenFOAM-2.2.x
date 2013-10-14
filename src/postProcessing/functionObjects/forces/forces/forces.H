@@ -32,7 +32,8 @@ Description
     pressure and skin-friction forces over a given list of patches.
 
     Member function forces::write() calculates the forces/moments and
-    writes the forces/moments into the file \<timeDir\>/forces.dat
+    writes the forces/moments into the file \<timeDir\>/forces.dat and bin
+    data (if selected) to the file \<timeDir\>/forces_bin.dat
 
     Example of function object specification:
     \verbatim
@@ -45,7 +46,6 @@ Description
         patches     (walls);
         nBin        20;
         binDir      (1 0 0);
-        binFormat   gnuplot;
     }
     \endverbatim
 
@@ -57,7 +57,6 @@ Description
         patches      | patches included in the forces calculation | yes |
         nBin         | number of data bins     | no          |
         binDir       | direction along which bins are defined | no |
-        binFormat    | output format for bin data | no       |
         pName        | pressure field name     | no          | p
         UName        | velocity field name     | no          | U
         rhoName      | density field name (see below) | no   | rho
@@ -209,17 +208,24 @@ protected:
                 //- Bin positions along binDir
                 List<point> binPoints_;
 
-                //- Write format for bin data
-                word binFormat_;
-
                 //- Should bin data be cumulative?
                 bool binCumulative_;
 
 
+            //- Initialised flag
+            bool initialised_;
+
+
     // Protected Member Functions
+
+        //- Create file names for forces and bins
+        wordList createFileNames(const dictionary& dict) const;
 
         //- Output file header information
         virtual void writeFileHeader(const label i);
+
+        //- Initialise the fields
+        void initialise();
 
         //- Return the effective viscous stress (laminar + turbulent).
         tmp<volSymmTensorField> devRhoReff() const;
@@ -244,8 +250,11 @@ protected:
             const vectorField& d
         );
 
+        //- Helper function to write force data
+        void writeForces();
+
         //- Helper function to write bin data
-        void writeBins() const;
+        void writeBins();
 
         //- Disallow default bitwise copy construct
         forces(const forces&);
@@ -269,7 +278,8 @@ public:
             const word& name,
             const objectRegistry&,
             const dictionary&,
-            const bool loadFromFiles = false
+            const bool loadFromFiles = false,
+            const bool readFields = true
         );
 
 

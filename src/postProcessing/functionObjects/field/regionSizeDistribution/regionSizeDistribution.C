@@ -149,10 +149,10 @@ void Foam::regionSizeDistribution::writeAlphaFields
     liquidCore.correctBoundaryConditions();
     backgroundAlpha.correctBoundaryConditions();
 
-    Info<< "Volume of liquid-core = "
+    Info<< "    Volume of liquid-core = "
         << fvc::domainIntegrate(liquidCore).value()
         << endl;
-    Info<< "Volume of background  = "
+    Info<< "    Volume of background  = "
         << fvc::domainIntegrate(backgroundAlpha).value()
         << endl;
 
@@ -330,18 +330,25 @@ Foam::regionSizeDistribution::regionSizeDistribution
     patchNames_(dict.lookup("patches"))
 {
     // Check if the available mesh is an fvMesh, otherwise deactivate
-    if (!isA<fvMesh>(obr_))
+    if (isA<fvMesh>(obr_))
+    {
+        read(dict);
+    }
+    else
     {
         active_ = false;
         WarningIn
         (
             "regionSizeDistribution::regionSizeDistribution"
-            "(const objectRegistry&, const dictionary&)"
-        )   << "No fvMesh available, deactivating." << nl
+            "("
+                "const word&,  "
+                "const objectRegistry&, "
+                "const dictionary&, "
+                "const bool"
+            ")"
+        )   << "No fvMesh available, deactivating " << name_ << nl
             << endl;
     }
-
-    read(dict);
 }
 
 
@@ -391,25 +398,29 @@ void Foam::regionSizeDistribution::end()
     // Do nothing - only valid on write
 }
 
+
 void Foam::regionSizeDistribution::timeSet()
 {
     // Do nothing - only valid on write
 }
 
+
 void Foam::regionSizeDistribution::write()
 {
     if (active_)
     {
+        Info<< type() << " " << name_ << " output:" << nl;
+
         const fvMesh& mesh = refCast<const fvMesh>(obr_);
 
         autoPtr<volScalarField> alphaPtr;
         if (obr_.foundObject<volScalarField>(alphaName_))
         {
-            Info<< "Looking up field " << alphaName_ << endl;
+            Info<< "    Looking up field " << alphaName_ << endl;
         }
         else
         {
-            Info<< "Reading field " << alphaName_ << endl;
+            Info<< "    Reading field " << alphaName_ << endl;
             alphaPtr.reset
             (
                 new volScalarField
@@ -435,7 +446,7 @@ void Foam::regionSizeDistribution::write()
            : obr_.lookupObject<volScalarField>(alphaName_)
         );
 
-        Info<< "Volume of alpha          = "
+        Info<< "    Volume of alpha          = "
             << fvc::domainIntegrate(alpha).value()
             << endl;
 
@@ -443,9 +454,9 @@ void Foam::regionSizeDistribution::write()
         const scalar maxDropletVol = 1.0/6.0*pow(maxDiam_, 3);
         const scalar delta = (maxDiam_-minDiam_)/nBins_;
 
-        Info<< "Mesh volume              = " << meshVol << endl;
-        Info<< "Maximum droplet diameter = " << maxDiam_ << endl;
-        Info<< "Maximum droplet volume   = " << maxDropletVol << endl;
+        Info<< "    Mesh volume              = " << meshVol << endl;
+        Info<< "    Maximum droplet diameter = " << maxDiam_ << endl;
+        Info<< "    Maximum droplet volume   = " << maxDropletVol << endl;
 
 
         // Determine blocked faces
@@ -504,8 +515,8 @@ void Foam::regionSizeDistribution::write()
 
         regionSplit regions(mesh, blockedFace);
 
-        Info<< "Determined " << regions.nRegions() << " disconnected regions"
-            << endl;
+        Info<< "    Determined " << regions.nRegions()
+            << " disconnected regions" << endl;
 
 
         if (debug)
@@ -523,7 +534,7 @@ void Foam::regionSizeDistribution::write()
                 mesh,
                 dimensionedScalar("zero", dimless, 0)
             );
-            Info<< "Dumping region as volScalarField to " << region.name()
+            Info<< "    Dumping region as volScalarField to " << region.name()
                 << endl;
 
             forAll(regions, cellI)
@@ -555,7 +566,7 @@ void Foam::regionSizeDistribution::write()
 
         if (debug)
         {
-            Info<< token::TAB << "Region"
+            Info<< "    " << token::TAB << "Region"
                 << token::TAB << "Volume(mesh)"
                 << token::TAB << "Volume(" << alpha.name() << "):"
                 << token::TAB << "nCells"
@@ -575,7 +586,7 @@ void Foam::regionSizeDistribution::write()
                 ++vIter, ++aIter, ++numIter
             )
             {
-                Info<< token::TAB << vIter.key()
+                Info<< "    " << token::TAB << vIter.key()
                     << token::TAB << vIter()
                     << token::TAB << aIter()
                     << token::TAB << numIter()
@@ -585,7 +596,7 @@ void Foam::regionSizeDistribution::write()
                 alphaSumVol += aIter();
                 nCells += numIter();
             }
-            Info<< token::TAB << "Total:"
+            Info<< "    " << token::TAB << "Total:"
                 << token::TAB << meshSumVol
                 << token::TAB << alphaSumVol
                 << token::TAB << nCells
@@ -597,15 +608,15 @@ void Foam::regionSizeDistribution::write()
 
 
         {
-            Info<< "Patch connected regions (liquid core):" << endl;
-            Info<< token::TAB << "Region"
+            Info<< "    Patch connected regions (liquid core):" << endl;
+            Info<< token::TAB << "    Region"
                 << token::TAB << "Volume(mesh)"
                 << token::TAB << "Volume(" << alpha.name() << "):"
                 << endl;
             forAllConstIter(Map<label>, patchRegions, iter)
             {
                 label regionI = iter.key();
-                Info<< token::TAB << iter.key()
+                Info<< "    " << token::TAB << iter.key()
                     << token::TAB << allRegionVolume[regionI]
                     << token::TAB << allRegionAlphaVolume[regionI] << endl;
 
@@ -614,8 +625,8 @@ void Foam::regionSizeDistribution::write()
         }
 
         {
-            Info<< "Background regions:" << endl;
-            Info<< token::TAB << "Region"
+            Info<< "    Background regions:" << endl;
+            Info<< "    " << token::TAB << "Region"
                 << token::TAB << "Volume(mesh)"
                 << token::TAB << "Volume(" << alpha.name() << "):"
                 << endl;
@@ -636,7 +647,7 @@ void Foam::regionSizeDistribution::write()
                  && vIter() >= maxDropletVol
                 )
                 {
-                    Info<< token::TAB << vIter.key()
+                    Info<< "    " << token::TAB << vIter.key()
                         << token::TAB << vIter()
                         << token::TAB << aIter() << endl;
                 }
@@ -736,8 +747,8 @@ void Foam::regionSizeDistribution::write()
 
             // Write to screen
             {
-                Info<< "Bins:" << endl;
-                Info<< token::TAB << "Bin"
+                Info<< "    Bins:" << endl;
+                Info<< "    " << token::TAB << "Bin"
                     << token::TAB << "Min diameter"
                     << token::TAB << "Count:"
                     << endl;
@@ -745,7 +756,7 @@ void Foam::regionSizeDistribution::write()
                 scalar diam = 0.0;
                 forAll(binCount, binI)
                 {
-                    Info<< token::TAB << binI
+                    Info<< "    " << token::TAB << binI
                         << token::TAB << diam
                         << token::TAB << binCount[binI] << endl;
                     diam += delta;
@@ -772,7 +783,7 @@ void Foam::regionSizeDistribution::write()
                 forAll(selected, i)
                 {
                     const word& fldName = scalarNames[selected[i]];
-                    Info<< "Scalar field " << fldName << endl;
+                    Info<< "    Scalar field " << fldName << endl;
 
                     const scalarField& fld = obr_.lookupObject
                     <
@@ -801,7 +812,7 @@ void Foam::regionSizeDistribution::write()
                 forAll(selected, i)
                 {
                     const word& fldName = vectorNames[selected[i]];
-                    Info<< "Vector field " << fldName << endl;
+                    Info<< "    Vector field " << fldName << endl;
 
                     vectorField fld = obr_.lookupObject
                     <
@@ -810,7 +821,7 @@ void Foam::regionSizeDistribution::write()
 
                     if (coordSysPtr_.valid())
                     {
-                        Info<< "Transforming vector field " << fldName
+                        Info<< "    Transforming vector field " << fldName
                             << " with coordinate system "
                             << coordSysPtr_().name()
                             << endl;
