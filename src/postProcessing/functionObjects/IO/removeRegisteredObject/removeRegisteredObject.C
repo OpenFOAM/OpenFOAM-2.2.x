@@ -78,6 +78,10 @@ void Foam::removeRegisteredObject::execute()
 
             if (obj.ownedByRegistry())
             {
+                Info<< type() << " " << name_ << " output:" << nl
+                    << "    removing object " << obj.name() << nl
+                    << endl;
+
                 const_cast<regIOobject&>(obj).release();
                 delete &obj;
             }
@@ -90,6 +94,7 @@ void Foam::removeRegisteredObject::end()
 {
     // Do nothing - only valid on execute
 }
+
 
 void Foam::removeRegisteredObject::timeSet()
 {

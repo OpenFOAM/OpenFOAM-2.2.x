@@ -29,9 +29,9 @@ Group
 
 Description
     This function object calculates average quantities for a user-specified
-    selection of fields.  Fields are entered as a list of sub-dictionaries,
-    which indicate the type of averages to perform, and can be updated during
-    the calculation.  The current options include:
+    selection of volumetric and surface fields.  Fields are entered as a list
+    of sub-dictionaries, which indicate the type of averages to perform, and
+    can be updated during the calculation.  The current options include:
     - \c mean: arithmetic mean:
         \f[
             \overline{x} = \frac{1}{N}\displaystyle\sum\limits_{i=0}^N x_i
@@ -142,16 +142,7 @@ class fieldAverage
 {
 protected:
 
-    // File and field name extensions
-
-        //- Mean average
-        static const word EXT_MEAN;
-
-        //- Prime-squared average
-        static const word EXT_PRIME2MEAN;
-
-
-    // Private data
+    // Protected data
 
         //- Name of this set of field averages.
         word name_;
@@ -178,22 +169,6 @@ protected:
         //  calculated and output
         List<fieldAverageItem> faItems_;
 
-
-        // Lists of averages
-
-            // Arithmetic mean fields
-            wordList meanScalarFields_;
-            wordList meanVectorFields_;
-            wordList meanSphericalTensorFields_;
-            wordList meanSymmTensorFields_;
-            wordList meanTensorFields_;
-
-            // Prime-squared fields
-            // Only applicable to volScalarFields / volVectorFields
-            wordList prime2MeanScalarFields_;
-            wordList prime2MeanSymmTensorFields_;
-
-
         // Counters
 
             //- Iteration steps counter
@@ -209,24 +184,27 @@ protected:
 
             //- Checkout fields (causes deletion) from the database
             //  and reset lists
-            void resetFields(wordList&);
+            void resetFields();
 
             //- Reset lists (clear existing values) and initialize averaging.
             //  Check requested field averages are valid, populate field lists
             void initialize();
 
-            //- Add mean average field to list
+            //- Add mean average field to database
             template<class Type>
-            void addMeanField(const label, wordList&) const;
+            void addMeanFieldType(const label fieldI);
 
-            //- Add prime-squared average field to list
+            //- Add mean average field to database
+            template<class Type>
+            void addMeanField(const label fieldI);
+
+            //- Add prime-squared average field to database
             template<class Type1, class Type2>
-            void addPrime2MeanField
-            (
-                const label,
-                const wordList&,
-                wordList&
-            ) const;
+            void addPrime2MeanFieldType(const label fieldI);
+
+            //- Add prime-squared average field to database
+            template<class Type1, class Type2>
+            void addPrime2MeanField(const label fieldI);
 
 
         // Calculation functions
@@ -236,23 +214,27 @@ protected:
 
             //- Calculate mean average fields
             template<class Type>
-            void calculateMeanFields(const wordList&) const;
+            void calculateMeanFieldType(const label fieldI) const;
 
-            //- Add mean-squared field value to prime-squared mean field
-            template<class Type1, class Type2>
-            void addMeanSqrToPrime2Mean
-            (
-                const wordList&,
-                const wordList&
-            ) const;
+            //- Calculate mean average fields
+            template<class Type>
+            void calculateMeanFields() const;
 
             //- Calculate prime-squared average fields
             template<class Type1, class Type2>
-            void calculatePrime2MeanFields
-            (
-                const wordList&,
-                const wordList&
-            ) const;
+            void calculatePrime2MeanFieldType(const label fieldI) const;
+
+            //- Calculate prime-squared average fields
+            template<class Type1, class Type2>
+            void calculatePrime2MeanFields() const;
+
+            //- Add mean-squared field value to prime-squared mean field
+            template<class Type1, class Type2>
+            void addMeanSqrToPrime2MeanType(const label fieldI) const;
+
+            //- Add mean-squared field value to prime-squared mean field
+            template<class Type1, class Type2>
+            void addMeanSqrToPrime2Mean() const;
 
 
         // I-O
@@ -262,7 +244,11 @@ protected:
 
             //- Write fields
             template<class Type>
-            void writeFieldList(const wordList&) const;
+            void writeFieldType(const word& fieldName) const;
+
+            //- Write fields
+            template<class Type>
+            void writeFields() const;
 
             //- Write averaging properties - steps and time
             void writeAveragingProperties() const;

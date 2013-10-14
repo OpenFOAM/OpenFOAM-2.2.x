@@ -68,7 +68,7 @@ Foam::Peclet::Peclet
                 "const dictionary&, "
                 "const bool"
             ")"
-        )   << "No fvMesh available, deactivating." << nl
+        )   << "No fvMesh available, deactivating " << name_ << nl
             << endl;
     }
 
@@ -209,10 +209,11 @@ void Foam::Peclet::write()
                *fvc::interpolate(nuEff)
             );
 
-        Peclet.write();
+        Info<< type() << " " << name_ << " output:" << nl
+            << "    writing field " << Peclet.name() << nl
+            << endl;
 
-        Info<< type() << " output:" << nl
-            << "    writing " << Peclet.name() << " field" << nl << endl;
+        Peclet.write();
     }
 }
 

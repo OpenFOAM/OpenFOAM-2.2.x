@@ -630,11 +630,22 @@ void Foam::fieldValues::faceSource::write()
 
         forAll(fields_, i)
         {
-            writeValues<scalar>(fields_[i]);
-            writeValues<vector>(fields_[i]);
-            writeValues<sphericalTensor>(fields_[i]);
-            writeValues<symmTensor>(fields_[i]);
-            writeValues<tensor>(fields_[i]);
+            const word& fieldName = fields_[i];
+            bool processed = false;
+
+            processed = processed || writeValues<scalar>(fieldName);
+            processed = processed || writeValues<vector>(fieldName);
+            processed = processed || writeValues<sphericalTensor>(fieldName);
+            processed = processed || writeValues<symmTensor>(fieldName);
+            processed = processed || writeValues<tensor>(fieldName);
+
+            if (!processed)
+            {
+                WarningIn("void Foam::fieldValues::faceSource::write()")
+                    << "Requested field " << fieldName
+                    << " not found in database and not processed"
+                    << endl;
+            }
         }
 
         if (Pstream::master())

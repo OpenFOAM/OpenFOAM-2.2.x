@@ -65,7 +65,7 @@ Foam::Lambda2::Lambda2
                 "const dictionary&, "
                 "const bool"
             ")"
-        )   << "No fvMesh available, deactivating." << nl
+        )   << "No fvMesh available, deactivating " << name_ << nl
             << endl;
     }
 
@@ -157,10 +157,11 @@ void Foam::Lambda2::write()
 
         Lambda2 = -eigenValues(SSplusWW)().component(vector::Y);
 
-        Lambda2.write();
+        Info<< type() << " " << name_ << " output:" << nl
+            << "    writing field " << Lambda2.name() << nl
+            << endl;
 
-        Info<< type() << " output:" << nl
-            << "    writing " << Lambda2.name() << " field" << nl << endl;
+        Lambda2.write();
     }
 }
 

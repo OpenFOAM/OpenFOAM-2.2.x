@@ -132,7 +132,7 @@ void Foam::partialWrite::timeSet()
 
         if (writeInstance_ == writeInterval_)
         {
-            // Next overall dump corresponf to partial write. Change
+            // Next overall dump corresponds to partial write. Change
             // write options to AUTO_WRITE
             writeInstance_ = 0;
 

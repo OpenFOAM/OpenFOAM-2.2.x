@@ -526,28 +526,19 @@ void Foam::mappedPatchBase::calcMapping() const
 
     if (sampleMyself && coincident)
     {
-        WarningIn
-        (
-            "mappedPatchBase::mappedPatchBase\n"
-            "(\n"
-            "    const polyPatch& pp,\n"
-            "    const word& sampleRegion,\n"
-            "    const sampleMode mode,\n"
-            "    const word& samplePatch,\n"
-            "    const vector& offset\n"
-            ")\n"
-        )   << "Invalid offset " << d << endl
+        WarningIn("mappedPatchBase::calcMapping() const")
+            << "Invalid offset " << d << nl
             << "Offset is the vector added to the patch face centres to"
-            << " find the patch face supplying the data." << endl
+            << " find the patch face supplying the data." << nl
             << "Setting it to " << d
             << " on the same patch, on the same region"
             << " will find the faces themselves which does not make sense"
-            << " for anything but testing." << endl
-            << "patch_:" << patch_.name() << endl
-            << "sampleRegion_:" << sampleRegion_ << endl
-            << "mode_:" << sampleModeNames_[mode_] << endl
-            << "samplePatch_:" << samplePatch_ << endl
-            << "offsetMode_:" << offsetModeNames_[offsetMode_] << endl;
+            << " for anything but testing." << nl
+            << "patch :" << patch_.name() << nl
+            << "sampleRegion :" << sampleRegion_ << nl
+            << "mode :" << sampleModeNames_[mode_] << nl
+            << "samplePatch :" << samplePatch_ << nl
+            << "offsetMode :" << offsetModeNames_[offsetMode_] << endl;
     }
 
 
@@ -590,25 +581,16 @@ void Foam::mappedPatchBase::calcMapping() const
         {
             if (!hasWarned)
             {
-                WarningIn
-                (
-                    "mappedPatchBase::mappedPatchBase\n"
-                    "(\n"
-                    "    const polyPatch& pp,\n"
-                    "    const word& sampleRegion,\n"
-                    "    const sampleMode mode,\n"
-                    "    const word& samplePatch,\n"
-                    "    const vector& offset\n"
-                    ")\n"
-                )   << "Did not find " << nNotFound
+                WarningIn("mappedPatchBase::calcMapping() const")
+                    << "Did not find " << nNotFound
                     << " out of " << sampleProcs.size() << " total samples."
-                    << " Sampling these on owner cell centre instead." << endl
+                    << " Sampling these on owner cell centre instead." << nl
                     << "On patch " << patch_.name()
                     << " on region " << sampleRegion_
-                    << " in mode " << sampleModeNames_[mode_] << endl
-                    << "whilst sampling patch " << samplePatch_ << endl
+                    << " in mode " << sampleModeNames_[mode_] << nl
+                    << "whilst sampling patch " << samplePatch_
                     << " with offset mode " << offsetModeNames_[offsetMode_]
-                    << endl
+                    << nl
                     << "Suppressing further warnings from " << type() << endl;
 
                 hasWarned = true;

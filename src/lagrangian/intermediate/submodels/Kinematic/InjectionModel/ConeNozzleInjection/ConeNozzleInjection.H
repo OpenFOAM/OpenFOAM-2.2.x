@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -134,10 +134,10 @@ private:
         //- Flow rate profile relative to SOI []
         const TimeDataEntry<scalar> flowRateProfile_;
 
-        //- Inner cone angle relative to SOI [deg]
+        //- Inner half cone angle relative to SOI [deg]
         const TimeDataEntry<scalar> thetaInner_;
 
-        //- Outer cone angle relative to SOI [deg]
+        //- Outer half cone angle relative to SOI [deg]
         const TimeDataEntry<scalar> thetaOuter_;
 
         //- Parcel size PDF model
