@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
     Info<< "    std::list constructed from Foam::List: ";
 
     std::list<vector>::iterator it;
-    for (it=stlList.begin(); it != stlList.end(); it++)
+    for (it=stlList.begin(); it != stlList.end(); ++it)
     {
         Info<< *it << " ";
     }

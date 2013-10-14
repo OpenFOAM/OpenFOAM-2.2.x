@@ -441,8 +441,6 @@ void pqPV3FoamReaderPanel::IncludeZonesToggled()
 
 void pqPV3FoamReaderPanel::ExtrapolatePatchesToggled()
 {
-    vtkSMProperty* prop;
-
     vtkSMIntVectorProperty::SafeDownCast
     (
         this->proxy()->GetProperty("UiExtrapolatePatches")
@@ -454,8 +452,6 @@ void pqPV3FoamReaderPanel::ExtrapolatePatchesToggled()
 
 void pqPV3FoamReaderPanel::InterpolateVolFieldsToggled()
 {
-    vtkSMProperty* prop;
-
     vtkSMIntVectorProperty::SafeDownCast
     (
         this->proxy()->GetProperty("UiInterpolateVolFields")

@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     while (iter != iter2)
     {
         Info<< *iter;
-        iter++;
+        ++iter;
     }
     Info<< "<\n";
 
