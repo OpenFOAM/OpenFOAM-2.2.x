@@ -903,6 +903,24 @@ void Foam::autoLayerDriver::medialAxisSmoothingInfo
             mesh.globalData().nTotalPoints(),   // max iterations
             dummyTrackData
         );
+
+
+        label nUnvisit = returnReduce
+        (
+            wallDistCalc.getUnsetPoints(),
+            sumOp<label>()
+        );
+
+        if (nUnvisit > 0)
+        {
+            WarningIn("autoLayerDriver::medialAxisSmoothingInfo(..)")
+                << "Walking did not visit all points." << nl
+                << "    Did not visit " << nUnvisit
+                << " out of " << mesh.globalData().nTotalPoints()
+                << " points. This is not necessarily a problem" << nl
+                << "    and might be due to faceZones splitting of part"
+                << " of the domain." << nl << endl;
+        }
     }
 
 
@@ -943,11 +961,21 @@ void Foam::autoLayerDriver::medialAxisSmoothingInfo
 
         forAll(edges, edgeI)
         {
-            if (isMaxEdge(pointWallDist, edgeI, minMedianAxisAngleCos))
+            const edge& e = edges[edgeI];
+
+            if
+            (
+                !pointWallDist[e[0]].valid(dummyTrackData)
+             || !pointWallDist[e[1]].valid(dummyTrackData)
+            )
+            {
+                // Unvisited point. See above about nUnvisit warning
+            }
+            else if (isMaxEdge(pointWallDist, edgeI, minMedianAxisAngleCos))
             {
                 // Both end points of edge have very different nearest wall
                 // point. Mark both points as medial axis points.
-                const edge& e = edges[edgeI];
+
                 // Approximate medial axis location on edge.
                 //const point medialAxisPt = e.centre(points);
                 vector eVec = e.vec(points);
@@ -1072,7 +1100,11 @@ void Foam::autoLayerDriver::medialAxisSmoothingInfo
                     {
                         label pointI = meshPoints[i];
 
-                        if (!pointMedialDist[pointI].valid(dummyTrackData))
+                        if
+                        (
+                            pointWallDist[pointI].valid(dummyTrackData)
+                        && !pointMedialDist[pointI].valid(dummyTrackData)
+                        )
                         {
                             // Check if angle not too large.
                             scalar cosAngle =
@@ -1143,7 +1175,14 @@ void Foam::autoLayerDriver::medialAxisSmoothingInfo
     // Extract transported surface normals as pointVectorField
     forAll(dispVec, i)
     {
-        dispVec[i] = pointWallDist[i].v();
+        if (!pointWallDist[i].valid(dummyTrackData))
+        {
+            dispVec[i] = vector(1, 0, 0);
+        }
+        else
+        {
+            dispVec[i] = pointWallDist[i].v();
+        }
     }
 
     // Smooth normal vectors. Do not change normals on pp.meshPoints
@@ -1157,16 +1196,23 @@ void Foam::autoLayerDriver::medialAxisSmoothingInfo
     // Calculate ratio point medial distance to point wall distance
     forAll(medialRatio, pointI)
     {
-        scalar wDist2 = pointWallDist[pointI].distSqr();
-        scalar mDist = medialDist[pointI];
-
-        if (wDist2 < sqr(SMALL) && mDist < SMALL)
+        if (!pointWallDist[pointI].valid(dummyTrackData))
         {
             medialRatio[pointI] = 0.0;
         }
         else
         {
-            medialRatio[pointI] = mDist / (Foam::sqrt(wDist2) + mDist);
+            scalar wDist2 = pointWallDist[pointI].distSqr();
+            scalar mDist = medialDist[pointI];
+
+            if (wDist2 < sqr(SMALL) && mDist < SMALL)
+            {
+                medialRatio[pointI] = 0.0;
+            }
+            else
+            {
+                medialRatio[pointI] = mDist / (Foam::sqrt(wDist2) + mDist);
+            }
         }
     }
 
@@ -1417,6 +1463,9 @@ void Foam::autoLayerDriver::shrinkMeshMedialDistance
         thickness
     );
 
+    // Dummy additional info for PointEdgeWave
+    int dummyTrackData = 0;
+
     List<pointData> pointWallDist(mesh.nPoints());
 
     const pointField& points = mesh.points();
@@ -1451,7 +1500,8 @@ void Foam::autoLayerDriver::shrinkMeshMedialDistance
             wallInfo,
             pointWallDist,
             edgeWallDist,
-            mesh.globalData().nTotalPoints()    // max iterations
+            mesh.globalData().nTotalPoints(),   // max iterations
+            dummyTrackData
         );
     }
 
@@ -1460,15 +1510,22 @@ void Foam::autoLayerDriver::shrinkMeshMedialDistance
 
     forAll(displacement, pointI)
     {
-        // 1) displacement on nearest wall point, scaled by medialRatio
-        //    (wall distance / medial distance)
-        // 2) pointWallDist[pointI].s() is layer thickness transported
-        //    from closest wall point.
-        // 3) shrink in opposite direction of addedPoints
-        displacement[pointI] =
-            -medialRatio[pointI]
-            *pointWallDist[pointI].s()
-            *dispVec[pointI];
+        if (!pointWallDist[pointI].valid(dummyTrackData))
+        {
+            displacement[pointI] = vector::zero;
+        }
+        else
+        {
+            // 1) displacement on nearest wall point, scaled by medialRatio
+            //    (wall distance / medial distance)
+            // 2) pointWallDist[pointI].s() is layer thickness transported
+            //    from closest wall point.
+            // 3) shrink in opposite direction of addedPoints
+            displacement[pointI] =
+                -medialRatio[pointI]
+                *pointWallDist[pointI].s()
+                *dispVec[pointI];
+        }
     }
 
 

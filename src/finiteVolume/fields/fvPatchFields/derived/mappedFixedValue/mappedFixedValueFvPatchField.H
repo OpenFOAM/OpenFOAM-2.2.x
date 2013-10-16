@@ -118,16 +118,11 @@ protected:
         //- Interpolation scheme to use for nearestcell mode
         word interpolationScheme_;
 
-        mutable autoPtr<interpolation<Type> > interpolator_;
-
 
     // Protected Member Functions
 
         //- Field to sample. Either on my or nbr mesh
         const GeometricField<Type, fvPatchField, volMesh>& sampleField() const;
-
-        //- Access the interpolation method
-        const interpolation<Type>& interpolator() const;
 
 
 public:

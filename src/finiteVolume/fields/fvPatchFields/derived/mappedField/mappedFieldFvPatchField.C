@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -192,22 +192,6 @@ mappedFieldFvPatchField<Type>::sampleField() const
 
 
 template<class Type>
-const interpolation<Type>&
-mappedFieldFvPatchField<Type>::interpolator() const
-{
-    if (!interpolator_.valid())
-    {
-        interpolator_ = interpolation<Type>::New
-        (
-            interpolationScheme_,
-            sampleField()
-        );
-    }
-    return interpolator_();
-}
-
-
-template<class Type>
 void mappedFieldFvPatchField<Type>::updateCoeffs()
 {
     if (this->updated())
@@ -247,6 +231,15 @@ void mappedFieldFvPatchField<Type>::updateCoeffs()
                     samples
                 );
 
+
+                autoPtr<interpolation<Type> > interpolator
+                (
+                    interpolation<Type>::New
+                    (
+                        interpolationScheme_,
+                        sampleField()
+                    )
+                );
                 const interpolation<Type>& interp = interpolator();
 
                 newValues.setSize(samples.size(), pTraits<Type>::max);

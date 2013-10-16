@@ -219,6 +219,16 @@ public:
         ) const;
 
         //- Interpolate volField using inverse distance weighting
+        //  returning pointField with name. Optionally caches
+        template<class Type>
+        tmp<GeometricField<Type, pointPatchField, pointMesh> > interpolate
+        (
+            const GeometricField<Type, fvPatchField, volMesh>&,
+            const word& name,
+            const bool cache
+        ) const;
+
+        //- Interpolate volField using inverse distance weighting
         //  returning pointField
         template<class Type>
         tmp<GeometricField<Type, pointPatchField, pointMesh> > interpolate
@@ -233,6 +243,7 @@ public:
         (
             const tmp<GeometricField<Type, fvPatchField, volMesh> >&
         ) const;
+
 };
 
 
