@@ -17,7 +17,17 @@ FoamFile
 
 defaultFieldValues ( volScalarFieldValue alpha1 0 );
 
-regions         ( boxToCell { box ( 0 0 -0.1 ) ( 0.15 0.5 0.1 ) ; fieldValues ( volScalarFieldValue alpha1 0.55 ) ; } );
+regions
+(
+    boxToCell
+    {
+        box ( 0 0 -0.1 )( 0.15 0.5 0.1 );
+        fieldValues
+        (
+            volScalarFieldValue alpha1 0.55
+        );
+    }
+);
 
 
 // ************************************************************************* //

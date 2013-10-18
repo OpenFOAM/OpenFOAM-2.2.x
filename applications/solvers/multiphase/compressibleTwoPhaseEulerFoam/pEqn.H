@@ -159,8 +159,16 @@
         {
             surfaceScalarField mSfGradp(pEqnIncomp.flux()/Dp);
 
+            mrfZones.absoluteFlux(phi1);
+            phi1 == (mesh.Sf() & fvc::interpolate(U1));
+            mrfZones.relativeFlux(phi1);
             phi1 = phiHbyA1 + rAlphaAU1f*mSfGradp/fvc::interpolate(rho1);
+
+            mrfZones.absoluteFlux(phi2);
+            phi2 == (mesh.Sf() & fvc::interpolate(U2));
+            mrfZones.relativeFlux(phi2);
             phi2 = phiHbyA2 + rAlphaAU2f*mSfGradp/fvc::interpolate(rho2);
+
             phi = alpha1f*phi1 + alpha2f*phi2;
 
             dgdt =

@@ -259,41 +259,42 @@ public:
             //- Thermal diffusivity for temperature of mixture [J/m/s/K]
             virtual tmp<volScalarField> kappa() const;
 
-            //- Thermal diffusivity of mixture for patch [J/m/s/K]
-
+            //- Thermal diffusivity for temperature
+            //  of mixture for patch [J/m/s/K]
             virtual tmp<scalarField> kappa
             (
                 const label patchi
             ) const;
 
-            //- Effective thermal diffusivity of mixture [J/m/s/K]
+            //- Effective thermal diffusivity for temperature
+            //  of mixture [J/m/s/K]
             virtual tmp<volScalarField> kappaEff(const volScalarField&) const;
 
-            //- Effective thermal diffusivity of mixture for patch [J/m/s/K]
+            //- Effective thermal diffusivity for temperature
+            //  of mixture for patch [J/m/s/K]
             virtual tmp<scalarField> kappaEff
             (
                 const scalarField& alphat,
                 const label patchi
             ) const;
 
+            //- Thermal diffusivity of mixture [kg/m/s]
+            virtual tmp<scalarField> alpha
+            (
+                const label patchI
+            ) const;
 
-            //- Effective thermal diffusivity of mixture [J/m/s/K]
+            //- Effective thermal diffusivity of mixture [kg/m/s]
             virtual tmp<volScalarField> alphaEff
             (
                 const volScalarField& alphat
             ) const;
 
-            //- Effective thermal diffusivity of mixture for patch [J/m/s/K]
+            //- Effective thermal diffusivity of mixture for patch [kg/m/s]
             virtual tmp<scalarField> alphaEff
             (
                 const scalarField& alphat,
                 const label patchi
-            ) const;
-
-             //- Thermal diffusivity for enthalpy of mixture [kg/m/s]
-            virtual tmp<scalarField> alpha
-            (
-                const label patchI
             ) const;
 
 
