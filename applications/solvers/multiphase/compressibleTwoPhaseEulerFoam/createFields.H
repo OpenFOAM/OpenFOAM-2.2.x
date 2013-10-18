@@ -292,3 +292,27 @@
     Info<< "Creating field kinetic energy K\n" << endl;
     volScalarField K1("K" + phase1Name, 0.5*magSqr(U1));
     volScalarField K2("K" + phase2Name, 0.5*magSqr(U2));
+
+    surfaceScalarField alphaPhi1
+    (
+        IOobject
+        (
+            "alphaPhi" + phase1Name,
+            runTime.timeName(),
+            mesh
+        ),
+        mesh,
+        dimensionedScalar("0", dimensionSet(0, 3, -1, 0, 0), 0)
+    );
+
+    surfaceScalarField alphaPhi2
+    (
+        IOobject
+        (
+            "alphaPhi" + phase2Name,
+            runTime.timeName(),
+            mesh
+        ),
+        mesh,
+        dimensionedScalar("0", dimensionSet(0, 3, -1, 0, 0), 0)
+    );
