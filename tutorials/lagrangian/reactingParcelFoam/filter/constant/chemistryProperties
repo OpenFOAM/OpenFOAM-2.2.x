@@ -41,7 +41,6 @@ odeCoeffs
 {
     solver          RK;
     eps             0.05;
-    scale           1;
 }
 
 
