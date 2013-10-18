@@ -50,7 +50,11 @@ Foam::processorField::processorField
     active_(true)
 {
     // Check if the available mesh is an fvMesh otherise deactivate
-    if (!isA<fvMesh>(obr_))
+    if (isA<fvMesh>(obr_))
+    {
+        read(dict);
+    }
+    else
     {
         active_ = false;
         WarningIn
@@ -62,11 +66,9 @@ Foam::processorField::processorField
                 "const dictionary&, "
                 "const bool"
             ")"
-        )   << "No fvMesh available, deactivating."
+        )   << "No fvMesh available, deactivating " << name_
             << endl;
     }
-
-    read(dict);
 }
 
 

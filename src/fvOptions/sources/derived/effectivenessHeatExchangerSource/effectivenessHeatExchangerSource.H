@@ -82,6 +82,41 @@ Description
     }
     \endverbatim
 
+    The effectiveness table is described in terms of the primary and secondary
+    mass flow rates.  For example, the table:
+
+                           secondary MFR
+                       |  0.1   0.2   0.3
+                  -----+-----------------
+                  0.02 |   A     B     C
+     primary MFR  0.04 |   D     E     F
+                  0.06 |   G     H     I
+
+
+    Is specified by the following:
+
+        (
+            0.02
+            (
+                (0.1    A)
+                (0.2    B)
+                (0.3    C)
+            ),
+            0.04
+            (
+                (0.1    D)
+                (0.2    E)
+                (0.3    F)
+            ),
+            0.06
+            (
+                (0.1    G)
+                (0.2    H)
+                (0.3    I)
+            )
+        );
+
+
 Note
 - the table with name "fileName" should have the same units as the
   secondary mass flow rate and kg/s for phi

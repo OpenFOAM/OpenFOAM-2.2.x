@@ -68,7 +68,7 @@ Foam::fieldValues::fieldValueDelta::fieldValueDelta
     name_(name),
     obr_(obr),
     loadFromFiles_(loadFromFiles),
-    log_(false),
+    log_(true),
     operation_(opSubtract),
     source1Ptr_(NULL),
     source2Ptr_(NULL)
@@ -119,7 +119,7 @@ Foam::fieldValues::fieldValueDelta::~fieldValueDelta()
 
 void Foam::fieldValues::fieldValueDelta::read(const dictionary& dict)
 {
-    log_ = dict.lookupOrDefault<Switch>("log", false);
+    log_ = dict.lookupOrDefault<Switch>("log", true);
     source1Ptr_.reset
     (
         fieldValue::New

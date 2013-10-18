@@ -24,6 +24,9 @@ License
 Class
     externalWallHeatFluxTemperatureFvPatchScalarField
 
+Group
+    grpThermoBoundaryConditions grpWallBoundaryConditions
+
 Description
     This boundary condition supplies a heat flux condition for temperature
     on an external wall. Optional thin thermal layer resistances can be
