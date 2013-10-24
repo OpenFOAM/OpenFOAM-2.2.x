@@ -63,10 +63,10 @@ tmp<scalarField> nutkAtmRoughWallFunctionFvPatchScalarField::calcNut() const
         scalar uStar = Cmu25*sqrt(k[faceCellI]);
         scalar yPlus = uStar*y[faceI]/nuw[faceI];
 
-        scalar Edash = (y[faceI] + z0_[faceI])/z0_[faceI];
+        scalar Edash = (y[faceI] + z0_[faceI])/(z0_[faceI] + 1e-4);
 
         nutw[faceI] =
-            nuw[faceI]*(yPlus*kappa_/log(max(Edash, 1+1e-4)) - 1);
+            nuw[faceI]*(yPlus*kappa_/log(max(Edash, 1 + 1e-4)) - 1);
 
         if (debug)
         {
