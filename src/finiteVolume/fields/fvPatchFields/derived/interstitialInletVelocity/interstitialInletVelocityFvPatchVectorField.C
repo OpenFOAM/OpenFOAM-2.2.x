@@ -38,7 +38,7 @@ interstitialInletVelocityFvPatchVectorField
     const DimensionedField<vector, volMesh>& iF
 )
 :
-    fixedValueFvPatchField<vector>(p, iF),
+    fixedValueFvPatchVectorField(p, iF),
     inletVelocity_(p.size(), vector::zero),
     alphaName_("alpha")
 {}
@@ -53,8 +53,8 @@ interstitialInletVelocityFvPatchVectorField
     const fvPatchFieldMapper& mapper
 )
 :
-    fixedValueFvPatchField<vector>(ptf, p, iF, mapper),
-    inletVelocity_(ptf.inletVelocity_),
+    fixedValueFvPatchVectorField(ptf, p, iF, mapper),
+    inletVelocity_(ptf.inletVelocity_, mapper),
     alphaName_(ptf.alphaName_)
 {}
 
@@ -67,7 +67,7 @@ interstitialInletVelocityFvPatchVectorField
     const dictionary& dict
 )
 :
-    fixedValueFvPatchField<vector>(p, iF, dict),
+    fixedValueFvPatchVectorField(p, iF, dict),
     inletVelocity_("inletVelocity", dict, p.size()),
     alphaName_(dict.lookupOrDefault<word>("alpha", "alpha"))
 {}
@@ -79,7 +79,7 @@ interstitialInletVelocityFvPatchVectorField
     const interstitialInletVelocityFvPatchVectorField& ptf
 )
 :
-    fixedValueFvPatchField<vector>(ptf),
+    fixedValueFvPatchVectorField(ptf),
     inletVelocity_(ptf.inletVelocity_),
     alphaName_(ptf.alphaName_)
 {}
@@ -92,13 +92,38 @@ interstitialInletVelocityFvPatchVectorField
     const DimensionedField<vector, volMesh>& iF
 )
 :
-    fixedValueFvPatchField<vector>(ptf, iF),
+    fixedValueFvPatchVectorField(ptf, iF),
     inletVelocity_(ptf.inletVelocity_),
     alphaName_(ptf.alphaName_)
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
+
+void Foam::interstitialInletVelocityFvPatchVectorField::autoMap
+(
+    const fvPatchFieldMapper& m
+)
+{
+    fixedValueFvPatchVectorField::autoMap(m);
+    inletVelocity_.autoMap(m);
+}
+
+
+void Foam::interstitialInletVelocityFvPatchVectorField::rmap
+(
+    const fvPatchVectorField& ptf,
+    const labelList& addr
+)
+{
+    fixedValueFvPatchVectorField::rmap(ptf, addr);
+
+    const interstitialInletVelocityFvPatchVectorField& tiptf =
+        refCast<const interstitialInletVelocityFvPatchVectorField>(ptf);
+
+    inletVelocity_.rmap(tiptf.inletVelocity_, addr);
+}
+
 
 void Foam::interstitialInletVelocityFvPatchVectorField::updateCoeffs()
 {
@@ -111,7 +136,7 @@ void Foam::interstitialInletVelocityFvPatchVectorField::updateCoeffs()
         patch().lookupPatchField<volScalarField, scalar>(alphaName_);
 
     operator==(inletVelocity_/alphap);
-    fixedValueFvPatchField<vector>::updateCoeffs();
+    fixedValueFvPatchVectorField::updateCoeffs();
 }
 
 
