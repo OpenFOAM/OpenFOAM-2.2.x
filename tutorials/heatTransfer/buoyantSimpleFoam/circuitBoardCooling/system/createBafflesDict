@@ -30,9 +30,6 @@ baffles
         zoneName    baffleFaces;
 
 
-        //- Optional flip
-        //flip        false;
-
         patches
         {
             master
@@ -42,9 +39,7 @@ baffles
 
                 type            mappedWall;
                 sampleMode      nearestPatchFace;
-                sampleRegion    region0;
                 samplePatch     baffle1Wall_1;
-                offsetMode      uniform;
                 offset          (0 0 0);
 
 
@@ -121,9 +116,7 @@ baffles
 
                 type            mappedWall;
                 sampleMode      nearestPatchFace;
-                sampleRegion    region0;
                 samplePatch     baffle1Wall_0;
-                offsetMode      uniform;
                 offset          (0 0 0);
 
                 patchFields
