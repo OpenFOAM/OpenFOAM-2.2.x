@@ -472,7 +472,7 @@ int main(int argc, char *argv[])
     }
     Info<< nl << "Writing polyMesh to time " << runTime.timeName() << endl;
 
-    IOstream::defaultPrecision(10);
+    IOstream::defaultPrecision(max(10u, IOstream::defaultPrecision()));
 
     // Bypass runTime write (since only writes at outputTime)
     if

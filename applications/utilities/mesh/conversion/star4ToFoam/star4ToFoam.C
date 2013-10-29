@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
     }
 
     // increase the precision of the points data
-    IOstream::defaultPrecision(10);
+    IOstream::defaultPrecision(max(10u, IOstream::defaultPrecision()));
 
     // remove extensions and/or trailing '.'
     const fileName prefix = fileName(args[1]).lessExt();
