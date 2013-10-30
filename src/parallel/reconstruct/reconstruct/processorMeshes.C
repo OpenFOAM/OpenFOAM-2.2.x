@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -31,6 +31,15 @@ License
 
 void Foam::processorMeshes::read()
 {
+    forAll(databases_, procI)
+    {
+        meshes_.set(procI, NULL);
+        pointProcAddressing_.set(procI, NULL);
+        faceProcAddressing_.set(procI, NULL);
+        cellProcAddressing_.set(procI, NULL);
+        boundaryProcAddressing_.set(procI, NULL);
+    }
+
     forAll(databases_, procI)
     {
         meshes_.set
