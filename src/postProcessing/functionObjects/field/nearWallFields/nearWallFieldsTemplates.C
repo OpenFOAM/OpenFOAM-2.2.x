@@ -65,38 +65,59 @@ void Foam::nearWallFields::createFields
                 io.rename(sampleFldName);
 
                 sflds.set(sz, new vfType(io, fld));
-                vfType& sampleFld = sflds[sz];
 
-                // Reset the bcs to be mapped
-                forAllConstIter(labelHashSet, patchSet_, iter)
-                {
-                    label patchI = iter.key();
-
-                    sampleFld.boundaryField().set
-                    (
-                        patchI,
-                        new mappedFieldFvPatchField<Type>
-                        (
-                            sampleFld.mesh().boundary()[patchI],
-                            sampleFld.dimensionedInternalField(),
-
-                            sampleFld.mesh().name(),
-                            mappedPatchBase::NEARESTCELL,
-                            word::null,     // samplePatch
-                            -distance_,
-
-                            sampleFld.name(),       // fieldName
-                            false,                  // setAverage
-                            pTraits<Type>::zero,    // average
-                            cachedInterpolationCellPoint<Type>::typeName
-                        )
-                    );
-                }
-
-                Info<< "    created " << sampleFld.name() << " to sample "
+                Info<< "    created " << sflds[sz].name() << " to sample "
                     << fld.name() << endl;
             }
         }
+    }
+}
+
+
+template<class Type>
+void Foam::nearWallFields::sampleBoundaryField
+(
+    const cachedInterpolationCellPoint<Type>& interpolator,
+    //const interpolationCellPoint<Type>& interpolator,
+    GeometricField<Type, fvPatchField, volMesh>& fld
+) const
+{
+    // Construct flat fields for all patch faces to be sampled
+    Field<Type> sampledValues(getPatchDataMapPtr_().constructSize());
+
+    forAll(cellToWalls_, cellI)
+    {
+        const labelList& cData = cellToWalls_[cellI];
+
+        forAll(cData, i)
+        {
+            const point& samplePt = cellToSamples_[cellI][i];
+            sampledValues[cData[i]] = interpolator.interpolate(samplePt, cellI);
+        }
+    }
+
+    // Send back sampled values to patch faces
+    getPatchDataMapPtr_().reverseDistribute
+    (
+        getPatchDataMapPtr_().constructSize(),
+        sampledValues
+    );
+
+    // Pick up data
+    label nPatchFaces = 0;
+    forAllConstIter(labelHashSet, patchSet_, iter)
+    {
+        label patchI = iter.key();
+
+        fvPatchField<Type>& pfld = fld.boundaryField()[patchI];
+
+        Field<Type> newFld(pfld.size());
+        forAll(pfld, i)
+        {
+            newFld[i] = sampledValues[nPatchFaces++];
+        }
+
+        pfld == newFld;
     }
 }
 
@@ -116,8 +137,13 @@ void Foam::nearWallFields::sampleFields
 
         // Take over internal and boundary values
         sflds[i] == fld;
-        // Evaluate to update the mapped
-        sflds[i].correctBoundaryConditions();
+
+        // Construct interpolation method
+        cachedInterpolationCellPoint<Type> interpolator(fld);
+        //interpolationCellPoint<Type> interpolator(fld);
+
+        // Override sampled values
+        sampleBoundaryField(interpolator, sflds[i]);
     }
 }
 

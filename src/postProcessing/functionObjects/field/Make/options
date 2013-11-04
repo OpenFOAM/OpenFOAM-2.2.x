@@ -3,6 +3,7 @@ EXE_INC = \
     -I$(LIB_SRC)/meshTools/lnInclude \
     -I$(LIB_SRC)/lagrangian/basic/lnInclude \
     -I$(LIB_SRC)/fileFormats/lnInclude \
+    -I$(LIB_SRC)/surfMesh/lnInclude \
     -I$(LIB_SRC)/sampling/lnInclude \
     -I$(LIB_SRC)/transportModels \
     -I$(LIB_SRC)/turbulenceModels \
@@ -13,6 +14,7 @@ LIB_LIBS = \
     -lmeshTools \
     -llagrangian \
     -lfileFormats \
+    -lsurfMesh \
     -lsampling \
     -lincompressibleTransportModels \
     -lcompressibleTurbulenceModel \
