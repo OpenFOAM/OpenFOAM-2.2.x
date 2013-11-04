@@ -24,9 +24,6 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "nearWallFields.H"
-#include "mappedFieldFvPatchFields.H"
-//#include "interpolationCellPoint.H"
-#include "cachedInterpolationCellPoint.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
