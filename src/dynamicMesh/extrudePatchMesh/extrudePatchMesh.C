@@ -47,14 +47,16 @@ extrudePatchMesh::extrudePatchMesh
 (
     const fvMesh& mesh,
     const fvPatch& patch,
-    const dictionary& dict
+    const dictionary& extrudeDict,
+    const word regionName,
+    const dictionary& polyDict,
 )
 :
     fvMesh
     (
         IOobject
         (
-            dict.lookup("region"),
+            regionName,
             mesh.facesInstance(),
             mesh,
             IOobject::READ_IF_PRESENT,
@@ -71,7 +73,7 @@ extrudePatchMesh::extrudePatchMesh
 {
     if (this->boundaryMesh().size() == 0)
     {
-        bool columnCells = readBool(dict.lookup("columnCells"));
+        bool columnCells = readBool(extrudeDict.lookup("columnCells"));
 
         PackedBoolList nonManifoldEdge(extrudedPatch_.nEdges());
         for (label edgeI = 0; edgeI < extrudedPatch_.nInternalEdges(); edgeI++)
@@ -82,7 +84,7 @@ extrudePatchMesh::extrudePatchMesh
             }
         }
 
-        autoPtr<extrudeModel> model_(extrudeModel::New(dict));
+        autoPtr<extrudeModel> model_(extrudeModel::New(extrudeDict));
 
         faceList pointGlobalRegions;
         faceList pointLocalRegions;

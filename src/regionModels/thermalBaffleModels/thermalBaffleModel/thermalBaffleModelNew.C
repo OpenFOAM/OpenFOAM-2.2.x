@@ -53,10 +53,13 @@ autoPtr<thermalBaffleModel> thermalBaffleModel::New(const fvMesh& mesh)
             )
         );
 
-        thermalBafflePropertiesDict.lookup("thermalBaffleModel") >> modelType;
+        word modelType =
+            thermalBafflePropertiesDict.lookupOrDefault<word>
+            (
+                "thermalBaffleModel",
+                "thermalBaffle"
+            );
     }
-
-    Info<< "Selecting baffle model " << modelType << endl;
 
     meshConstructorTable::iterator cstrIter =
         meshConstructorTablePtr_->find(modelType);
@@ -82,9 +85,8 @@ autoPtr<thermalBaffleModel> thermalBaffleModel::New
     const dictionary& dict
 )
 {
-    word modelType = dict.lookup("thermalBaffleModel");
-
-    Info<< "Selecting baffle model " << modelType << endl;
+    word modelType =
+        dict.lookupOrDefault<word>("thermalBaffleModel", "thermalBaffle");
 
     dictionaryConstructorTable::iterator cstrIter =
         dictionaryConstructorTablePtr_->find(modelType);
