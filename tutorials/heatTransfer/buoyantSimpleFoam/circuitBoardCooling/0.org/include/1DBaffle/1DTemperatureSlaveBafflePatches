@@ -9,7 +9,7 @@
 T
 {
    type     compressible::thermalBaffle1D<hConstSolidThermoPhysics>;
-   samplePatch  baffle1DWall_slave;
+   samplePatch  baffle1DWall_master;
    value        uniform 300;
 }
 
