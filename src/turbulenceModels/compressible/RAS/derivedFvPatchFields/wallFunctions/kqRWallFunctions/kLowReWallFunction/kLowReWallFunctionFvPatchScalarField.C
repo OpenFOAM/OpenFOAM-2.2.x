@@ -235,6 +235,7 @@ void kLowReWallFunctionFvPatchScalarField::write(Ostream& os) const
     os.writeKeyword("kappa") << kappa_ << token::END_STATEMENT << nl;
     os.writeKeyword("E") << E_ << token::END_STATEMENT << nl;
     os.writeKeyword("Ceps2") << Ceps2_ << token::END_STATEMENT << nl;
+    writeEntry("value", os);
 }
 
 
