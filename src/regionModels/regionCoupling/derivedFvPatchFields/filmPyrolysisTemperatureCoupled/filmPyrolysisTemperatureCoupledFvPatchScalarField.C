@@ -39,6 +39,8 @@ filmPyrolysisTemperatureCoupledFvPatchScalarField
 )
 :
     fixedValueFvPatchScalarField(p, iF),
+    filmRegionName_("surfaceFilmProperties"),
+    pyrolysisRegionName_("pyrolysisProperties"),
     phiName_("phi"),
     rhoName_("rho")
 {}
@@ -54,6 +56,8 @@ filmPyrolysisTemperatureCoupledFvPatchScalarField
 )
 :
     fixedValueFvPatchScalarField(ptf, p, iF, mapper),
+    filmRegionName_(ptf.filmRegionName_),
+    pyrolysisRegionName_(ptf.pyrolysisRegionName_),
     phiName_(ptf.phiName_),
     rhoName_(ptf.rhoName_)
 {}
@@ -68,6 +72,14 @@ filmPyrolysisTemperatureCoupledFvPatchScalarField
 )
 :
     fixedValueFvPatchScalarField(p, iF),
+    filmRegionName_
+    (
+        dict.lookupOrDefault<word>("filmRegion", "surfaceFilmProperties")
+    ),
+    pyrolysisRegionName_
+    (
+        dict.lookupOrDefault<word>("pyrolysisRegion", "pyrolysisProperties")
+    ),
     phiName_(dict.lookupOrDefault<word>("phi", "phi")),
     rhoName_(dict.lookupOrDefault<word>("rho", "rho"))
 {
@@ -82,6 +94,8 @@ filmPyrolysisTemperatureCoupledFvPatchScalarField
 )
 :
     fixedValueFvPatchScalarField(fptpsf),
+    filmRegionName_(fptpsf.filmRegionName_),
+    pyrolysisRegionName_(fptpsf.pyrolysisRegionName_),
     phiName_(fptpsf.phiName_),
     rhoName_(fptpsf.rhoName_)
 {}
@@ -95,6 +109,8 @@ filmPyrolysisTemperatureCoupledFvPatchScalarField
 )
 :
     fixedValueFvPatchScalarField(fptpsf, iF),
+    filmRegionName_(fptpsf.filmRegionName_),
+    pyrolysisRegionName_(fptpsf.pyrolysisRegionName_),
     phiName_(fptpsf.phiName_),
     rhoName_(fptpsf.rhoName_)
 {}
@@ -117,11 +133,10 @@ void Foam::filmPyrolysisTemperatureCoupledFvPatchScalarField::updateCoeffs()
     int oldTag = UPstream::msgType();
     UPstream::msgType() = oldTag+1;
 
-    bool filmOk =
-        db().time().foundObject<filmModelType>("surfaceFilmProperties");
+    bool filmOk = db().time().foundObject<filmModelType>(filmRegionName_);
 
 
-    bool pyrOk = db().time().foundObject<pyrModelType>("pyrolysisProperties");
+    bool pyrOk = db().time().foundObject<pyrModelType>(pyrolysisRegionName_);
 
     if (!filmOk || !pyrOk)
     {
@@ -135,7 +150,7 @@ void Foam::filmPyrolysisTemperatureCoupledFvPatchScalarField::updateCoeffs()
 
     // Retrieve film model
     const filmModelType& filmModel =
-        db().time().lookupObject<filmModelType>("surfaceFilmProperties");
+        db().time().lookupObject<filmModelType>(filmRegionName_);
 
     const label filmPatchI = filmModel.regionPatchID(patchI);
 
@@ -147,7 +162,7 @@ void Foam::filmPyrolysisTemperatureCoupledFvPatchScalarField::updateCoeffs()
 
     // Retrieve pyrolysis model
     const pyrModelType& pyrModel =
-        db().time().lookupObject<pyrModelType>("pyrolysisProperties");
+        db().time().lookupObject<pyrModelType>(pyrolysisRegionName_);
 
     const label pyrPatchI = pyrModel.regionPatchID(patchI);
 
@@ -171,6 +186,20 @@ void Foam::filmPyrolysisTemperatureCoupledFvPatchScalarField::write
 ) const
 {
     fvPatchScalarField::write(os);
+    writeEntryIfDifferent<word>
+    (
+        os,
+        "filmRegion",
+        "surfaceFilmProperties",
+        filmRegionName_
+    );
+    writeEntryIfDifferent<word>
+    (
+        os,
+        "pyrolysisRegion",
+        "pyrolysisProperties",
+        pyrolysisRegionName_
+    );
     writeEntryIfDifferent<word>(os, "phi", "phi", phiName_);
     writeEntryIfDifferent<word>(os, "rho", "rho", rhoName_);
     writeEntry("value", os);

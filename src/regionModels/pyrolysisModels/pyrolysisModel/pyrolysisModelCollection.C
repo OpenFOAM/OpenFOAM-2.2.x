@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -30,11 +30,13 @@ License
 
 namespace Foam
 {
-    defineTemplateTypeNameAndDebug
-    (
-        IOPtrList<regionModels::pyrolysisModels::pyrolysisModel>,
-        0
-    );
+    namespace regionModels
+    {
+        namespace pyrolysisModels
+        {
+            defineTypeNameAndDebug(pyrolysisModelCollection, 0);
+        }
+    }
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -48,12 +50,12 @@ namespace pyrolysisModels
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-pyrolysisModelCollection::pyrolysisModelCollection
-(
-    const fvMesh& mesh
-)
+pyrolysisModelCollection::pyrolysisModelCollection(const fvMesh& mesh)
 :
-    IOPtrList<pyrolysisModel>
+    PtrList<pyrolysisModel>()
+    
+{
+    IOdictionary pyrolysisZonesDict
     (
         IOobject
         (
@@ -62,10 +64,23 @@ pyrolysisModelCollection::pyrolysisModelCollection
             mesh,
             IOobject::MUST_READ,
             IOobject::NO_WRITE
-        ),
-        pyrolysisModel::iNew(mesh)
-    ),
-    mesh_(mesh)
+        )
+    );
+
+    const wordList regions(pyrolysisZonesDict.toc());
+
+    setSize(regions.size());
+
+    for (label i = 0; i < regions.size(); i++)
+    {
+        set(i, pyrolysisModel::New(mesh, pyrolysisZonesDict.subDict(regions[i]), regions[i]));
+    }
+}
+
+
+// * * * * * * * * * * * * * * * * Destructors * * * * * * * * * * * * * * * //
+
+pyrolysisModelCollection::~pyrolysisModelCollection()
 {}
 
 

@@ -112,6 +112,12 @@ private:
 
     // Private data
 
+        //- Name of film region
+        const word filmRegionName_;
+
+        //- Name of pyrolysis region
+        const word pyrolysisRegionName_;
+
         //- Name of field on the neighbour region
         const word TnbrName_;
 

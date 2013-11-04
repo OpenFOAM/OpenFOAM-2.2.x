@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -286,11 +286,41 @@ Foam::label Foam::regionModels::regionModel::nbrCoupledPatchID
     // boundary mesh
     const polyBoundaryMesh& nbrPbm = nbrRegionMesh.boundaryMesh();
 
-    const mappedPatchBase& mpb =
-        refCast<const mappedPatchBase>
+    const polyBoundaryMesh& pbm = regionMesh().boundaryMesh();
+
+    if (regionPatchI > pbm.size() - 1)
+    {
+        FatalErrorIn
         (
-            regionMesh().boundaryMesh()[regionPatchI]
-        );
+            "Foam::label Foam::regionModels::regionModel::nbrCoupledPatchID"
+            "("
+                "const regionModel&, "
+                "const label"
+            ") const"
+        )
+            << "region patch index out of bounds: "
+            << "region patch index = " << regionPatchI
+            << ", maximum index = " << pbm.size() - 1
+            << abort(FatalError);
+    }
+
+    const polyPatch& pp = regionMesh().boundaryMesh()[regionPatchI];
+
+    if (!isA<mappedPatchBase>(pp))
+    {
+        FatalErrorIn
+        (
+            "Foam::label Foam::regionModels::regionModel::nbrCoupledPatchID"
+            "("
+                "const regionModel&, "
+                "const label"
+            ") const"
+        )
+            << "Expected a " << mappedPatchBase::typeName
+            << " patch, but found a " << pp.type() << abort(FatalError);
+    }
+
+    const mappedPatchBase& mpb = refCast<const mappedPatchBase>(pp);
 
     // sample patch name on the primary region
     const word& primaryPatchName = mpb.samplePatch();
@@ -333,13 +363,17 @@ Foam::label Foam::regionModels::regionModel::nbrCoupledPatchID
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::regionModels::regionModel::regionModel(const fvMesh& mesh)
+Foam::regionModels::regionModel::regionModel
+(
+    const fvMesh& mesh,
+    const word& regionType
+)
 :
     IOdictionary
     (
         IOobject
         (
-            "regionModelProperties",
+            regionType + "Properties",
             mesh.time().constant(),
             mesh.time(),
             IOobject::NO_READ,

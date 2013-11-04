@@ -38,13 +38,29 @@ const filmPyrolysisRadiativeCoupledMixedFvPatchScalarField::filmModelType&
 filmPyrolysisRadiativeCoupledMixedFvPatchScalarField::
 filmModel() const
 {
-    const regionModels::regionModel& model =
-        db().time().lookupObject<regionModels::regionModel>
-        (
-            "surfaceFilmProperties"
-        );
+    HashTable<const filmModelType*> models
+        = db().time().lookupClass<filmModelType>();
 
-    return dynamic_cast<const filmModelType&>(model);
+    forAllConstIter(HashTable<const filmModelType*>, models, iter)
+    {
+        if (iter()->regionMesh().name() == filmRegionName_)
+        {
+            return *iter();
+        }
+    }
+
+
+    FatalErrorIn
+    (
+        "const filmPyrolysisRadiativeCoupledMixedFvPatchScalarField::"
+        "filmModelType& "
+        "filmPyrolysisRadiativeCoupledMixedFvPatchScalarField::"
+        "filmModel() const"
+    )
+        << "Unable to locate film region " << filmRegionName_
+        << abort(FatalError);
+
+    return **models.begin();
 }
 
 
@@ -53,13 +69,28 @@ pyrolysisModelType&
 filmPyrolysisRadiativeCoupledMixedFvPatchScalarField::
 pyrModel() const
 {
-    const regionModels::regionModel& model =
-        db().time().lookupObject<regionModels::regionModel>
-        (
-            "pyrolysisProperties"
-        );
+    HashTable<const pyrolysisModelType*> models =
+        db().time().lookupClass<pyrolysisModelType>();
 
-    return dynamic_cast<const pyrolysisModelType&>(model);
+    forAllConstIter(HashTable<const pyrolysisModelType*>, models, iter)
+    {
+        if (iter()->regionMesh().name() == pyrolysisRegionName_)
+        {
+            return *iter();
+        }
+    }
+
+    FatalErrorIn
+    (
+        "const filmPyrolysisRadiativeCoupledMixedFvPatchScalarField::"
+        "pyrolysisModelType& "
+        "filmPyrolysisRadiativeCoupledMixedFvPatchScalarField::"
+        "pyrModel() const"
+    )
+        << "Unable to locate pyrolysis region " << pyrolysisRegionName_
+        << abort(FatalError);
+
+    return **models.begin();
 }
 
 
@@ -74,6 +105,8 @@ filmPyrolysisRadiativeCoupledMixedFvPatchScalarField
 :
     mixedFvPatchScalarField(p, iF),
     temperatureCoupledBase(patch(), "undefined", "undefined-K"),
+    filmRegionName_("surfaceFilmProperties"),
+    pyrolysisRegionName_("pyrolysisProperties"),
     TnbrName_("undefined-Tnbr"),
     QrNbrName_("undefined-QrNbr"),
     QrName_("undefined-Qr"),
@@ -98,6 +131,8 @@ filmPyrolysisRadiativeCoupledMixedFvPatchScalarField
 :
     mixedFvPatchScalarField(psf, p, iF, mapper),
     temperatureCoupledBase(patch(), psf.KMethod(), psf.kappaName()),
+    filmRegionName_(psf.filmRegionName_),
+    pyrolysisRegionName_(psf.pyrolysisRegionName_),
     TnbrName_(psf.TnbrName_),
     QrNbrName_(psf.QrNbrName_),
     QrName_(psf.QrName_),
@@ -117,6 +152,14 @@ filmPyrolysisRadiativeCoupledMixedFvPatchScalarField
 :
     mixedFvPatchScalarField(p, iF),
     temperatureCoupledBase(patch(), dict),
+    filmRegionName_
+    (
+        dict.lookupOrDefault<word>("filmRegion", "surfaceFilmProperties")
+    ),
+    pyrolysisRegionName_
+    (
+        dict.lookupOrDefault<word>("pyrolysisRegion", "pyrolysisProperties")
+    ),
     TnbrName_(dict.lookup("Tnbr")),
     QrNbrName_(dict.lookup("QrNbr")),
     QrName_(dict.lookup("Qr")),
@@ -171,6 +214,8 @@ filmPyrolysisRadiativeCoupledMixedFvPatchScalarField
 :
     mixedFvPatchScalarField(psf, iF),
     temperatureCoupledBase(patch(), psf.KMethod(), psf.kappaName()),
+    filmRegionName_(psf.filmRegionName_),
+    pyrolysisRegionName_(psf.pyrolysisRegionName_),
     TnbrName_(psf.TnbrName_),
     QrNbrName_(psf.QrNbrName_),
     QrName_(psf.QrName_),
@@ -196,7 +241,6 @@ updateCoeffs()
 
     const label patchI = patch().index();
     const label nbrPatchI = mpp.samplePolyPatch().index();
-
     const polyMesh& mesh = patch().boundaryMesh().mesh();
     const polyMesh& nbrMesh = mpp.sampleMesh();
     const fvPatch& nbrPatch =
@@ -240,13 +284,13 @@ updateCoeffs()
 
     // Obtain Rad heat (Qr)
     scalarField Qr(patch().size(), 0.0);
-    if (QrName_ != "none") //region0
+    if (QrName_ != "none") // primary region (region0)
     {
         Qr = patch().lookupPatchField<volScalarField, scalar>(QrName_);
         myPatchINrbPatchI = nbrPatch.index();
     }
 
-    if (QrNbrName_ != "none") //pyrolysis
+    if (QrNbrName_ != "none") // pyrolysis region
     {
         Qr = nbrPatch.lookupPatchField<volScalarField, scalar>(QrNbrName_);
         mpp.distribute(Qr);
@@ -326,13 +370,12 @@ updateCoeffs()
             << "     convective heat[W] : " << Qc << nl
             << "     radiative heat [W] : " << Qr << nl
             << "     total heat     [W] : " << Qt << nl
-            << "     walltemperature "
+            << "     wall temperature "
             << " min:" << gMin(*this)
             << " max:" << gMax(*this)
             << " avg:" << gAverage(*this)
             << endl;
     }
-
 }
 
 
@@ -342,6 +385,20 @@ void filmPyrolysisRadiativeCoupledMixedFvPatchScalarField::write
 ) const
 {
     mixedFvPatchScalarField::write(os);
+    writeEntryIfDifferent<word>
+    (
+        os,
+        "filmRegion",
+        "surfaceFilmProperties",
+        filmRegionName_
+    );
+    writeEntryIfDifferent<word>
+    (
+        os,
+        "pyrolysisRegion",
+        "pyrolysisProperties",
+        pyrolysisRegionName_
+    );
     os.writeKeyword("Tnbr")<< TnbrName_ << token::END_STATEMENT << nl;
     os.writeKeyword("QrNbr")<< QrNbrName_ << token::END_STATEMENT << nl;
     os.writeKeyword("Qr")<< QrName_ << token::END_STATEMENT << nl;

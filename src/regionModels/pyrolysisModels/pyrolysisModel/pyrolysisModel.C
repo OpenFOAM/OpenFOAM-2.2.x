@@ -80,15 +80,20 @@ bool pyrolysisModel::read(const dictionary& dict)
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-pyrolysisModel::pyrolysisModel(const fvMesh& mesh)
+pyrolysisModel::pyrolysisModel(const fvMesh& mesh, const word& regionType)
 :
-    regionModel1D(mesh)
+    regionModel1D(mesh, regionType)
 {}
 
 
-pyrolysisModel::pyrolysisModel(const word& modelType, const fvMesh& mesh)
+pyrolysisModel::pyrolysisModel
+(
+    const word& modelType,
+    const fvMesh& mesh,
+    const word& regionType
+)
 :
-    regionModel1D(mesh, "pyrolysis", modelType)
+    regionModel1D(mesh, regionType, modelType)
 {
     if (active_)
     {
@@ -101,10 +106,11 @@ pyrolysisModel::pyrolysisModel
 (
     const word& modelType,
     const fvMesh& mesh,
-    const dictionary& dict
+    const dictionary& dict,
+    const word& regionType
 )
 :
-    regionModel1D(mesh, "pyrolysis", modelType, dict)
+    regionModel1D(mesh, regionType, modelType, dict)
 {
     if (active_)
     {

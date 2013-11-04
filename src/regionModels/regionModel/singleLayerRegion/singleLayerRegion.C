@@ -157,9 +157,13 @@ bool Foam::regionModels::singleLayerRegion::read()
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::regionModels::singleLayerRegion::singleLayerRegion(const fvMesh& mesh)
+Foam::regionModels::singleLayerRegion::singleLayerRegion
+(
+    const fvMesh& mesh,
+    const word& regionType
+)
 :
-    regionModel(mesh),
+    regionModel(mesh, regionType),
     nHatPtr_(NULL),
     magSfPtr_(NULL),
     passivePatchIDs_()

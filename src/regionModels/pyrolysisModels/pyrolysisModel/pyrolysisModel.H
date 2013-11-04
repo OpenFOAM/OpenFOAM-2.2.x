@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,9 +22,10 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::pyrolysisModel
+    Foam::regionModels::pyrolysisModels::pyrolysisModel
 
 Description
+    Base class for pyrolysis models
 
 SourceFiles
     pyrolysisModelI.H
@@ -104,9 +105,10 @@ public:
             mesh,
             (
                 const word& modelType,
-                const fvMesh& mesh
+                const fvMesh& mesh,
+                const word& regionType
             ),
-            (modelType, mesh)
+            (modelType, mesh, regionType)
         );
 
         declareRunTimeSelectionTable
@@ -117,26 +119,37 @@ public:
             (
                 const word& modelType,
                 const fvMesh& mesh,
-                const dictionary& dict
+                const dictionary& dict,
+                const word& regionType
             ),
-            (modelType, mesh, dict)
+            (modelType, mesh, dict, regionType)
         );
 
 
     // Constructors
 
         //- Construct null from mesh
-        pyrolysisModel(const fvMesh& mesh);
+        pyrolysisModel
+        (
+            const fvMesh& mesh,
+            const word& regionType
+        );
 
         //- Construct from type name and mesh
-        pyrolysisModel(const word& modelType, const fvMesh& mesh);
+        pyrolysisModel
+        (
+            const word& modelType,
+            const fvMesh& mesh,
+            const word& regionType
+        );
 
         //- Construct from type name and mesh and dictionary
         pyrolysisModel
         (
             const word& modelType,
             const fvMesh& mesh,
-            const dictionary& dict
+            const dictionary& dict,
+            const word& regionType
         );
 
         //- Return clone
@@ -150,38 +163,19 @@ public:
     // Selectors
 
         //- Return a reference to the selected pyrolysis model
-        static autoPtr<pyrolysisModel> New(const fvMesh& mesh);
+        static autoPtr<pyrolysisModel> New
+        (
+            const fvMesh& mesh,
+            const word& regionType = "pyrolysis"
+        );
 
         //- Return a reference to a named selected pyrolysis model
         static autoPtr<pyrolysisModel> New
         (
             const fvMesh& mesh,
-            const dictionary& dict
+            const dictionary& dict,
+            const word& regionType = "pyrolysis"
         );
-
-         //- Return pointer to new pyrolysis created on freestore from Istream
-        class iNew
-        {
-            const fvMesh& mesh_;
-
-        public:
-
-            iNew(const fvMesh& mesh)
-            :
-                mesh_(mesh)
-            {}
-
-            autoPtr<pyrolysisModel> operator()(Istream& is) const
-            {
-                keyType key(is);
-                dictionary dict(is);
-
-                return autoPtr<pyrolysisModel>
-                (
-                    pyrolysisModel::New(mesh_, dict)
-                );
-            }
-        };
 
 
     //- Destructor
@@ -211,6 +205,7 @@ public:
 
                 //- Return the total gas mass flux to primary region [kg/m2/s]
                 virtual const surfaceScalarField& phiGas() const = 0;
+
 
             // Sources
 

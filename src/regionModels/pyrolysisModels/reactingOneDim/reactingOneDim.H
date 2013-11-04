@@ -203,14 +203,20 @@ public:
     // Constructors
 
         //- Construct from type name and mesh
-        reactingOneDim(const word& modelType, const fvMesh& mesh);
+        reactingOneDim
+        (
+            const word& modelType,
+            const fvMesh& mesh,
+            const word& regionType
+        );
 
         //- Construct from type name, mesh and dictionary
         reactingOneDim
         (
             const word& modelType,
             const fvMesh& mesh,
-            const dictionary& dict
+            const dictionary& dict,
+            const word& regionType
         );
 
 
