@@ -5,45 +5,46 @@
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
-FoamFile
+
+alphat
 {
-    version     2.0;
-    format      ascii;
-    class       dictionary;
-    object      controlDict;
+    type            compressible::alphatWallFunction;
+    value           uniform 0;
 }
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     buoyantSimpleFoam;
+epsilon
+{
+    type            compressible::epsilonWallFunction;
+    value           uniform 0.01;
+}
 
-startFrom       startTime;
+k
+{
+    type            compressible::kqRWallFunction;
+    value           uniform 0.01;
+}
 
-startTime       0;
+mut
+{
+    type            mutkWallFunction;
+    value           uniform 0;
+}
 
-stopAt          endTime;
+p
+{
+    type            calculated;
+    value           uniform 101325;
+}
 
-endTime         2500;
+p_rgh
+{
+    type            fixedFluxPressure;
+}
 
-deltaT          1;
-
-writeControl    timeStep;
-
-writeInterval   500;
-
-purgeWrite      0;
-
-writeFormat     ascii;
-
-writePrecision  6;
-
-writeCompression off;
-
-timeFormat      general;
-
-timePrecision   6;
-
-runTimeModifiable true;
-
-libs ("libthermalBaffleModels.so" "libcompressibleRASModels.so");
+U
+{
+    type            fixedValue;
+    value           uniform (0 0 0);
+}
 
 // ************************************************************************* //

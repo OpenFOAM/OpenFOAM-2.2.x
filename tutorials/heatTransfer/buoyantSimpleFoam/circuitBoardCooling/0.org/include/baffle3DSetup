@@ -1,30 +1,27 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.2.2                                 |
+|  \\    /   O peration     | Version:  2.2.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
-FoamFile
-{
-    version     2.0;
-    format      ascii;
-    class       volScalarField;
-    object      Q;
-}
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [1 -1 -3 0 0 0 0];
+baffleRegionName    baffle3DRegion;
 
-internalField   uniform 17000;
+masterPatchName     baffle3DRegionMaster;
 
-boundaryField
-{
-    ".*"
-    {
-        type            zeroGradient;
-    }
-}
+slavePatchName      baffle3DRegionSlave;
 
+oneD                false;
+
+nLayers             50;
+
+thickness           0.02;
+
+Kappa               0.01;
+
+Cp                  15;
+
+rho                 80;
 
 // ************************************************************************* //
