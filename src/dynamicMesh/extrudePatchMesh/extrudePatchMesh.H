@@ -120,8 +120,7 @@ public:
             const fvMesh&,
             const fvPatch&,
             const dictionary&,
-            const word,
-            const dictionary&,
+            const word
         );
 
 

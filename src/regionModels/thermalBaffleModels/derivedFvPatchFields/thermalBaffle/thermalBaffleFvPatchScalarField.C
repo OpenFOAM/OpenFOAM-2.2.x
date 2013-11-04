@@ -167,41 +167,6 @@ void thermalBaffleFvPatchScalarField::createPatchMesh()
 
     word regionName = dict_.lookup("regionName");
 
-    const mappedPatchBase& mpp =
-        refCast<const mappedPatchBase>(patch().patch());
-
-    const word myName = patch().boundaryMesh()[patch().index()];
-    const word nbrName = patch().boundaryMesh()[mpp.samplePatch().index()];
-
-    dictionary regionPolyPatchDict;
-    {
-        dictionary dict;
-        dict.add("name", "bottom");
-        dict.add(type, "mappedWall");
-        dict.add(sampleMode, "nearestPatchFace");
-        dict.add(samplePatch, myName);
-        dict.add(offsetMode, "uniform");
-        dict.add(offset, vector::zero);
-
-        regionPolyPatchDict.add("bottomCoeffs", dict);
-
-        dict.set("name", "top");
-        dict.set(samplePatch, nbrName);
-
-        regionPolyPatchDict.add("topCoeffs", dict);
-
-        dictionary sideDict;
-        sideDict.set("name", "sideCoeffs");
-        const word sidePatchType("empty");
-        if (!readBool(dict_.lookup("columnCells"))
-        {
-            sidePatchType = "patch";
-        }
-        dict.set(type, sidePatchType);
-
-        regionPolyPatchDict.add("sideCoeffs", sideDict);
-    }
-
     extrudeMeshPtr_.reset
     (
         new extrudePatchMesh
@@ -209,8 +174,7 @@ void thermalBaffleFvPatchScalarField::createPatchMesh()
             defaultRegion,
             patch(),
             dict_,
-            regionName,
-            regionPolyPatchDict
+            regionName
         )
     );
 

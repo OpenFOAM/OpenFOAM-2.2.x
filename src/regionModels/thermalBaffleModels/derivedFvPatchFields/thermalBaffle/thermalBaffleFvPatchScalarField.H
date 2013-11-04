@@ -49,13 +49,11 @@ Description
         type                compressible::temperatureThermoBaffle;
 
         // Underlaying coupled boundary condition
-            Tnbr                T;
-            kappa               fluidThermo; // or solidThermo
-            KappaName           none;
-            QrNbr               Qr;   // or none.Name of Qr field on neighbour
-region
-            Qr                  none; // or none.Name of Qr field on local
-region
+            Tnbr               T;
+            kappa              fluidThermo; // or solidThermo
+            KappaName          none;
+            QrNbr              Qr;//or none.Name of Qr field on neighbourregion
+            Qr                 none;// or none.Name of Qr field on localregion
             value              uniform 300;
 
         // Thermo baffle model
