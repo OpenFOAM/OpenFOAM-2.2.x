@@ -5,45 +5,23 @@
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
-FoamFile
-{
-    version     2.0;
-    format      ascii;
-    class       dictionary;
-    object      controlDict;
-}
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     buoyantSimpleFoam;
+baffleRegionName    baffle3DRegion;
 
-startFrom       startTime;
+masterPatchName     baffle3DRegionMaster;
 
-startTime       0;
+slavePatchName      baffle3DRegionSlave;
 
-stopAt          endTime;
+oneD                false;
 
-endTime         2500;
+nLayers             50;
 
-deltaT          1;
+thickness           0.02;
 
-writeControl    timeStep;
+Kappa               0.01;
 
-writeInterval   500;
+Cp                  15;
 
-purgeWrite      0;
-
-writeFormat     ascii;
-
-writePrecision  6;
-
-writeCompression off;
-
-timeFormat      general;
-
-timePrecision   6;
-
-runTimeModifiable true;
-
-libs ("libthermalBaffleModels.so" "libcompressibleRASModels.so");
+rho                 80;
 
 // ************************************************************************* //

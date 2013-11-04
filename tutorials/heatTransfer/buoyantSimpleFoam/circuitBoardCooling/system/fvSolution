@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.2.2                                 |
+|  \\    /   O peration     | Version:  2.2.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -49,9 +49,9 @@ SIMPLE
 
     residualControl
     {
-        p_rgh           5e-3;
-        U               3e-4;
-        h               3e-4;
+        p_rgh           1e-3;
+        U               1e-4;
+        h               1e-4;
 
         // possibly check turbulence fields
         "(k|epsilon|omega)" 5e-3;
@@ -62,8 +62,8 @@ relaxationFactors
 {
     rho             1.0;
     p_rgh           0.7;
-    U               0.7;
-    h               0.3;
+    U               0.3;
+    h               0.7;
     "(k|epsilon|omega)" 0.3;
 }
 

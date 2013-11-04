@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.2.2                                 |
+|  \\    /   O peration     | Version:  2.2.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -15,7 +15,7 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [ 0 2 -3 0 0 0 0 ];
+dimensions      [0 2 -3 0 0 0 0];
 
 internalField   uniform 0.01;
 
@@ -24,11 +24,17 @@ boundaryField
     floor
     {
         type            compressible::epsilonWallFunction;
+        Cmu             0.09;
+        kappa           0.41;
+        E               9.8;
         value           uniform 0.01;
     }
     ceiling
     {
         type            compressible::epsilonWallFunction;
+        Cmu             0.09;
+        kappa           0.41;
+        E               9.8;
         value           uniform 0.01;
     }
     inlet

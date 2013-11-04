@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.2.2                                 |
+|  \\    /   O peration     | Version:  2.2.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -19,109 +19,97 @@ FoamFile
 // faces.
 internalFacesOnly true;
 
-
 // Baffles to create.
 baffles
 {
     baffleFacesThermoBaffle1D
     {
         //- Use predefined faceZone to select faces and orientation.
-        type        faceZone;
-        zoneName    baffleFaces;
-
+        type        searchableSurface;
+        surface     triSurfaceMesh;
+        name        baffle1D.stl;
 
         patches
         {
             master
             {
                 //- Master side patch
-                name            baffle1Wall_0;
+                name            baffle1DWall_master;
 
-                type            mappedWall;
-                sampleMode      nearestPatchFace;
-                samplePatch     baffle1Wall_1;
-                offset          (0 0 0);
-
+                type            wall;
+                inGroups        (baffleWallGroup);
 
                 patchFields
                 {
-                    T
-                    {
-                        type   compressible::thermalBaffle1D<hConstSolidThermoPhysics>;
-                        baffleActivated yes;
-                        thickness       uniform 0.005;  // thickness [m]
-                        Qs              uniform 100;    // heat flux [W/m2]
-                        specie
-                        {
-                            nMoles          1;
-                            molWeight       20;
-                        }
-                        transport
-                        {
-                            kappa           1;
-                        }
-                        thermodynamics
-                        {
-                            Hf              0;
-                            Cp              10;
-                        }
-                        equationOfState
-                        {
-                            rho             10;
-                        }
-
-                        value               uniform 300;
-                    }
-
-                    alphat
-                    {
-                        type            compressible::alphatWallFunction;
-                        value           uniform 0;
-                    }
-                    epsilon
-                    {
-                        type            compressible::epsilonWallFunction;
-                        value           uniform 0.01;
-                    }
-                    k
-                    {
-                        type            compressible::kqRWallFunction;
-                        value           uniform 0.01;
-                    }
-                    mut
-                    {
-                        type            mutkWallFunction;
-                        value           uniform 0;
-                    }
-                    p
-                    {
-                        type            calculated;
-                        value           uniform 101325;
-                    }
-                    p_rgh
-                    {
-                        type            fixedFluxPressure;
-                    }
-                    U
-                    {
-                        type            fixedValue;
-                        value           uniform (0 0 0);
-                    }
+                    #include "./0/include/wallBafflePatches"
+                    #include "./0/include/1DBaffle/1DTemperatureMasterBafflePatches"
                 }
             }
             slave
             {
                 //- Slave side patch
-                name            baffle1Wall_1;
+                name            baffle1DWall_slave;
+
+                type            wall;
+                inGroups        (baffleWallGroup);
+
+                patchFields
+                {
+                    #include "./0/include/wallBafflePatches"
+                    #include "./0/include/1DBaffle/1DTemperatureSlaveBafflePatches"
+                }
+            }
+        }
+    }
+
+    #include "./0/include/baffle3DSetup"
+
+    baffleFacesThermoBaffle3D
+    {
+        type        searchableSurface;
+        surface     triSurfaceMesh;
+        name        baffle3D.stl;
+
+        patches
+        {
+            master
+            {
+                //- Master side patch
+                name            ${masterPatchName};
 
                 type            mappedWall;
+                inGroups        (baffleWallGroup);
+
                 sampleMode      nearestPatchFace;
-                samplePatch     baffle1Wall_0;
+                sampleRegion    ${baffleRegionName};
+                samplePatch     bottom;
+                offsetMode      uniform;
                 offset          (0 0 0);
 
                 patchFields
                 {
-                    ${...master.patchFields}
+                    #include "./0/include/wallBafflePatches"
+                    #include "./0/include/3DBaffle/3DTemperatureMasterBafflePatches"
+                }
+            }
+            slave
+            {
+                //- Slave side patch
+                name            ${slavePatchName};
+
+                type            mappedWall;
+                inGroups        (baffleWallGroup);
+
+                sampleMode      nearestPatchFace;
+                sampleRegion    ${baffleRegionName};
+                samplePatch     top;
+                offsetMode      uniform;
+                offset          (0 0 0);
+
+                patchFields
+                {
+                    #include "./0/include/wallBafflePatches"
+                    #include "./0/include/3DBaffle/3DTemperatureSlaveBafflePatches"
                 }
             }
         }

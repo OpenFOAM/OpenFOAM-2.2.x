@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.2.2                                 |
+|  \\    /   O peration     | Version:  2.2.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -11,30 +11,27 @@ FoamFile
     format      ascii;
     class       dictionary;
     location    "system/baffleRegion";
-    object      fvSchemes;
+    object      fvSolution;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-ddtSchemes
+solvers
 {
-    default         steadyState;
+    h
+    {
+        solver           PCG;
+        smoother         GaussSeidel;
+        preconditioner   DIC;
+        tolerance        1e-06;
+        relTol           0;
+    }
 }
 
-divSchemes
-{
-     default        none;
-}
+nNonOrthCorr        0;
 
-gradSchemes
+relaxationFactors
 {
-    default         Gauss linear;
+    h       1;
 }
-
-laplacianSchemes
-{
-    default             none;
-    laplacian(alpha,h)  Gauss linear uncorrected;
-}
-
 
 // ************************************************************************* //

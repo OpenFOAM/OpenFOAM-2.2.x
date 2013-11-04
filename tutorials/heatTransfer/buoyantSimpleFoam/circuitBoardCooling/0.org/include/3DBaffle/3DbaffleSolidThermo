@@ -5,23 +5,15 @@
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
-FoamFile
-{
-    version     2.0;
-    format      ascii;
-    class       dictionary;
-    location    "constant";
-    object      thermophysicalProperties;
-}
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+ // Solid thermo
 thermoType
 {
-    type            heRhoThermo;
+    type            heSolidThermo;
     mixture         pureMixture;
-    transport       const;
+    transport       constIso;
     thermo          hConst;
-    equationOfState perfectGas;
+    equationOfState rhoConst;
     specie          specie;
     energy          sensibleEnthalpy;
 }
@@ -31,19 +23,28 @@ mixture
     specie
     {
         nMoles          1;
-        molWeight       28.96;
-    }
-    thermodynamics
-    {
-        Cp              1004.4;
-        Hf              0;
+        molWeight       20;
     }
     transport
     {
-        mu              1.831e-05;
-        Pr              0.705;
+        kappa           ${Kappa};
+    }
+    thermodynamics
+    {
+        Hf              0;
+        Cp              ${Cp};
+    }
+    equationOfState
+    {
+        rho             ${rho};
     }
 }
 
+radiation
+{
+    radiationModel  opaqueSolid;
+    absorptionEmissionModel none;
+    scatterModel    none;
+}
 
 // ************************************************************************* //

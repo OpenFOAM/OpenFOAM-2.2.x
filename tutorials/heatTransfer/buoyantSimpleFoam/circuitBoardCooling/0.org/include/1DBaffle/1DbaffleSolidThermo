@@ -5,45 +5,24 @@
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
-FoamFile
+
+specie
 {
-    version     2.0;
-    format      ascii;
-    class       dictionary;
-    object      controlDict;
+    nMoles          1;
+    molWeight       20;
 }
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-application     buoyantSimpleFoam;
-
-startFrom       startTime;
-
-startTime       0;
-
-stopAt          endTime;
-
-endTime         2500;
-
-deltaT          1;
-
-writeControl    timeStep;
-
-writeInterval   500;
-
-purgeWrite      0;
-
-writeFormat     ascii;
-
-writePrecision  6;
-
-writeCompression off;
-
-timeFormat      general;
-
-timePrecision   6;
-
-runTimeModifiable true;
-
-libs ("libthermalBaffleModels.so" "libcompressibleRASModels.so");
+transport
+{
+    kappa           1;
+}
+thermodynamics
+{
+    Hf              0;
+    Cp              10;
+}
+equationOfState
+{
+    rho             10;
+}
 
 // ************************************************************************* //
