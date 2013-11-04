@@ -88,11 +88,6 @@ thermalBaffleFvPatchScalarField
     extrudeMeshPtr_()
 {
 
-    const mappedPatchBase& mpp =
-        refCast<const mappedPatchBase>(patch().patch());
-
-    const word nbrMesh = mpp.sampleRegion();
-
     const fvMesh& thisMesh = patch().boundaryMesh().mesh();
 
     typedef regionModels::thermalBaffleModels::thermalBaffleModel baffle;
@@ -115,6 +110,17 @@ thermalBaffleFvPatchScalarField
                 createPatchMesh();
             }
 
+            baffle_.reset(baffle::New(thisMesh, dict).ptr());
+            owner_ = true;
+            baffle_->rename(baffleName);
+        }
+        else if //Backwards compatibility (if region exists)
+        (
+            thisMesh.time().foundObject<fvMesh>(regionName)
+         && baffle_.empty()
+         && regionName != "none"
+        )
+        {
             baffle_.reset(baffle::New(thisMesh, dict).ptr());
             owner_ = true;
             baffle_->rename(baffleName);
