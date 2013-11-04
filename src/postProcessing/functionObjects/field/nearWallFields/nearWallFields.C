@@ -327,15 +327,6 @@ void Foam::nearWallFields::execute()
     {
         Info<< "nearWallFields:execute()" << endl;
     }
-
-    //if (active_)
-    //{
-    //    sampleFields(vsf_);
-    //    sampleFields(vvf_);
-    //    sampleFields(vSpheretf_);
-    //    sampleFields(vSymmtf_);
-    //    sampleFields(vtf_);
-    //}
 }
 
 
@@ -345,8 +336,6 @@ void Foam::nearWallFields::end()
     {
         Info<< "nearWallFields:end()" << endl;
     }
-    // Update fields
-    execute();
 }
 
 
