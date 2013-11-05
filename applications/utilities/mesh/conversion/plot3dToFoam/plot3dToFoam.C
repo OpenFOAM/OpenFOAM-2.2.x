@@ -256,7 +256,7 @@ int main(int argc, char *argv[])
     );
 
     // Set the precision of the points data to 10
-    IOstream::defaultPrecision(10);
+    IOstream::defaultPrecision(max(10u, IOstream::defaultPrecision()));
 
     Info<< "Writing polyMesh" << endl;
     pShapeMesh.write();

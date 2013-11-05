@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -78,6 +78,26 @@ public:
             hexes(nCells),
             polys(nCells)
         {}
+
+
+    // Member Functions
+
+        void setSize(const label nCells)
+        {
+            nTets = 0;
+            nPyrs = 0;
+            nPrisms = 0;
+            nHexesWedges = 0;
+            nPolys = 0;
+
+            tets.setSize(nCells);
+            pyrs.setSize(nCells);
+            prisms.setSize(nCells);
+            wedges.setSize(nCells);
+            hexes.setSize(nCells);
+            polys.setSize(nCells);
+        }
+
 };
 
 

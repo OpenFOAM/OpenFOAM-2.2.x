@@ -14,7 +14,7 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-// List of pairs of source/target patches for mapping
+// List of pairs of target/source patches for mapping
 patchMap
 (
     lid movingWall

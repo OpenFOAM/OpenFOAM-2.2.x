@@ -47,7 +47,8 @@ License
 void Foam::ensightMesh::correct()
 {
     patchPartOffset_ = 2;
-    meshCellSets_ = mesh_.nCells();
+    meshCellSets_.setSize(mesh_.nCells());
+
     boundaryFaceSets_.setSize(mesh_.boundary().size());
     allPatchNames_.clear();
     patchNames_.clear();
@@ -194,44 +195,41 @@ void Foam::ensightMesh::correct()
     {
         forAll(mesh_.boundary(), patchi)
         {
-            if (mesh_.boundary()[patchi].size())
+            const polyPatch& p = mesh_.boundaryMesh()[patchi];
+
+            labelList& tris = boundaryFaceSets_[patchi].tris;
+            labelList& quads = boundaryFaceSets_[patchi].quads;
+            labelList& polys = boundaryFaceSets_[patchi].polys;
+
+            tris.setSize(p.size());
+            quads.setSize(p.size());
+            polys.setSize(p.size());
+
+            label nTris = 0;
+            label nQuads = 0;
+            label nPolys = 0;
+
+            forAll(p, faceI)
             {
-                const polyPatch& p = mesh_.boundaryMesh()[patchi];
+                const face& f = p[faceI];
 
-                labelList& tris = boundaryFaceSets_[patchi].tris;
-                labelList& quads = boundaryFaceSets_[patchi].quads;
-                labelList& polys = boundaryFaceSets_[patchi].polys;
-
-                tris.setSize(p.size());
-                quads.setSize(p.size());
-                polys.setSize(p.size());
-
-                label nTris = 0;
-                label nQuads = 0;
-                label nPolys = 0;
-
-                forAll(p, faceI)
+                if (f.size() == 3)
                 {
-                    const face& f = p[faceI];
-
-                    if (f.size() == 3)
-                    {
-                        tris[nTris++] = faceI;
-                    }
-                    else if (f.size() == 4)
-                    {
-                        quads[nQuads++] = faceI;
-                    }
-                    else
-                    {
-                        polys[nPolys++] = faceI;
-                    }
+                    tris[nTris++] = faceI;
                 }
-
-                tris.setSize(nTris);
-                quads.setSize(nQuads);
-                polys.setSize(nPolys);
+                else if (f.size() == 4)
+                {
+                    quads[nQuads++] = faceI;
+                }
+                else
+                {
+                    polys[nPolys++] = faceI;
+                }
             }
+
+            tris.setSize(nTris);
+            quads.setSize(nQuads);
+            polys.setSize(nPolys);
         }
     }
 
@@ -242,12 +240,9 @@ void Foam::ensightMesh::correct()
 
         if (patchNames_.empty() || patchNames_.found(patchName))
         {
-            if (mesh_.boundary()[patchi].size())
-            {
-                nfp.nTris   = boundaryFaceSets_[patchi].tris.size();
-                nfp.nQuads  = boundaryFaceSets_[patchi].quads.size();
-                nfp.nPolys  = boundaryFaceSets_[patchi].polys.size();
-            }
+            nfp.nTris   = boundaryFaceSets_[patchi].tris.size();
+            nfp.nQuads  = boundaryFaceSets_[patchi].quads.size();
+            nfp.nPolys  = boundaryFaceSets_[patchi].polys.size();
         }
 
         reduce(nfp.nTris, sumOp<label>());
@@ -1148,6 +1143,7 @@ void Foam::ensightMesh::write
             if (nfp.nTris || nfp.nQuads || nfp.nPolys)
             {
                 const polyPatch& p = mesh_.boundaryMesh()[patchi];
+
                 const labelList& tris = boundaryFaceSets_[patchi].tris;
                 const labelList& quads = boundaryFaceSets_[patchi].quads;
                 const labelList& polys = boundaryFaceSets_[patchi].polys;

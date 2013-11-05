@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.2.2                                 |
+|  \\    /   O peration     | Version:  2.2.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -10,22 +10,31 @@ FoamFile
     version     2.0;
     format      ascii;
     class       dictionary;
-    location    "constant";
-    object      thermalBaffleProperties;
+    location    "system/baffleRegion";
+    object      fvSchemes;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-thermalBaffleModel  none;
-
-active          no;
-
-regionName      none;
-
-thermalBaffleCoeffs
+ddtSchemes
 {
+    default         steadyState;
 }
 
-noThermoCoeffs
+divSchemes
 {
+     default        none;
 }
+
+gradSchemes
+{
+    default         Gauss linear;
+}
+
+laplacianSchemes
+{
+    default             none;
+    laplacian(alpha,h)  Gauss linear uncorrected;
+}
+
+
 // ************************************************************************* //

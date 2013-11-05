@@ -47,14 +47,15 @@ extrudePatchMesh::extrudePatchMesh
 (
     const fvMesh& mesh,
     const fvPatch& patch,
-    const dictionary& dict
+    const dictionary& dict,
+    const word regionName
 )
 :
     fvMesh
     (
         IOobject
         (
-            dict.lookup("region"),
+            regionName,
             mesh.facesInstance(),
             mesh,
             IOobject::READ_IF_PRESENT,

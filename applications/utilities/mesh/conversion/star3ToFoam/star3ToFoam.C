@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
     starMesh makeMesh(args[1], runTime, scaleFactor);
 
     // Set the precision of the points data to 10
-    IOstream::defaultPrecision(10);
+    IOstream::defaultPrecision(max(10u, IOstream::defaultPrecision()));
 
     Info<< "Writing mesh" << endl;
     makeMesh.writeMesh();

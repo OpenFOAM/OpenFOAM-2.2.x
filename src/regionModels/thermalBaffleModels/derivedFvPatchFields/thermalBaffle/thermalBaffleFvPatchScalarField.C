@@ -45,7 +45,8 @@ thermalBaffleFvPatchScalarField
     turbulentTemperatureRadCoupledMixedFvPatchScalarField(p, iF),
     owner_(false),
     baffle_(),
-    dict_(dictionary::null)
+    dict_(dictionary::null),
+    extrudeMeshPtr_()
 {}
 
 
@@ -66,8 +67,9 @@ thermalBaffleFvPatchScalarField
         mapper
     ),
     owner_(ptf.owner_),
-    baffle_(ptf.baffle_),
-    dict_(ptf.dict_)
+    baffle_(),
+    dict_(ptf.dict_),
+    extrudeMeshPtr_()
 {}
 
 
@@ -82,47 +84,47 @@ thermalBaffleFvPatchScalarField
     turbulentTemperatureRadCoupledMixedFvPatchScalarField(p, iF, dict),
     owner_(false),
     baffle_(),
-    dict_(dict)
+    dict_(dict),
+    extrudeMeshPtr_()
 {
-    if (!isA<mappedPatchBase>(patch().patch()))
-    {
-        FatalErrorIn
-        (
-            "thermalBaffleFvPatchScalarField::"
-            "thermalBaffleFvPatchScalarField\n"
-            "(\n"
-            "    const fvPatch& p,\n"
-            "    const DimensionedField<scalar, volMesh>& iF,\n"
-            "    const dictionary& dict\n"
-            ")\n"
-        )   << "\n    patch type '" << patch().type()
-            << "' not type '" << mappedPatchBase::typeName << "'"
-            << "\n    for patch " << patch().name()
-            << " of field " << dimensionedInternalField().name()
-            << " in file " << dimensionedInternalField().objectPath()
-            << exit(FatalError);
-    }
-
-    const mappedPatchBase& mpp =
-        refCast<const mappedPatchBase>(patch().patch());
-
-    const word nbrMesh = mpp.sampleRegion();
 
     const fvMesh& thisMesh = patch().boundaryMesh().mesh();
 
     typedef regionModels::thermalBaffleModels::thermalBaffleModel baffle;
 
-    if
-    (
-        thisMesh.name() == polyMesh::defaultRegion
-     && !thisMesh.foundObject<baffle>(nbrMesh)
-     && !owner_
-    )
+    if (thisMesh.name() == polyMesh::defaultRegion)
     {
-        Info << "Creating thermal baffle" <<  nbrMesh << endl;
-        baffle_.reset(baffle::New(thisMesh, dict).ptr());
-        owner_ = true;
-        baffle_->rename(nbrMesh);
+        const word regionName =
+            dict_.lookupOrDefault<word>("regionName", "none");
+
+        const word baffleName("3DBaffle" + regionName);
+
+        if
+        (
+            !thisMesh.time().foundObject<fvMesh>(regionName)
+         && regionName != "none"
+        )
+        {
+            if (extrudeMeshPtr_.empty())
+            {
+                createPatchMesh();
+            }
+
+            baffle_.reset(baffle::New(thisMesh, dict).ptr());
+            owner_ = true;
+            baffle_->rename(baffleName);
+        }
+        else if //Backwards compatibility (if region exists)
+        (
+            thisMesh.time().foundObject<fvMesh>(regionName)
+         && baffle_.empty()
+         && regionName != "none"
+        )
+        {
+            baffle_.reset(baffle::New(thisMesh, dict).ptr());
+            owner_ = true;
+            baffle_->rename(baffleName);
+        }
     }
 }
 
@@ -136,8 +138,9 @@ thermalBaffleFvPatchScalarField
 :
     turbulentTemperatureRadCoupledMixedFvPatchScalarField(ptf, iF),
     owner_(ptf.owner_),
-    baffle_(ptf.baffle_),
-    dict_(ptf.dict_)
+    baffle_(),
+    dict_(ptf.dict_),
+    extrudeMeshPtr_()
 {}
 
 
@@ -160,6 +163,36 @@ void thermalBaffleFvPatchScalarField::rmap
 )
 {
     mixedFvPatchScalarField::rmap(ptf, addr);
+}
+
+
+void thermalBaffleFvPatchScalarField::createPatchMesh()
+{
+    const fvMesh& defaultRegion =
+        db().time().lookupObject<fvMesh>(fvMesh::defaultRegion);
+
+    word regionName = dict_.lookup("regionName");
+
+    extrudeMeshPtr_.reset
+    (
+        new extrudePatchMesh
+        (
+            defaultRegion,
+            patch(),
+            dict_,
+            regionName
+        )
+    );
+
+    if (extrudeMeshPtr_.empty())
+    {
+        WarningIn
+        (
+            "thermalBaffleFvPatchScalarField::createPatchMesh()\n"
+        )   << "Specified IOobject::MUST_READ_IF_MODIFIED but class"
+            << " patchMeshPtr not set."
+            << endl;
+    }
 }
 
 
@@ -189,26 +222,34 @@ void thermalBaffleFvPatchScalarField::write(Ostream& os) const
 
     if (thisMesh.name() == polyMesh::defaultRegion && owner_)
     {
-        word thermoModel = dict_.lookup("thermalBaffleModel");
 
-        os.writeKeyword("thermalBaffleModel")
-            << thermoModel
-            << token::END_STATEMENT << nl;
+        os.writeKeyword("extrudeModel");
+        os << word(dict_.lookup("extrudeModel"))
+           << token::END_STATEMENT << nl;
+
+        os.writeKeyword("nLayers");
+        os << readLabel(dict_.lookup("nLayers"))
+           << token::END_STATEMENT << nl;
+
+        os.writeKeyword("expansionRatio");
+        os << readScalar(dict_.lookup("expansionRatio"))
+           << token::END_STATEMENT << nl;
+
+        os.writeKeyword("columnCells");
+        os << readBool(dict_.lookup("columnCells"))
+           << token::END_STATEMENT << nl;
+
+        word extrudeModel(word(dict_.lookup("extrudeModel")) + "Coeffs");
+        os.writeKeyword(extrudeModel);
+        os << dict_.subDict(extrudeModel) << nl;
 
         word regionName = dict_.lookup("regionName");
         os.writeKeyword("regionName") << regionName
             << token::END_STATEMENT << nl;
 
-        bool infoOutput = readBool(dict_.lookup("infoOutput"));
-        os.writeKeyword("infoOutput") << infoOutput
-            << token::END_STATEMENT << nl;
-
         bool active = readBool(dict_.lookup("active"));
         os.writeKeyword("active") <<  active
             << token::END_STATEMENT << nl;
-
-        os.writeKeyword(word(thermoModel + "Coeffs"));
-        os << dict_.subDict(thermoModel + "Coeffs") << nl;
 
         os.writeKeyword("thermoType");
         os << dict_.subDict("thermoType") << nl;

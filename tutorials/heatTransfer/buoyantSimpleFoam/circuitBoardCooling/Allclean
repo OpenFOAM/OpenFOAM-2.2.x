@@ -5,7 +5,8 @@ cd ${0%/*} || exit 1    # run from this directory
 . $WM_PROJECT_DIR/bin/tools/CleanFunctions
 
 cleanCase
-rm -rf constant/baffleRegion/polyMesh
-rm -rf sets 0
+rm -rf constant/baffle3DRegion
+rm -rf constant/polyMesh/boundary
+rm -rf 0
 
 # ----------------------------------------------------------------- end-of-file

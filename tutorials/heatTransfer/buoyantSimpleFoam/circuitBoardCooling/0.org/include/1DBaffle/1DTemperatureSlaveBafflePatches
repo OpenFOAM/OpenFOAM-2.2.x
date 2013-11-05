@@ -1,30 +1,16 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.2.2                                 |
+|  \\    /   O peration     | Version:  2.2.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
-FoamFile
+
+T
 {
-    version     2.0;
-    format      ascii;
-    class       volScalarField;
-    object      Q;
+   type     compressible::thermalBaffle1D<hConstSolidThermoPhysics>;
+   samplePatch  baffle1DWall_master;
+   value        uniform 300;
 }
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-dimensions      [1 -1 -3 0 0 0 0];
-
-internalField   uniform 17000;
-
-boundaryField
-{
-    ".*"
-    {
-        type            zeroGradient;
-    }
-}
-
 
 // ************************************************************************* //

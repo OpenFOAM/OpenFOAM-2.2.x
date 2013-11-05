@@ -1,6 +1,3 @@
-surfaceScalarField alphaPhi1("alphaPhi" + phase1Name, phi1);
-surfaceScalarField alphaPhi2("alphaPhi" + phase2Name, phi2);
-
 {
     word alphaScheme("div(phi," + alpha1.name() + ')');
     word alpharScheme("div(phir," + alpha1.name() + ')');
@@ -83,6 +80,27 @@ surfaceScalarField alphaPhi2("alphaPhi" + phase2Name, phi2);
                     alpharScheme
                 )
             );
+
+            // Ensure that the flux at inflow BCs is preserved
+            forAll(alphaPhic1.boundaryField(), patchi)
+            {
+                fvsPatchScalarField& alphaPhic1p =
+                    alphaPhic1.boundaryField()[patchi];
+
+                if (!alphaPhic1p.coupled())
+                {
+                    const scalarField& phi1p = phi1.boundaryField()[patchi];
+                    const scalarField& alpha1p = alpha1.boundaryField()[patchi];
+
+                    forAll(alphaPhic1p, facei)
+                    {
+                        if (phi1p[facei] < 0)
+                        {
+                            alphaPhic1p[facei] = alpha1p[facei]*phi1p[facei];
+                        }
+                    }
+                }
+            }
 
             MULES::explicitSolve
             (

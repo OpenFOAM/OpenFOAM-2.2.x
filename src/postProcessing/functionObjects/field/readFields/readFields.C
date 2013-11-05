@@ -120,7 +120,7 @@ void Foam::readFields::execute()
 
 void Foam::readFields::end()
 {
-    // Do nothing
+    execute();
 }
 
 

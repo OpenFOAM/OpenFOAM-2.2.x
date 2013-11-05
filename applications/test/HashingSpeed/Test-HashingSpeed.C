@@ -1016,7 +1016,6 @@ int i;
 // found somewhere in the 2nd addition
 uint32_t stroustrup (const char * s, int len) {
     uint32_t h;
-    int i;
 
     for (register int i=0; i < len; ++s, ++i)
     {

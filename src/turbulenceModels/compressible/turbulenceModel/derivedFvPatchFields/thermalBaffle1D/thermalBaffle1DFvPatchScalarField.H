@@ -24,9 +24,68 @@ License
 Class
     Foam::thermalBaffle1DFvPatchScalarField
 
+Group
+    grpThermoBoundaryConditions
+
 Description
-    Boundary which solves the 1D steady state heat transfer equation
-    through a baffle.
+
+    This BC solves a steady 1D thermal baffle. The solid properties are
+    specify as dictionary. Optionaly radiative heat flux (Qr) can be
+    incorporated into the balance. Some under-relaxation might be needed on
+    Qr.
+    Baffle and solid properties need to be specified on the master side
+    of the baffle.
+
+    \heading Patch usage
+    Example of the boundary condition specification using constant
+    solid thermo :
+
+    \verbatim
+    myPatch_master
+    {
+        type   compressible::thermalBaffle1D<hConstSolidThermoPhysics>;
+        samplePatch     myPatch_slave;
+
+        thickness       uniform 0.005;  // thickness [m]
+        Qs              uniform 100;    // heat flux [W/m2]
+
+        Qr              none;
+        relaxation      0;
+
+        // Solid thermo
+        specie
+        {
+            nMoles          1;
+            molWeight       20;
+        }
+        transport
+        {
+            kappa           1;
+        }
+        thermodynamics
+        {
+            Hf              0;
+            Cp              10;
+        }
+        equationOfState
+        {
+            rho             10;
+        }
+
+        value               uniform 300;
+    }
+
+    myPatch_slave
+    {
+        type   compressible::thermalBaffle1D<hConstSolidThermoPhysics>;
+        samplePatch     myPatch_master_master;
+
+        Qr              none;
+        relaxation      0;
+    }
+    \endverbatim
+
+
 
 SourceFiles
     thermalBaffle1DFvPatchScalarField.C
@@ -38,7 +97,7 @@ SourceFiles
 
 #include "mixedFvPatchFields.H"
 #include "autoPtr.H"
-
+#include "mappedPatchBase.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -54,6 +113,7 @@ namespace compressible
 template<class solidType>
 class thermalBaffle1DFvPatchScalarField
 :
+    public mappedPatchBase,
     public mixedFvPatchScalarField
 {
     // Private data
@@ -65,10 +125,10 @@ class thermalBaffle1DFvPatchScalarField
         bool baffleActivated_;
 
         //- Baffle thickness [m]
-        scalarField thickness_;
+        mutable scalarField thickness_;
 
         //- Superficial heat source [W/m2]
-        scalarField Qs_;
+        mutable scalarField Qs_;
 
         //- Solid dictionary
         dictionary  solidDict_;
@@ -76,11 +136,29 @@ class thermalBaffle1DFvPatchScalarField
         //- Solid thermo
         mutable autoPtr<solidType> solidPtr_;
 
+        //- Chache Qr for relaxation
+        scalarField QrPrevious_;
+
+        //- Relaxation for Qr
+        scalar QrRelaxation_;
+
+        //- Name of the radiative heat flux in local region
+        const word QrName_;
+
 
     // Private members
 
-        //- Return const solid thermo autoMap
-        const solidType& solidPtr() const;
+        //- Return const solid thermo
+        const solidType& solid() const;
+
+        //- Return Qs from master
+        const scalarField& Qs() const;
+
+        //- Return thickness from master
+        const scalarField& baffleThickness() const;
+
+        //- Is Owner
+        bool owner() const;
 
 
 public:

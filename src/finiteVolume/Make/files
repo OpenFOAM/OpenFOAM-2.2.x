@@ -189,6 +189,7 @@ $(derivedFvPatchFields)/variableHeightFlowRate/variableHeightFlowRateFvPatchFiel
 $(derivedFvPatchFields)/variableHeightFlowRateInletVelocity/variableHeightFlowRateInletVelocityFvPatchVectorField.C
 $(derivedFvPatchFields)/waveTransmissive/waveTransmissiveFvPatchFields.C
 $(derivedFvPatchFields)/waveSurfacePressure/waveSurfacePressureFvPatchScalarField.C
+$(derivedFvPatchFields)/interstitialInletVelocity/interstitialInletVelocityFvPatchVectorField.C
 
 fvsPatchFields = fields/fvsPatchFields
 $(fvsPatchFields)/fvsPatchField/fvsPatchFields.C

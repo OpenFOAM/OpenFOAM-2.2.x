@@ -1,0 +1,20 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.x                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+
+T
+{
+        type                compressible::thermalBaffle;
+        Tnbr                T;
+        kappa               fluidThermo;
+        kappaName           none;
+        QrNbr               none;
+        Qr                  none;
+        value               uniform 300;
+}
+
+// ************************************************************************* //

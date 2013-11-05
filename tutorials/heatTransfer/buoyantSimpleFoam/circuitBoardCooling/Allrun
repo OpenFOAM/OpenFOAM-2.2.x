@@ -4,25 +4,11 @@
 # Get application name
 application=`getApplication`
 
-cp -r 0.org 0
 runApplication blockMesh
 
-runApplication topoSet
+cp -r 0.org 0
 
-unset FOAM_SETNAN
-unset FOAM_SIGFPE
-
-# Create first baffle
+# Create 1D and 3D baffles
 runApplication createBaffles -overwrite
-
-# Create region
-runApplication extrudeToRegionMesh -overwrite
-
-# Set Bc's for the region baffle
-runApplication changeDictionary -dict system/changeDictionaryDict.baffleRegion -literalRE
-rm log.changeDictionary
-
-# Reset proper values at the region
-runApplication changeDictionary -region baffleRegion -literalRE
 
 runApplication $application

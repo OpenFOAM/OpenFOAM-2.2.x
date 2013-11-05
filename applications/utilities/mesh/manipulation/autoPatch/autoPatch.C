@@ -248,8 +248,11 @@ int main(int argc, char *argv[])
     {
         mesh.setInstance(oldInstance);
     }
-    mesh.write();
 
+    // Set the precision of the points data to 10
+    IOstream::defaultPrecision(max(10u, IOstream::defaultPrecision()));
+
+    mesh.write();
 
     Info<< "End\n" << endl;
 

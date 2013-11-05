@@ -42,72 +42,106 @@ Description
     dictionary entries.
 
     \heading Patch usage
-
     Example of the boundary condition specification:
     \verbatim
     myPatch
     {
         type                compressible::temperatureThermoBaffle;
 
-        // coupled boundary condition
-        Tnbr                T;
-        kappa               fluidThermo; // or solidThermo
-        KappaName           none;
-        QrNbr               Qr; // or none.Name of Qr field on neighbour region
-        Qr                  Qr; // or none.Name of Qr field on local region
+        // Underlaying coupled boundary condition
+            Tnbr               T;
+            kappa              fluidThermo; // or solidThermo
+            KappaName          none;
+            QrNbr              Qr;//or none.Name of Qr field on neighbourregion
+            Qr                 none;// or none.Name of Qr field on localregion
+            value              uniform 300;
 
         // Thermo baffle model
-        thermalBaffleModel   thermalBaffle;
-        regionName          baffleRegion;
-        infoOutput          yes;
-        active              yes;
-        thermalBaffleCoeffs
-        {
-        }
+            regionName          baffleRegion; // solid region name
+            infoOutput          yes;
+            active              yes;
 
-
-        // Solid thermo
-        thermoType
-        {
-            type            heSolidThermo;
-            mixture         pureSolidMixture;
-            transport       constIso;
-            thermo          hConst;
-            equationOfState rhoConst;
-            specie          specie;
-            energy          sensibleEnthalpy;
-        }
-
-        mixture
-        {
-            specie
+        // Solid thermo in solid region
+            thermoType
             {
-                nMoles          1;
-                molWeight       20;
+                type            heSolidThermo;
+                mixture         pureSolidMixture;
+                transport       constIso;
+                thermo          hConst;
+                equationOfState rhoConst;
+                specie          specie;
+                energy          sensibleEnthalpy;
             }
-            transport
-            {
-                kappa           0.01;
-            }
-            thermodynamics
-            {
-                Hf              0;
-                Cp              15;
-            }
-            density
-            {
-                rho             80;
-            }
-        }
 
-        radiation
-        {
-            radiationModel  opaqueSolid;
-            absorptionEmissionModel none;
-            scatterModel    none;
-        }
+            mixture
+            {
+                specie
+                {
+                    nMoles          1;
+                    molWeight       20;
+                }
+                transport
+                {
+                    kappa           0.01;
+                }
+                thermodynamics
+                {
+                    Hf              0;
+                    Cp              15;
+                }
+                density
+                {
+                    rho             80;
+                }
+            }
 
-        value               uniform 300;
+            radiation
+            {
+                radiationModel  opaqueSolid;
+                absorptionEmissionModel none;
+                scatterModel    none;
+            }
+
+
+        // Extrude model for new region
+
+            extrudeModel        linearNormal;
+            nLayers             50;
+            expansionRatio      1;
+            columnCells         false; //3D or 1D
+            linearNormalCoeffs
+            {
+                thickness           0.02;
+            }
+
+
+        // New mesh polyPatch information
+
+            bottomCoeffs
+            {
+                name        "bottom";
+                type        mappedWall;
+                sampleMode  nearestPatchFace;
+                samplePatch baffle3DWall_master;
+                offsetMode  uniform;
+                offset      (0 0 0);
+            }
+
+            topCoeffs
+            {
+                name        "top";
+                type        mappedWall;
+                sampleMode  nearestPatchFace;
+                samplePatch baffle3DWall_slave;
+                offsetMode  uniform;
+                offset      (0 0 0);
+            }
+
+            sideCoeffs
+            {
+                name        "side";
+                type        patch;
+            }
     }
     \endverbatim
 
@@ -127,7 +161,7 @@ SourceFiles
 #include "autoPtr.H"
 #include "regionModel.H"
 #include "thermalBaffleModel.H"
-//#include "turbulentTemperatureCoupledBaffleMixedFvPatchScalarField.H"
+#include "extrudePatchMesh.H"
 #include "turbulentTemperatureRadCoupledMixedFvPatchScalarField.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -157,6 +191,14 @@ class thermalBaffleFvPatchScalarField
         //- Dictionary
         dictionary dict_;
 
+        //- Auto pointer to extrapolated mesh from patch
+        autoPtr<extrudePatchMesh> extrudeMeshPtr_;
+
+
+    // Private member functions
+
+        //- Extrude mesh
+        void createPatchMesh();
 
 public:
 
