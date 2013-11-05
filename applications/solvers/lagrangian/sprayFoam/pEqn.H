@@ -52,7 +52,7 @@ else
         )
     );
 
-    fvOptions.relativeFlux(fvc::interpolate(psi), phiHbyA);
+    fvOptions.relativeFlux(fvc::interpolate(rho), phiHbyA);
 
     while (pimple.correctNonOrthogonal())
     {
