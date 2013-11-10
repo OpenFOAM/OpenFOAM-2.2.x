@@ -141,7 +141,7 @@ void Foam::KRR4::solve
 
         for (register label i=0; i<n_; i++)
         {
-            g3_[i] = dydx[i] + h*c3X*dfdx_[i] + (c31*g1_[i] + c32*g2_[i])/h;
+            g3_[i] = dydx_[i] + h*c3X*dfdx_[i] + (c31*g1_[i] + c32*g2_[i])/h;
         }
 
         LUBacksubstitute(a_, pivotIndices_, g3_);
