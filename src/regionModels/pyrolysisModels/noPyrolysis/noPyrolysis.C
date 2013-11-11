@@ -56,6 +56,7 @@ void noPyrolysis::constructThermoChemistry()
     radiation_.reset(radiation::radiationModel::New(solidThermo_->T()).ptr());
 }
 
+
 bool noPyrolysis::read()
 {
     if (pyrolysisModel::read())
@@ -86,9 +87,14 @@ bool noPyrolysis::read(const dictionary& dict)
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-noPyrolysis::noPyrolysis(const word& modelType, const fvMesh& mesh)
+noPyrolysis::noPyrolysis
+(
+    const word& modelType,
+    const fvMesh& mesh,
+    const word& regionType
+)
 :
-    pyrolysisModel(mesh),
+    pyrolysisModel(mesh, regionType),
     solidChemistry_(NULL),
     solidThermo_(NULL),
     radiation_(NULL)
@@ -104,9 +110,11 @@ noPyrolysis::noPyrolysis
 (
     const word& modelType,
     const fvMesh& mesh,
-    const dictionary& dict
-):
-    pyrolysisModel(mesh),
+    const dictionary& dict,
+    const word& regionType
+)
+:
+    pyrolysisModel(mesh, regionType),
     solidChemistry_(NULL),
     solidThermo_(NULL),
     radiation_(NULL)
@@ -116,6 +124,7 @@ noPyrolysis::noPyrolysis
         constructThermoChemistry();
     }
 }
+
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 

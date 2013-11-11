@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -140,13 +140,14 @@ protected:
         virtual bool read(const dictionary& dict);
 
         //- Create or return a new inter-region AMI object
-        virtual const Foam::AMIPatchToPatchInterpolation& interRegionAMI
+        virtual const AMIPatchToPatchInterpolation& interRegionAMI
         (
             const regionModel& nbrRegion,
             const label regionPatchI,
             const label nbrPatchI,
             const bool flip
         );
+
 
 public:
 
@@ -157,7 +158,7 @@ public:
     // Constructors
 
         //- Construct null
-        regionModel(const fvMesh& mesh);
+        regionModel(const fvMesh& mesh, const word& regionType);
 
         //- Construct from mesh, region type and name
         regionModel

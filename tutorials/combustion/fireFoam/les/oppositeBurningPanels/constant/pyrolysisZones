@@ -15,29 +15,27 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-1
-(
-    pyrolysis
+pyrolysis
+{
+    active          true;
+
+    pyrolysisModel  reactingOneDim;
+
+    regionName      panelRegion;
+
+    reactingOneDimCoeffs
     {
-        active          true;
+        gasHSource      no; //Energy source term due to pyrolysis gas
+        QrHSource       no; //Energy source term due in depht radiation
+        minimumDelta    1e-12;
 
-        pyrolysisModel  reactingOneDim;
+        reactionDeltaMin 1e-12;
 
-        regionName      panelRegion;
-
-        reactingOneDimCoeffs
-        {
-            gasHSource      no; //Energy source term due to pyrolysis gas
-            QrHSource       no; //Energy source term due in depht radiation
-            minimumDelta    1e-12;
-
-            reactionDeltaMin 1e-12;
-
-            moveMesh        false;
-        }
-
-        infoOutput      true;
+        moveMesh        false;
     }
-)
+
+    infoOutput      true;
+}
+
 
 // ************************************************************************* //

@@ -438,10 +438,11 @@ kinematicSingleLayer::kinematicSingleLayer
     const word& modelType,
     const fvMesh& mesh,
     const dimensionedVector& g,
+    const word& regionType,
     const bool readFields
 )
 :
-    surfaceFilmModel(modelType, mesh, g),
+    surfaceFilmModel(modelType, mesh, g, regionType),
 
     momentumPredictor_(solution().subDict("PISO").lookup("momentumPredictor")),
     nOuterCorr_(solution().subDict("PISO").lookupOrDefault("nOuterCorr", 1)),

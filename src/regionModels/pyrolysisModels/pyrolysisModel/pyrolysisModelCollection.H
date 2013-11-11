@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -38,16 +38,15 @@ SourceFiles
 #ifndef pyrolysisModelCollection_H
 #define pyrolysisModelCollection_H
 
-#include "IOPtrList.H"
+#include "PtrList.H"
 #include "pyrolysisModel.H"
-#include "fvc.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
 
-// Forward declaration of friend functions and operators
+// Forward class declarations
 class fvMesh;
 
 namespace regionModels
@@ -56,19 +55,13 @@ namespace pyrolysisModels
 {
 
 /*---------------------------------------------------------------------------*\
-                           Class pyrolysisModelCollection Declaration
+                  Class pyrolysisModelCollection Declaration
 \*---------------------------------------------------------------------------*/
 
 class pyrolysisModelCollection
 :
-    public IOPtrList<pyrolysisModel>
+    public PtrList<pyrolysisModel>
 {
-    // Private data
-
-        //- Reference to the finite volume mesh this zone is part of
-        const fvMesh& mesh_;
-
-
     // Private Member Functions
 
         //- Disallow default bitwise copy construct
@@ -80,6 +73,9 @@ class pyrolysisModelCollection
 
 public:
 
+    // Runtime type information
+    TypeName("pyrolysisModelCollection");
+
 
     // Constructors
 
@@ -87,26 +83,29 @@ public:
         pyrolysisModelCollection(const fvMesh&);
 
 
+    //- Destructor
+    virtual ~pyrolysisModelCollection();
+
+
     // Member Functions
 
         //- Pre-evolve regions
-        void preEvolveRegion();
+        virtual void preEvolveRegion();
 
-         //- Evolve the pyrolysis equation regions
-        void evolveRegion();
+        //- Evolve the pyrolysis equation regions
+        virtual void evolveRegion();
 
         //- Evolve regions
-        void evolve();
+        virtual void evolve();
 
         //- Provide some feedback from pyrolysis regions
-        void info() const;
+        virtual void info() const;
 
         //- Return max diffusivity allowed in the solid
-        scalar maxDiff() const;
+        virtual scalar maxDiff() const;
 
         //- Mean diffusion number of the solid regions
-        scalar solidRegionDiffNo() const;
-
+        virtual scalar solidRegionDiffNo() const;
 };
 
 

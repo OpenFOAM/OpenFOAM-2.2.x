@@ -38,6 +38,7 @@ inclinedFilmNusseltInletVelocityFvPatchVectorField
 )
 :
     fixedValueFvPatchVectorField(p, iF),
+    filmRegionName_("surfaceFilmProperties"),
     GammaMean_(),
     a_(),
     omega_()
@@ -54,6 +55,7 @@ inclinedFilmNusseltInletVelocityFvPatchVectorField
 )
 :
     fixedValueFvPatchVectorField(ptf, p, iF, mapper),
+    filmRegionName_(ptf.filmRegionName_),
     GammaMean_(ptf.GammaMean_().clone().ptr()),
     a_(ptf.a_().clone().ptr()),
     omega_(ptf.omega_().clone().ptr())
@@ -69,6 +71,10 @@ inclinedFilmNusseltInletVelocityFvPatchVectorField
 )
 :
     fixedValueFvPatchVectorField(p, iF),
+    filmRegionName_
+    (
+        dict.lookupOrDefault<word>("filmRegion", "surfaceFilmProperties")
+    ),
     GammaMean_(DataEntry<scalar>::New("GammaMean", dict)),
     a_(DataEntry<scalar>::New("a", dict)),
     omega_(DataEntry<scalar>::New("omega", dict))
@@ -84,6 +90,7 @@ inclinedFilmNusseltInletVelocityFvPatchVectorField
 )
 :
     fixedValueFvPatchVectorField(fmfrpvf),
+    filmRegionName_(fmfrpvf.filmRegionName_),
     GammaMean_(fmfrpvf.GammaMean_().clone().ptr()),
     a_(fmfrpvf.a_().clone().ptr()),
     omega_(fmfrpvf.omega_().clone().ptr())
@@ -98,6 +105,7 @@ inclinedFilmNusseltInletVelocityFvPatchVectorField
 )
 :
     fixedValueFvPatchVectorField(fmfrpvf, iF),
+    filmRegionName_(fmfrpvf.filmRegionName_),
     GammaMean_(fmfrpvf.GammaMean_().clone().ptr()),
     a_(fmfrpvf.a_().clone().ptr()),
     omega_(fmfrpvf.omega_().clone().ptr())
@@ -118,10 +126,7 @@ void Foam::inclinedFilmNusseltInletVelocityFvPatchVectorField::updateCoeffs()
     // retrieve the film region from the database
 
     const regionModels::regionModel& region =
-        db().time().lookupObject<regionModels::regionModel>
-        (
-            "surfaceFilmProperties"
-        );
+        db().time().lookupObject<regionModels::regionModel>(filmRegionName_);
 
     const regionModels::surfaceFilmModels::kinematicSingleLayer& film =
         dynamic_cast
@@ -191,6 +196,13 @@ void Foam::inclinedFilmNusseltInletVelocityFvPatchVectorField::write
 ) const
 {
     fvPatchVectorField::write(os);
+    writeEntryIfDifferent<word>
+    (
+        os,
+        "filmRegion",
+        "surfaceFilmProperties",
+        filmRegionName_
+    );
     GammaMean_->writeData(os);
     a_->writeData(os);
     omega_->writeData(os);

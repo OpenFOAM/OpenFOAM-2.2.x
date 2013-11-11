@@ -383,9 +383,14 @@ void reactingOneDim::calculateMassTransfer()
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-reactingOneDim::reactingOneDim(const word& modelType, const fvMesh& mesh)
+reactingOneDim::reactingOneDim
+(
+    const word& modelType,
+    const fvMesh& mesh,
+    const word& regionType
+)
 :
-    pyrolysisModel(modelType, mesh),
+    pyrolysisModel(modelType, mesh, regionType),
     solidChemistry_(basicSolidChemistryModel::New(regionMesh())),
     solidThermo_(solidChemistry_->solidThermo()),
     radiation_(radiation::radiationModel::New(solidThermo_.T())),
@@ -483,10 +488,11 @@ reactingOneDim::reactingOneDim
 (
     const word& modelType,
     const fvMesh& mesh,
-    const dictionary& dict
+    const dictionary& dict,
+    const word& regionType
 )
 :
-    pyrolysisModel(modelType, mesh, dict),
+    pyrolysisModel(modelType, mesh, dict, regionType),
     solidChemistry_(basicSolidChemistryModel::New(regionMesh())),
     solidThermo_(solidChemistry_->solidThermo()),
     radiation_(radiation::radiationModel::New(solidThermo_.T())),

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -53,8 +53,7 @@ tmp<scalarField> mutkFilmWallFunctionFvPatchScalarField::calcUTau
 
     typedef regionModels::surfaceFilmModels::surfaceFilmModel modelType;
 
-    bool foundFilm =
-        db().time().foundObject<modelType>("surfaceFilmProperties");
+    bool foundFilm = db().time().foundObject<modelType>(filmRegionName_);
 
     if (!foundFilm)
     {
@@ -66,7 +65,7 @@ tmp<scalarField> mutkFilmWallFunctionFvPatchScalarField::calcUTau
 
     // Retrieve phase change mass from surface film model
     const modelType& filmModel =
-        db().time().lookupObject<modelType>("surfaceFilmProperties");
+        db().time().lookupObject<modelType>(filmRegionName_);
 
     const label filmPatchI = filmModel.regionPatchID(patchI);
 
@@ -142,6 +141,7 @@ mutkFilmWallFunctionFvPatchScalarField::mutkFilmWallFunctionFvPatchScalarField
 )
 :
     mutkWallFunctionFvPatchScalarField(p, iF),
+    filmRegionName_("surfaceFilmProperties"),
     B_(5.5),
     yPlusCrit_(11.05)
 {}
@@ -156,6 +156,7 @@ mutkFilmWallFunctionFvPatchScalarField::mutkFilmWallFunctionFvPatchScalarField
 )
 :
     mutkWallFunctionFvPatchScalarField(ptf, p, iF, mapper),
+    filmRegionName_(ptf.filmRegionName_),
     B_(5.5),
     yPlusCrit_(11.05)
 {}
@@ -169,6 +170,10 @@ mutkFilmWallFunctionFvPatchScalarField::mutkFilmWallFunctionFvPatchScalarField
 )
 :
     mutkWallFunctionFvPatchScalarField(p, iF, dict),
+    filmRegionName_
+    (
+        dict.lookupOrDefault<word>("filmRegion", "surfaceFilmProperties")
+    ),
     B_(dict.lookupOrDefault("B", 5.5)),
     yPlusCrit_(dict.lookupOrDefault("yPlusCrit", 11.05))
 {}
@@ -180,6 +185,7 @@ mutkFilmWallFunctionFvPatchScalarField::mutkFilmWallFunctionFvPatchScalarField
 )
 :
     mutkWallFunctionFvPatchScalarField(wfpsf),
+    filmRegionName_(wfpsf.filmRegionName_),
     B_(wfpsf.B_),
     yPlusCrit_(wfpsf.yPlusCrit_)
 {}
@@ -192,6 +198,7 @@ mutkFilmWallFunctionFvPatchScalarField::mutkFilmWallFunctionFvPatchScalarField
 )
 :
     mutkWallFunctionFvPatchScalarField(wfpsf, iF),
+    filmRegionName_(wfpsf.filmRegionName_),
     B_(wfpsf.B_),
     yPlusCrit_(wfpsf.yPlusCrit_)
 {}
@@ -216,6 +223,13 @@ tmp<scalarField> mutkFilmWallFunctionFvPatchScalarField::yPlus() const
 void mutkFilmWallFunctionFvPatchScalarField::write(Ostream& os) const
 {
     fvPatchField<scalar>::write(os);
+    writeEntryIfDifferent<word>
+    (
+        os,
+        "filmRegion",
+        "surfaceFilmProperties",
+        filmRegionName_
+    );
     writeLocalEntries(os);
     os.writeKeyword("B") << B_ << token::END_STATEMENT << nl;
     os.writeKeyword("yPlusCrit") << yPlusCrit_ << token::END_STATEMENT << nl;

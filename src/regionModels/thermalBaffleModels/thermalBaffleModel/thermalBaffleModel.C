@@ -201,7 +201,7 @@ void thermalBaffleModel::init()
 
 thermalBaffleModel::thermalBaffleModel(const fvMesh& mesh)
 :
-    regionModel1D(mesh),
+    regionModel1D(mesh, "thermalBaffle"),
     thickness_(),
     delta_("delta", dimLength, 0.0),
     oneD_(false),

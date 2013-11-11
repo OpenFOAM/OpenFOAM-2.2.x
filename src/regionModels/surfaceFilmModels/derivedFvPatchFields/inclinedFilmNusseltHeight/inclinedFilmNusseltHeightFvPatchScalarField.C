@@ -38,6 +38,7 @@ inclinedFilmNusseltHeightFvPatchScalarField
 )
 :
     fixedValueFvPatchScalarField(p, iF),
+    filmRegionName_("surfaceFilmProperties"),
     GammaMean_(),
     a_(),
     omega_()
@@ -54,6 +55,7 @@ inclinedFilmNusseltHeightFvPatchScalarField
 )
 :
     fixedValueFvPatchScalarField(ptf, p, iF, mapper),
+    filmRegionName_(ptf.filmRegionName_),
     GammaMean_(ptf.GammaMean_().clone().ptr()),
     a_(ptf.a_().clone().ptr()),
     omega_(ptf.omega_().clone().ptr())
@@ -69,6 +71,10 @@ inclinedFilmNusseltHeightFvPatchScalarField
 )
 :
     fixedValueFvPatchScalarField(p, iF),
+    filmRegionName_
+    (
+        dict.lookupOrDefault<word>("filmRegion", "surfaceFilmProperties")
+    ),
     GammaMean_(DataEntry<scalar>::New("GammaMean", dict)),
     a_(DataEntry<scalar>::New("a", dict)),
     omega_(DataEntry<scalar>::New("omega", dict))
@@ -84,6 +90,7 @@ inclinedFilmNusseltHeightFvPatchScalarField
 )
 :
     fixedValueFvPatchScalarField(wmfrhpsf),
+    filmRegionName_(wmfrhpsf.filmRegionName_),
     GammaMean_(wmfrhpsf.GammaMean_().clone().ptr()),
     a_(wmfrhpsf.a_().clone().ptr()),
     omega_(wmfrhpsf.omega_().clone().ptr())
@@ -98,6 +105,7 @@ inclinedFilmNusseltHeightFvPatchScalarField
 )
 :
     fixedValueFvPatchScalarField(wmfrhpsf, iF),
+    filmRegionName_(wmfrhpsf.filmRegionName_),
     GammaMean_(wmfrhpsf.GammaMean_().clone().ptr()),
     a_(wmfrhpsf.a_().clone().ptr()),
     omega_(wmfrhpsf.omega_().clone().ptr())
@@ -118,10 +126,7 @@ void Foam::inclinedFilmNusseltHeightFvPatchScalarField::updateCoeffs()
     // retrieve the film region from the database
 
     const regionModels::regionModel& region =
-        db().time().lookupObject<regionModels::regionModel>
-        (
-            "surfaceFilmProperties"
-        );
+        db().time().lookupObject<regionModels::regionModel>(filmRegionName_);
 
     const regionModels::surfaceFilmModels::kinematicSingleLayer& film =
         dynamic_cast
@@ -195,6 +200,13 @@ void Foam::inclinedFilmNusseltHeightFvPatchScalarField::write
 ) const
 {
     fixedValueFvPatchScalarField::write(os);
+    writeEntryIfDifferent<word>
+    (
+        os,
+        "filmRegion",
+        "surfaceFilmProperties",
+        filmRegionName_
+    );
     GammaMean_->writeData(os);
     a_->writeData(os);
     omega_->writeData(os);
