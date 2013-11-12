@@ -32,7 +32,7 @@ Foam::regionModels::regionModel::mapRegionPatchField
     const label nbrPatchI,
     const Field<Type>& nbrField,
     const bool flip
-)
+) const
 {
     int oldTag = UPstream::msgType();
     UPstream::msgType() = oldTag + 1;
@@ -56,7 +56,7 @@ Foam::regionModels::regionModel::mapRegionPatchField
     const word& fieldName,
     const label regionPatchI,
     const bool flip
-)
+) const
 {
     typedef GeometricField<Type, fvPatchField, volMesh> fieldType;
 
@@ -108,7 +108,7 @@ Foam::regionModels::regionModel::mapRegionPatchInternalField
     const word& fieldName,
     const label regionPatchI,
     const bool flip
-)
+) const
 {
     typedef GeometricField<Type, fvPatchField, volMesh> fieldType;
 

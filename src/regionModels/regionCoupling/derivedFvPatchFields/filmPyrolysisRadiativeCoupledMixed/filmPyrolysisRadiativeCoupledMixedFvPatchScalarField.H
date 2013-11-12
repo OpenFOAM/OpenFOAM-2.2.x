@@ -38,7 +38,6 @@ Description
             type            filmPyrolysisRadiativeCoupledMixed;
             Tnbr            T;
             kappa           fluidThermo;
-            QrNbr           none;
             Qr              Qr;
             kappaName       none;
             filmDeltaDry    0.0;
@@ -91,7 +90,7 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-   Class filmPyrolysisRadiativeCoupledMixedFvPatchScalarField Declaration
+    Class filmPyrolysisRadiativeCoupledMixedFvPatchScalarField Declaration
 \*---------------------------------------------------------------------------*/
 
 class filmPyrolysisRadiativeCoupledMixedFvPatchScalarField
@@ -121,10 +120,7 @@ private:
         //- Name of field on the neighbour region
         const word TnbrName_;
 
-         //- Name of the radiative heat flux in the neighbout region
-        const word QrNbrName_;
-
-        //- Name of the radiative heat flux in local region
+        //- Name of the radiative heat flux
         const word QrName_;
 
         //- Convective Scaling Factor (as determined by Prateep's tests)
