@@ -48,11 +48,13 @@ namespace Foam
 
 
     template<>
-    const char* NamedEnum<fieldValues::faceSource::operationType, 12>::names[] =
+    const char* NamedEnum<fieldValues::faceSource::operationType, 14>::names[] =
     {
         "none",
         "sum",
+        "sumMag",
         "sumDirection",
+        "sumDirectionBalance",
         "average",
         "weightedAverage",
         "areaAverage",
@@ -75,7 +77,7 @@ namespace Foam
 const Foam::NamedEnum<Foam::fieldValues::faceSource::sourceType, 3>
     Foam::fieldValues::faceSource::sourceTypeNames_;
 
-const Foam::NamedEnum<Foam::fieldValues::faceSource::operationType, 12>
+const Foam::NamedEnum<Foam::fieldValues::faceSource::operationType, 14>
     Foam::fieldValues::faceSource::operationTypeNames_;
 
 
@@ -450,6 +452,11 @@ void Foam::fieldValues::faceSource::initialise(const dictionary& dict)
         Info<< "    weight field = " << weightFieldName_;
     }
 
+    if (dict.readIfPresent("scaleFactor", scaleFactor_))
+    {
+        Info<< "    scale factor = " << scaleFactor_;
+    }
+
     Info<< nl << endl;
 
     if (valueOutput_)
@@ -499,24 +506,15 @@ Foam::scalar Foam::fieldValues::faceSource::processValues
     {
         case opSumDirection:
         {
-            const vector direction(dict_.lookup("direction"));
+            vector n(dict_.lookup("direction"));
+            return sum(pos(values*(Sf & n))*mag(values));
+        }
+        case opSumDirectionBalance:
+        {
+            vector n(dict_.lookup("direction"));
+            const scalarField nv(values*(Sf & n));
 
-            scalar v = 0.0;
-
-            forAll(Sf, i)
-            {
-                scalar d = Sf[i] & direction;
-                if (d > 0)
-                {
-                    v += pos(values[i])*values[i];
-                }
-                else
-                {
-                    v += neg(values[i])*values[i];
-                }
-            }
-
-            return v;
+            return sum(pos(nv)*mag(values) - neg(nv)*mag(values));
         }
         default:
         {
@@ -539,8 +537,19 @@ Foam::vector Foam::fieldValues::faceSource::processValues
     {
         case opSumDirection:
         {
-            const vector direction(dict_.lookup("direction"));
-            return sum(pos(values & direction)*values);
+            vector n(dict_.lookup("direction"));
+            n /= mag(n) + ROOTVSMALL;
+            const scalarField nv(n & values);
+
+            return sum(pos(nv)*n*(nv));
+        }
+        case opSumDirectionBalance:
+        {
+            vector n(dict_.lookup("direction"));
+            n /= mag(n) + ROOTVSMALL;
+            const scalarField nv(n & values);
+
+            return sum(pos(nv)*n*(nv));
         }
         case opAreaNormalAverage:
         {
@@ -576,6 +585,7 @@ Foam::fieldValues::faceSource::faceSource
     source_(sourceTypeNames_.read(dict.lookup("source"))),
     operation_(operationTypeNames_.read(dict.lookup("operation"))),
     weightFieldName_("none"),
+    scaleFactor_(1.0),
     nFaces_(0),
     faceId_(),
     facePatchId_(),
