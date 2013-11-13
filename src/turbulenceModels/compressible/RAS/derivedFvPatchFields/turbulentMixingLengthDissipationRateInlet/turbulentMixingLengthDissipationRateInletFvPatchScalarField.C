@@ -91,6 +91,8 @@ turbulentMixingLengthDissipationRateInletFvPatchScalarField
     this->refValue() = 0.0;
     this->refGrad() = 0.0;
     this->valueFraction() = 0.0;
+
+    inletOutletFvPatchScalarField::phiName_ = phiName_;
 }
 
 
