@@ -144,8 +144,7 @@ inline bool Foam::wallPoint::sameGeometry
     const wallPoint& w2,
     const scalar tol,
     TrackingData& td
-)
- const
+) const
 {
     scalar diff = mag(distSqr() - w2.distSqr());
 

@@ -46,12 +46,13 @@ using namespace Foam;
 
 int main(int argc, char *argv[])
 {
+#   include "addRegionOption.H"
     argList::validArgs.append("faceZone");
     argList::validArgs.append("outsidePoint");
 
 #   include "setRootCase.H"
 #   include "createTime.H"
-#   include "createPolyMesh.H"
+#   include "createNamedPolyMesh.H"
 
     const word zoneName  = args[1];
     const point outsidePoint = args.argRead<point>(2);

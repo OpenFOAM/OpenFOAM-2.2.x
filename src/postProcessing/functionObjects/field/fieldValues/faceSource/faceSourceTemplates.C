@@ -141,7 +141,32 @@ Type Foam::fieldValues::faceSource::processSameTypeValues
             result = sum(values);
             break;
         }
+        case opSumMag:
+        {
+            result = sum(cmptMag(values));
+            break;
+        }
         case opSumDirection:
+        {
+            FatalErrorIn
+            (
+                "template<class Type>"
+                "Type Foam::fieldValues::faceSource::processSameTypeValues"
+                "("
+                    "const Field<Type>&, "
+                    "const vectorField&, "
+                    "const scalarField&"
+                ") const"
+            )
+                << "Operation " << operationTypeNames_[operation_]
+                << " not available for values of type "
+                << pTraits<Type>::typeName
+                << exit(FatalError);
+
+            result = pTraits<Type>::zero;
+            break;
+        }
+        case opSumDirectionBalance:
         {
             FatalErrorIn
             (
@@ -304,8 +329,8 @@ bool Foam::fieldValues::faceSource::writeValues(const word& fieldName)
             );
         }
 
-        // apply weight field
-        values *= weightField;
+        // apply scale factor and weight field
+        values *= scaleFactor_*weightField;
 
         if (Pstream::master())
         {

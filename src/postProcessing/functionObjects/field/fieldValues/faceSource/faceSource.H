@@ -71,6 +71,7 @@ Description
         sourceName   | name of face source if required  | no |
         operation    | operation to perform    | yes         |
         weightField  | name of field to apply weighting | no |
+        scaleFactor  | scale factor            | no          | 1
         fields       | list of fields to operate on | yes    |
     \endtable
 
@@ -87,7 +88,9 @@ Description
     \plaintable
        none          | no operation
        sum           | sum
+       sumMag        | sum of component magnitudes
        sumDirection  | sum values which are positive in given direction
+       sumDirectionBalance | sum of balance of values in given direction
        average       | ensemble average
        weightedAverage | weighted average
        areaAverage   | area weighted average
@@ -177,7 +180,9 @@ public:
         {
             opNone,
             opSum,
+            opSumMag,
             opSumDirection,
+            opSumDirectionBalance,
             opAverage,
             opWeightedAverage,
             opAreaAverage,
@@ -190,7 +195,7 @@ public:
         };
 
         //- Operation type names
-        static const NamedEnum<operationType, 12> operationTypeNames_;
+        static const NamedEnum<operationType, 14> operationTypeNames_;
 
 
 private:
@@ -236,6 +241,9 @@ protected:
 
         //- Weight field name - optional
         word weightFieldName_;
+
+        //- Scale factor
+        scalar scaleFactor_;
 
         //- Global number of faces
         label nFaces_;
