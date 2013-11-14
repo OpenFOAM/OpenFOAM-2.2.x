@@ -46,13 +46,14 @@ namespace Foam
     );
 
     template<>
-    const char* NamedEnum<sampledTriSurfaceMesh::samplingSource, 2>::names[] =
+    const char* NamedEnum<sampledTriSurfaceMesh::samplingSource, 3>::names[] =
     {
         "cells",
+        "insideCells",
         "boundaryFaces"
     };
 
-    const NamedEnum<sampledTriSurfaceMesh::samplingSource, 2>
+    const NamedEnum<sampledTriSurfaceMesh::samplingSource, 3>
     sampledTriSurfaceMesh::samplingSourceNames_;
 
 
@@ -147,7 +148,7 @@ bool Foam::sampledTriSurfaceMesh::update(const meshSearch& meshSearcher)
     // elements
     globalIndex globalCells
     (
-        sampleSource_ == cells
+        (sampleSource_ == cells || sampleSource_ == insideCells)
       ? mesh().nCells()
       : mesh().nFaces()
     );
@@ -175,6 +176,25 @@ bool Foam::sampledTriSurfaceMesh::update(const meshSearch& meshSearcher)
             {
                 nearest[triI].first() = magSqr(nearInfo.hitPoint()-fc[triI]);
                 nearest[triI].second() = globalCells.toGlobal(nearInfo.index());
+            }
+        }
+    }
+    else if (sampleSource_ == insideCells)
+    {
+        // Search for cell containing point
+
+        const indexedOctree<treeDataCell>& cellTree = meshSearcher.cellTree();
+
+        forAll(fc, triI)
+        {
+            if (cellTree.bb().contains(fc[triI]))
+            {
+                label index = cellTree.findInside(fc[triI]);
+                if (index != -1)
+                {
+                    nearest[triI].first() = 0.0;
+                    nearest[triI].second() = globalCells.toGlobal(index);
+                }
             }
         }
     }
@@ -364,6 +384,19 @@ bool Foam::sampledTriSurfaceMesh::update(const meshSearch& meshSearcher)
                 }
             }
         }
+        else if (sampleSource_ == insideCells)
+        {
+            // samplePoints_   : per surface point a location inside the cell
+            // sampleElements_ : per surface point the cell
+
+            forAll(points(), pointI)
+            {
+                const point& pt = points()[pointI];
+                label cellI = cellOrFaceLabels[pointToFace[pointI]];
+                sampleElements_[pointI] = cellI;
+                samplePoints_[pointI] = pt;
+            }
+        }
         else
         {
             // samplePoints_   : per surface point a location on the boundary
@@ -388,6 +421,9 @@ bool Foam::sampledTriSurfaceMesh::update(const meshSearch& meshSearcher)
         // if sampleSource_ == cells:
         //      samplePoints_   : n/a
         //      sampleElements_ : per surface triangle the cell
+        // if sampleSource_ == insideCells:
+        //      samplePoints_   : n/a
+        //      sampleElements_ : -1 or per surface triangle the cell
         // else:
         //      samplePoints_   : n/a
         //      sampleElements_ : per surface triangle the boundary face
@@ -406,7 +442,7 @@ bool Foam::sampledTriSurfaceMesh::update(const meshSearch& meshSearcher)
 
         if (sampledSurface::interpolate())
         {
-            if (sampleSource_ == cells)
+            if (sampleSource_ == cells || sampleSource_ == insideCells)
             {
                 forAll(samplePoints_, pointI)
                 {
@@ -443,7 +479,7 @@ bool Foam::sampledTriSurfaceMesh::update(const meshSearch& meshSearcher)
         }
         else
         {
-            if (sampleSource_ == cells)
+            if (sampleSource_ == cells || sampleSource_ == insideCells)
             {
                 forAll(sampleElements_, triI)
                 {

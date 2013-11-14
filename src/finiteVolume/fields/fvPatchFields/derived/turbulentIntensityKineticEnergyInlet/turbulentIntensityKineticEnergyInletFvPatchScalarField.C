@@ -40,8 +40,7 @@ turbulentIntensityKineticEnergyInletFvPatchScalarField
 :
     inletOutletFvPatchScalarField(p, iF),
     intensity_(0.0),
-    UName_("U"),
-    phiName_("phi")
+    UName_("U")
 {
     this->refValue() = 0.0;
     this->refGrad() = 0.0;
@@ -59,8 +58,7 @@ turbulentIntensityKineticEnergyInletFvPatchScalarField
 :
     inletOutletFvPatchScalarField(ptf, p, iF, mapper),
     intensity_(ptf.intensity_),
-    UName_(ptf.UName_),
-    phiName_(ptf.phiName_)
+    UName_(ptf.UName_)
 {}
 
 Foam::turbulentIntensityKineticEnergyInletFvPatchScalarField::
@@ -73,9 +71,10 @@ turbulentIntensityKineticEnergyInletFvPatchScalarField
 :
     inletOutletFvPatchScalarField(p, iF),
     intensity_(readScalar(dict.lookup("intensity"))),
-    UName_(dict.lookupOrDefault<word>("U", "U")),
-    phiName_(dict.lookupOrDefault<word>("phi", "phi"))
+    UName_(dict.lookupOrDefault<word>("U", "U"))
 {
+    this->phiName_ = dict.lookupOrDefault<word>("phi","phi");
+
     if (intensity_ < 0 || intensity_ > 1)
     {
         FatalErrorIn
@@ -111,8 +110,7 @@ turbulentIntensityKineticEnergyInletFvPatchScalarField
 :
     inletOutletFvPatchScalarField(ptf),
     intensity_(ptf.intensity_),
-    UName_(ptf.UName_),
-    phiName_(ptf.phiName_)
+    UName_(ptf.UName_)
 {}
 
 
@@ -125,8 +123,7 @@ turbulentIntensityKineticEnergyInletFvPatchScalarField
 :
     inletOutletFvPatchScalarField(ptf, iF),
     intensity_(ptf.intensity_),
-    UName_(ptf.UName_),
-    phiName_(ptf.phiName_)
+    UName_(ptf.UName_)
 {}
 
 
@@ -144,7 +141,7 @@ updateCoeffs()
         patch().lookupPatchField<volVectorField, vector>(UName_);
 
     const fvsPatchScalarField& phip =
-        patch().lookupPatchField<surfaceScalarField, scalar>(phiName_);
+        patch().lookupPatchField<surfaceScalarField, scalar>(this->phiName_);
 
     this->refValue() = 1.5*sqr(intensity_)*magSqr(Up);
     this->valueFraction() = 1.0 - pos(phip);
@@ -161,7 +158,7 @@ void Foam::turbulentIntensityKineticEnergyInletFvPatchScalarField::write
     fvPatchScalarField::write(os);
     os.writeKeyword("intensity") << intensity_ << token::END_STATEMENT << nl;
     writeEntryIfDifferent<word>(os, "U", "U", UName_);
-    writeEntryIfDifferent<word>(os, "phi", "phi", phiName_);
+    writeEntryIfDifferent<word>(os, "phi", "phi", this->phiName_);
     writeEntry("value", os);
 }
 

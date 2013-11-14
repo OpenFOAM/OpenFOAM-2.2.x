@@ -550,7 +550,7 @@ void Foam::InjectionModel<CloudType>::inject(TrackData& td)
                 if (cellI > -1)
                 {
                     // Lagrangian timestep
-                    scalar dt = time - timeInj;
+                    const scalar dt = time - timeInj;
 
                     // Apply corrections to position for 2-D cases
                     meshTools::constrainToMeshCentre(mesh, pos);
@@ -586,8 +586,11 @@ void Foam::InjectionModel<CloudType>::inject(TrackData& td)
                             pPtr->rho()
                         );
 
+                    const scalar mParcel0 = pPtr->nParticle()*pPtr->mass();
+
                     if (!pPtr->move(td, dt))
                     {
+                        massAdded += mParcel0;
                         delete pPtr;
                     }
                     else
@@ -595,7 +598,7 @@ void Foam::InjectionModel<CloudType>::inject(TrackData& td)
                         if (pPtr->nParticle() >= 1.0)
                         {
                             td.cloud().addParticle(pPtr);
-                            massAdded += pPtr->nParticle()*pPtr->mass();
+                            massAdded += mParcel0;
                             parcelsAdded++;
                         }
                         else

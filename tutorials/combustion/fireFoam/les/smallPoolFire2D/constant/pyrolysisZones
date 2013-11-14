@@ -15,28 +15,25 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-1
-(
-    pyrolysis
+pyrolysis
+{
+    active          false;
+
+    pyrolysisModel  none;
+
+    regionName      panelRegion;
+
+    reactingOneDimCoeffs
     {
+        radFluxName     Qr;
 
-        active          false;
+        minimumDelta    1e-8;
 
-        pyrolysisModel  none;
-
-        regionName      panelRegion;
-
-        reactingOneDimCoeffs
-        {
-            radFluxName     Qr;
-
-            minimumDelta    1e-8;
-
-            moveMesh        false;
-        }
-
-        infoOutput      false;
+        moveMesh        false;
     }
-)
+
+    infoOutput      false;
+}
+
 
 // ************************************************************************* //

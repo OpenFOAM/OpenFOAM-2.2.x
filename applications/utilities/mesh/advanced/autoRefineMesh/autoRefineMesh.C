@@ -540,7 +540,7 @@ void subsetMesh
         Info<< "Writing refined mesh to time " << runTime.timeName() << nl
             << endl;
 
-        IOstream::defaultPrecision(10);
+        IOstream::defaultPrecision(max(10u, IOstream::defaultPrecision()));
         mesh.write();
         refLevel.write();
     }
@@ -909,7 +909,7 @@ int main(int argc, char *argv[])
             Info<< "    Writing refined mesh to time " << runTime.timeName()
                 << nl << endl;
 
-            IOstream::defaultPrecision(10);
+            IOstream::defaultPrecision(max(10u, IOstream::defaultPrecision()));
             mesh.write();
             refLevel.write();
         }
@@ -980,7 +980,7 @@ int main(int argc, char *argv[])
             << endl;
 
         // Write final mesh
-        IOstream::defaultPrecision(10);
+        IOstream::defaultPrecision(max(10u, IOstream::defaultPrecision()));
         mesh.write();
         refLevel.write();
 
@@ -991,7 +991,7 @@ int main(int argc, char *argv[])
             << endl;
 
         // Write final mesh. (will have been written already if writeMesh=true)
-        IOstream::defaultPrecision(10);
+        IOstream::defaultPrecision(max(10u, IOstream::defaultPrecision()));
         mesh.write();
         refLevel.write();
     }

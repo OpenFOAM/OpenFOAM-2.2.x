@@ -76,6 +76,8 @@ SourceFiles
 #include "OFstream.H"
 #include "volFields.H"
 #include "Tuple2.H"
+#include "cachedInterpolationCellPoint.H"
+//#include "interpolationCellPoint.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -122,26 +124,46 @@ protected:
             //- From resulting back to original field
             HashTable<word> reverseFieldMap_;
 
-        //- Locally constructed fields
-        PtrList<volScalarField> vsf_;
-        PtrList<volVectorField> vvf_;
-        PtrList<volSphericalTensorField> vSpheretf_;
-        PtrList<volSymmTensorField> vSymmtf_;
-        PtrList<volTensorField> vtf_;
+
+        // Calculated addressing
+
+            //- From cell to seed patch faces
+            labelListList cellToWalls_;
+
+            //- From cell to tracked end point
+            List<List<point> > cellToSamples_;
+
+            //- Map from cell based data back to patch based data
+            autoPtr<mapDistribute> getPatchDataMapPtr_;
+
+
+        // Locally constructed fields
+
+            PtrList<volScalarField> vsf_;
+            PtrList<volVectorField> vvf_;
+            PtrList<volSphericalTensorField> vSpheretf_;
+            PtrList<volSymmTensorField> vSymmtf_;
+            PtrList<volTensorField> vtf_;
 
 
     // Protected Member Functions
 
-        //- Disallow default bitwise copy construct
-        nearWallFields(const nearWallFields&);
-
-        //- Disallow default bitwise assignment
-        void operator=(const nearWallFields&);
+        //- Calculate addressing from cells back to patch faces
+        void calcAddressing();
 
         template<class Type>
         void createFields
         (
             PtrList<GeometricField<Type, fvPatchField, volMesh> >&
+        ) const;
+
+        //- Override boundary fields with sampled values
+        template<class Type>
+        void sampleBoundaryField
+        (
+            const cachedInterpolationCellPoint<Type>& interpolator,
+            //const interpolationCellPoint<Type>& interpolator,
+            GeometricField<Type, fvPatchField, volMesh>& fld
         ) const;
 
         template<class Type>
@@ -150,6 +172,14 @@ protected:
             PtrList<GeometricField<Type, fvPatchField, volMesh> >&
         ) const;
 
+
+private:
+
+        //- Disallow default bitwise copy construct
+        nearWallFields(const nearWallFields&);
+
+        //- Disallow default bitwise assignment
+        void operator=(const nearWallFields&);
 
 public:
 

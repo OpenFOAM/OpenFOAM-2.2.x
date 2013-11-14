@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -125,10 +125,11 @@ protected:
         // Inter-region AMI interpolation caching
 
             //- List of region names this region is coupled to
-            wordList interRegionAMINames_;
+            mutable wordList interRegionAMINames_;
 
             //- List of AMI objects per coupled region
-            PtrList<PtrList<AMIPatchToPatchInterpolation> > interRegionAMI_;
+            mutable PtrList<PtrList<AMIPatchToPatchInterpolation> >
+                interRegionAMI_;
 
 
     // Protected member functions
@@ -140,13 +141,14 @@ protected:
         virtual bool read(const dictionary& dict);
 
         //- Create or return a new inter-region AMI object
-        virtual const Foam::AMIPatchToPatchInterpolation& interRegionAMI
+        virtual const AMIPatchToPatchInterpolation& interRegionAMI
         (
             const regionModel& nbrRegion,
             const label regionPatchI,
             const label nbrPatchI,
             const bool flip
-        );
+        ) const;
+
 
 public:
 
@@ -157,7 +159,7 @@ public:
     // Constructors
 
         //- Construct null
-        regionModel(const fvMesh& mesh);
+        regionModel(const fvMesh& mesh, const word& regionType);
 
         //- Construct from mesh, region type and name
         regionModel
@@ -256,7 +258,7 @@ public:
                 const label nbrPatchI,
                 const Field<Type>& nbrField,
                 const bool flip = false
-            );
+            ) const;
 
             //- Map patch field from another region model to local patch
             template<class Type>
@@ -266,7 +268,7 @@ public:
                 const word& fieldName,
                 const label regionPatchI,
                 const bool flip = false
-            );
+            ) const;
 
             //- Map patch internal field from another region model to local
             //  patch
@@ -277,7 +279,7 @@ public:
                 const word& fieldName,
                 const label regionPatchI,
                 const bool flip = false
-            );
+            ) const;
 
             //- Convert a local region field to the primary region
             template<class Type>

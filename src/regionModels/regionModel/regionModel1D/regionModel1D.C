@@ -277,9 +277,13 @@ Foam::tmp<Foam::labelField> Foam::regionModels::regionModel1D::moveMesh
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::regionModels::regionModel1D::regionModel1D(const fvMesh& mesh)
+Foam::regionModels::regionModel1D::regionModel1D
+(
+    const fvMesh& mesh,
+    const word& regionType
+)
 :
-    regionModel(mesh),
+    regionModel(mesh, regionType),
     boundaryFaceFaces_(),
     boundaryFaceCells_(),
     boundaryFaceOppositeFace_(),

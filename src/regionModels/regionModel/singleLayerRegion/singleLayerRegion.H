@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -104,7 +104,7 @@ public:
     // Constructors
 
         //- Construct null
-        singleLayerRegion(const fvMesh& mesh);
+        singleLayerRegion(const fvMesh& mesh, const word& regionType);
 
         //- Construct from mesh, region type and name
         singleLayerRegion

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -41,7 +41,8 @@ namespace surfaceFilmModels
 autoPtr<surfaceFilmModel> surfaceFilmModel::New
 (
     const fvMesh& mesh,
-    const dimensionedVector& g
+    const dimensionedVector& g,
+    const word& regionType
 )
 {
     word modelType;
@@ -51,7 +52,7 @@ autoPtr<surfaceFilmModel> surfaceFilmModel::New
         (
             IOobject
             (
-                "surfaceFilmProperties",
+                regionType + "Properties",
                 mesh.time().constant(),
                 mesh,
                 IOobject::MUST_READ,
@@ -79,7 +80,16 @@ autoPtr<surfaceFilmModel> surfaceFilmModel::New
             << exit(FatalError);
     }
 
-    return autoPtr<surfaceFilmModel>(cstrIter()(modelType, mesh, g));
+    return autoPtr<surfaceFilmModel>
+    (
+        cstrIter()
+        (
+            modelType,
+            mesh,
+            g,
+            regionType
+        )
+    );
 }
 
 

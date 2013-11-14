@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,7 +22,7 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::surfaceFilmModel
+    Foam::regionModels::surfaceFilmModels::surfaceFilmModel
 
 Description
     Base class for surface film models
@@ -123,9 +123,10 @@ public:
              (
                 const word& modelType,
                 const fvMesh& mesh,
-                const dimensionedVector& g
+                const dimensionedVector& g,
+                const word& regionType
              ),
-             (modelType, mesh, g)
+             (modelType, mesh, g, regionType)
          );
 
     // Constructors
@@ -135,7 +136,8 @@ public:
         (
             const word& modelType,
             const fvMesh& mesh,
-            const dimensionedVector& g
+            const dimensionedVector& g,
+            const word& regionType
         );
 
 
@@ -145,7 +147,8 @@ public:
         static autoPtr<surfaceFilmModel> New
         (
             const fvMesh& mesh,
-            const dimensionedVector& g
+            const dimensionedVector& g,
+            const word& regionType = "surfaceFilm"
         );
 
 

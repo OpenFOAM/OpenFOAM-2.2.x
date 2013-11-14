@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -39,6 +39,8 @@ filmPyrolysisVelocityCoupledFvPatchVectorField
 )
 :
     fixedValueFvPatchVectorField(p, iF),
+    filmRegionName_("surfaceFilmProperties"),
+    pyrolysisRegionName_("pyrolysisProperties"),
     phiName_("phi"),
     rhoName_("rho")
 {}
@@ -54,6 +56,8 @@ filmPyrolysisVelocityCoupledFvPatchVectorField
 )
 :
     fixedValueFvPatchVectorField(ptf, p, iF, mapper),
+    filmRegionName_(ptf.filmRegionName_),
+    pyrolysisRegionName_(ptf.pyrolysisRegionName_),
     phiName_(ptf.phiName_),
     rhoName_(ptf.rhoName_)
 {}
@@ -68,6 +72,14 @@ filmPyrolysisVelocityCoupledFvPatchVectorField
 )
 :
     fixedValueFvPatchVectorField(p, iF),
+    filmRegionName_
+    (
+        dict.lookupOrDefault<word>("filmRegion", "surfaceFilmProperties")
+    ),
+    pyrolysisRegionName_
+    (
+        dict.lookupOrDefault<word>("pyrolysisRegion", "pyrolysisProperties")
+    ),
     phiName_(dict.lookupOrDefault<word>("phi", "phi")),
     rhoName_(dict.lookupOrDefault<word>("rho", "rho"))
 {
@@ -82,6 +94,8 @@ filmPyrolysisVelocityCoupledFvPatchVectorField
 )
 :
     fixedValueFvPatchVectorField(fpvpvf),
+    filmRegionName_(fpvpvf.filmRegionName_),
+    pyrolysisRegionName_(fpvpvf.pyrolysisRegionName_),
     phiName_(fpvpvf.phiName_),
     rhoName_(fpvpvf.rhoName_)
 {}
@@ -95,6 +109,8 @@ filmPyrolysisVelocityCoupledFvPatchVectorField
 )
 :
     fixedValueFvPatchVectorField(fpvpvf, iF),
+    filmRegionName_(fpvpvf.filmRegionName_),
+    pyrolysisRegionName_(fpvpvf.pyrolysisRegionName_),
     phiName_(fpvpvf.phiName_),
     rhoName_(fpvpvf.rhoName_)
 {}
@@ -117,11 +133,10 @@ void Foam::filmPyrolysisVelocityCoupledFvPatchVectorField::updateCoeffs()
     int oldTag = UPstream::msgType();
     UPstream::msgType() = oldTag+1;
 
-    bool foundFilm =
-        db().time().foundObject<filmModelType>("surfaceFilmProperties");
+    bool foundFilm = db().time().foundObject<filmModelType>(filmRegionName_);
 
     bool foundPyrolysis =
-        db().time().foundObject<pyrModelType>("pyrolysisProperties");
+        db().time().foundObject<pyrModelType>(pyrolysisRegionName_);
 
     if (!foundFilm || !foundPyrolysis)
     {
@@ -135,7 +150,7 @@ void Foam::filmPyrolysisVelocityCoupledFvPatchVectorField::updateCoeffs()
 
     // Retrieve film model
     const filmModelType& filmModel =
-        db().time().lookupObject<filmModelType>("surfaceFilmProperties");
+        db().time().lookupObject<filmModelType>(filmRegionName_);
 
     const label filmPatchI = filmModel.regionPatchID(patchI);
 
@@ -147,7 +162,7 @@ void Foam::filmPyrolysisVelocityCoupledFvPatchVectorField::updateCoeffs()
 
     // Retrieve pyrolysis model
     const pyrModelType& pyrModel =
-        db().time().lookupObject<pyrModelType>("pyrolysisProperties");
+        db().time().lookupObject<pyrModelType>(pyrolysisRegionName_);
 
     const label pyrPatchI = pyrModel.regionPatchID(patchI);
 
@@ -201,6 +216,20 @@ void Foam::filmPyrolysisVelocityCoupledFvPatchVectorField::write
 ) const
 {
     fvPatchVectorField::write(os);
+    writeEntryIfDifferent<word>
+    (
+        os,
+        "filmRegion",
+        "surfaceFilmProperties",
+        filmRegionName_
+    );
+    writeEntryIfDifferent<word>
+    (
+        os,
+        "pyrolysisRegion",
+        "pyrolysisProperties",
+        pyrolysisRegionName_
+    );
     writeEntryIfDifferent<word>(os, "phi", "phi", phiName_);
     writeEntryIfDifferent<word>(os, "rho", "rho", rhoName_);
     writeEntry("value", os);

@@ -99,9 +99,6 @@ class turbulentIntensityKineticEnergyInletFvPatchScalarField
         //- Name of the velocity field
         word UName_;
 
-        //- Name of the flux field
-        word phiName_;
-
 
 public:
 

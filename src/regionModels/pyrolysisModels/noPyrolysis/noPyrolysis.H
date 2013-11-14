@@ -100,14 +100,20 @@ public:
     // Constructors
 
         //- Construct from type name and mesh
-        noPyrolysis(const word& modelType, const fvMesh& mesh);
+        noPyrolysis
+        (
+            const word& modelType,
+            const fvMesh& mesh,
+            const word& regionType
+        );
 
         //- Construct from type name and mesh and dict
         noPyrolysis
         (
             const word& modelType,
             const fvMesh& mesh,
-            const dictionary& dict
+            const dictionary& dict,
+            const word& regionType
         );
 
 
