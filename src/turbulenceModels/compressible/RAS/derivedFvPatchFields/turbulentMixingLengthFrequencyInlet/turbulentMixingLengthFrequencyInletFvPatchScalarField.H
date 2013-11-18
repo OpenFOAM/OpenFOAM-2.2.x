@@ -100,9 +100,6 @@ class turbulentMixingLengthFrequencyInletFvPatchScalarField
         //- Turbulent length scale
         scalar mixingLength_;
 
-        //- Name of the flux field
-        word phiName_;
-
         //- Name of the turbulent kinetic energy field
         word kName_;
 

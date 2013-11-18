@@ -51,9 +51,9 @@ constantProperties
     minParticleMass 1e-15;
 
     rho0            2526;
-    youngsModulus   744583; //recalculated to match spring stifness of 20000
+    youngsModulus   1e8;
     poissonsRatio   0.35;
-    packedAlpha     0.64;
+    packedAlpha     0.9; //0.64;
 
     constantVolume  false;
 }
@@ -160,7 +160,7 @@ subModels
         {
             useEquivalentSize no;
             collisionResolutionSteps 12;
-            youngsModulus   744583;
+            youngsModulus   1e8;
             poissonsRatio   0.23;
             alpha           0.01;
             b               1.5;

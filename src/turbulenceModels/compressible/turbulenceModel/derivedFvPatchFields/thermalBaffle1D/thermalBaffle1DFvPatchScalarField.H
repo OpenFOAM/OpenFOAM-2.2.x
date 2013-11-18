@@ -152,10 +152,10 @@ class thermalBaffle1DFvPatchScalarField
         const solidType& solid() const;
 
         //- Return Qs from master
-        const scalarField& Qs() const;
+        tmp<scalarField> Qs() const;
 
         //- Return thickness from master
-        const scalarField& baffleThickness() const;
+        tmp<scalarField> baffleThickness() const;
 
         //- Is Owner
         bool owner() const;

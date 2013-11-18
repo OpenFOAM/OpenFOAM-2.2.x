@@ -30,7 +30,7 @@ Description
 
     - it either samples cells or (non-coupled) boundary faces
 
-    - 4 different modes:
+    - 6 different modes:
         - source=cells, interpolate=false:
             finds per triangle centre the nearest cell centre and uses its value
         - source=cells, interpolate=true
@@ -39,6 +39,12 @@ Description
             point; otherwise projects the point onto the nearest point on
             the boundary of the cell (to make sure interpolateCellPoint
             gets a valid location)
+
+        - source=insideCells, interpolate=false:
+            finds per triangle centre the cell containing it and uses its value.
+            Trims triangles outside mesh.
+        - source=insideCells, interpolate=true
+            Per surface point interpolate cell containing it.
 
         - source=boundaryFaces, interpolate=false:
             finds per triangle centre the nearest point on the boundary
@@ -88,7 +94,8 @@ public:
         enum samplingSource
         {
             cells,
-            boundaryFaces
+            insideCells,
+            boundaryFaces,
         };
 
 private:
@@ -99,7 +106,7 @@ private:
 
     // Private data
 
-        static const NamedEnum<samplingSource, 2> samplingSourceNames_;
+        static const NamedEnum<samplingSource, 3> samplingSourceNames_;
 
         //- Surface to sample on
         const triSurfaceMesh surface_;

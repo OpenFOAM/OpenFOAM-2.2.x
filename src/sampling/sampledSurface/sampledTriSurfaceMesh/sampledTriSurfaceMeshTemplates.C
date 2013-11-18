@@ -38,7 +38,7 @@ Foam::sampledTriSurfaceMesh::sampleField
     tmp<Field<Type> > tvalues(new Field<Type>(sampleElements_.size()));
     Field<Type>& values = tvalues();
 
-    if (sampleSource_ == cells)
+    if (sampleSource_ == cells || sampleSource_ == insideCells)
     {
         // Sample cells
 
@@ -94,7 +94,7 @@ Foam::sampledTriSurfaceMesh::interpolateField
     tmp<Field<Type> > tvalues(new Field<Type>(sampleElements_.size()));
     Field<Type>& values = tvalues();
 
-    if (sampleSource_ == cells)
+    if (sampleSource_ == cells || sampleSource_ == insideCells)
     {
         // Sample cells.
 

@@ -303,7 +303,9 @@ surfaces
         // Sampling on triSurface
         type        sampledTriSurfaceMesh;
         surface     integrationPlane.stl;
-        source      boundaryFaces;  // sample cells or boundaryFaces
+        source      boundaryFaces;  // What to sample: cells (nearest cell)
+                                    // insideCells (only triangles inside cell)
+                                    // boundaryFaces (nearest boundary face)
         interpolate true;
     }
 );
