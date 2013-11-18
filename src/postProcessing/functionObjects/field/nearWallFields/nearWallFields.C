@@ -72,8 +72,8 @@ void Foam::nearWallFields::calcAddressing()
         label patchI = iter.key();
         const fvPatch& patch = mesh.boundary()[patchI];
 
-        vectorField nf = patch.nf();
-        vectorField faceCellCentres = patch.patch().faceCellCentres();
+        vectorField nf(patch.nf());
+        vectorField faceCellCentres(patch.patch().faceCellCentres());
 
         forAll(patch, patchFaceI)
         {
