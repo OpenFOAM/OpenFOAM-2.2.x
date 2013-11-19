@@ -124,19 +124,19 @@ public:
         bool output();
 
         //- Return outputControl
-        outputControls outputControl()
+        outputControls outputControl() const
         {
             return outputControl_;
         }
 
         //- Return writeInterval
-        scalar writeInterval()
+        scalar writeInterval() const
         {
             return writeInterval_;
         }
 
         //- Return outputTimeLastDump
-        label outputTimeLastDump()
+        label outputTimeLastDump() const
         {
             return outputTimeLastDump_;
         }
