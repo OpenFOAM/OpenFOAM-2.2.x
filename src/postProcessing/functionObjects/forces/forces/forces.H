@@ -44,8 +44,13 @@ Description
         ...
         log         yes;
         patches     (walls);
-        nBin        20;
-        binDir      (1 0 0);
+
+        binData
+        {
+            nBin        20;
+            direction   (1 0 0);
+            cumulative  yes;
+        }
     }
     \endverbatim
 
@@ -55,14 +60,20 @@ Description
         type         | type name: forces       | yes         |
         log          | write force data to standard output | no | no
         patches      | patches included in the forces calculation | yes |
-        nBin         | number of data bins     | no          |
-        binDir       | direction along which bins are defined | no |
         pName        | pressure field name     | no          | p
         UName        | velocity field name     | no          | U
         rhoName      | density field name (see below) | no   | rho
         CofR         | centre of rotation (see below) | no   |
         directForceDensity | force density supplied directly (see below)|no|no
         fDName       | name of force density field (see below) | no | fD
+    \endtable
+
+    Bin data is optional, but if the dictionary is present, the entries must
+    be defined according o
+    \table
+        nBin         | number of data bins     | yes         |
+        direction    | direction along which bins are defined | yes |
+        cumulative   | bin data accumulated with incresing distance | yes |
     \endtable
 
 Note

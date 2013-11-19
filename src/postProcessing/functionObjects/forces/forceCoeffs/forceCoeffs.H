@@ -46,10 +46,14 @@ Description
         pitchAxis   (0 0 1);
         magUInf     100;
         lRef        3.5;
-        ARef        2.2;
-        nBin        20;
-        binDir      (1 0 0);
-        binFormat   gnuplot;
+        Aref        2.2;
+
+        binData
+        {
+            nBin        20;
+            direction   (1 0 0);
+            cumulative  yes;
+        }
     }
     \endverbatim
 
@@ -64,10 +68,15 @@ Description
         pitchAxis    | picth axis              | yes         |
         magUInf      | free stream velocity magnitude | yes  |
         lRef         | reference length scale for moment calculations | yes |
-        ARef         | reference area          | yes |
-        nBin         | number of data bins     | no          |
-        binDir       | direction along which bins are defined | no |
-        binFormat    | output format for bin data | no       |
+        Aref         | reference area          | yes |
+    \endtable
+
+    Bin data is optional, but if the dictionary is present, the entries must
+    be defined according o
+    \table
+        nBin         | number of data bins     | yes         |
+        direction    | direction along which bins are defined | yes |
+        cumulative   | bin data accumulated with incresing distance | yes |
     \endtable
 
 SeeAlso
