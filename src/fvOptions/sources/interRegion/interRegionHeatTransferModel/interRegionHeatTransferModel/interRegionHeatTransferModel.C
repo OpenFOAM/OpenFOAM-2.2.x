@@ -243,10 +243,11 @@ void Foam::fv::interRegionHeatTransferModel::addSup
                     "   const label "
                     ")"
                 )   << " on mesh " << mesh_.name()
-                    << " could not find object fluidThermo. The available objects : "
+                    << " could not find object fluidThermo. "
+                    << " The available objects : "
                     << mesh_.names()
-                    << " The semi implicit option can only be used for fluid-fluid "
-                    << " inter region heat transfer models "
+                    << " The semi implicit option can only be used for "
+                    << "fluid-fluid inter region heat transfer models "
                     << exit(FatalError);
             }
         }
