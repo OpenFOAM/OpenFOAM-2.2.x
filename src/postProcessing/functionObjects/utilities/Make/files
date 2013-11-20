@@ -36,4 +36,6 @@ yPlusLES/yPlusLESFunctionObject.C
 yPlusRAS/yPlusRAS.C
 yPlusRAS/yPlusRASFunctionObject.C
 
+setTimeStep/setTimeStepFunctionObject.C
+
 LIB = $(FOAM_LIBBIN)/libutilityFunctionObjects
