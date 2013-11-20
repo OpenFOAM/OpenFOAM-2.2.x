@@ -219,8 +219,15 @@ void Foam::meshToMeshNew::appendToDirectSeeds
             forAll(tgtNbr, j)
             {
                 label tgtI = tgtNbr[j];
-
-                if (tgt.pointInCell(srcCentre[srcI], tgtI))
+                if
+                (
+                    tgt.pointInCell
+                    (
+                        srcCentre[srcI],
+                        tgtI,
+                        polyMesh::FACEPLANES
+                    )
+                )
                 {
                     // new match - append to lists
                     found = true;
@@ -299,7 +306,6 @@ void Foam::meshToMeshNew::calcDirect
             srcCellI,
             tgtCellI
         );
-
     }
     while (srcCellI >= 0);
 
@@ -504,7 +510,13 @@ bool Foam::meshToMeshNew::intersect
     {
         case imMap:
         {
-            result = tgt.pointInCell(src.cellCentres()[srcCellI], tgtCellI);
+            result =
+                tgt.pointInCell
+                (
+                    src.cellCentres()[srcCellI],
+                    tgtCellI,
+                    polyMesh::FACEPLANES
+                );
             break;
         }
         case imCellVolumeWeight:
@@ -754,7 +766,6 @@ void Foam::meshToMeshNew::calcAddressing
         // with the source mesh
         return;
     }
-
 
     switch (method_)
     {

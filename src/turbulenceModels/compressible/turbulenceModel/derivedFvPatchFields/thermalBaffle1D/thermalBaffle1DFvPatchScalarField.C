@@ -74,11 +74,11 @@ thermalBaffle1DFvPatchScalarField
     mixedFvPatchScalarField(ptf, p, iF, mapper),
     TName_(ptf.TName_),
     baffleActivated_(ptf.baffleActivated_),
-    thickness_(ptf.thickness_),
-    Qs_(ptf.Qs_),
+    thickness_(ptf.thickness_, mapper),
+    Qs_(ptf.Qs_, mapper),
     solidDict_(ptf.solidDict_),
     solidPtr_(ptf.solidPtr_),
-    QrPrevious_(ptf.QrPrevious_),
+    QrPrevious_(ptf.QrPrevious_, mapper),
     QrRelaxation_(ptf.QrRelaxation_),
     QrName_(ptf.QrName_)
 {}
@@ -105,7 +105,7 @@ thermalBaffle1DFvPatchScalarField
     TName_("T"),
     baffleActivated_(dict.lookupOrDefault<bool>("baffleActivated", true)),
     thickness_(),
-    Qs_(),
+    Qs_(p.size(), 0),
     solidDict_(dict),
     solidPtr_(),
     QrPrevious_(p.size(), 0.0),
@@ -113,6 +113,21 @@ thermalBaffle1DFvPatchScalarField
     QrName_(dict.lookupOrDefault<word>("Qr", "none"))
 {
     fvPatchScalarField::operator=(scalarField("value", dict, p.size()));
+
+    if (dict.found("thickness"))
+    {
+        thickness_ = scalarField("thickness", dict, p.size());
+    }
+
+    if (dict.found("Qs"))
+    {
+        Qs_ = scalarField("Qs", dict, p.size());
+    }
+
+    if (dict.found("QrPrevious"))
+    {
+        QrPrevious_ = scalarField("QrPrevious", dict, p.size());
+    }
 
     if (dict.found("refValue") && baffleActivated_)
     {
@@ -216,52 +231,64 @@ const solidType& thermalBaffle1DFvPatchScalarField<solidType>::solid() const
 
 
 template<class solidType>
-const scalarField& thermalBaffle1DFvPatchScalarField<solidType>::baffleThickness() const
+tmp<scalarField> thermalBaffle1DFvPatchScalarField<solidType>::
+baffleThickness() const
 {
     if (this->owner())
     {
-        if (thickness_.size() > 0)
+        if (thickness_.size() != patch().size())
         {
-            return thickness_;
+            FatalErrorIn
+            (
+                "template<class solidType>"
+                "tmp<scalarField> thermalBaffle1DFvPatchScalarField<solidType>::"
+                " baffleThickness() const"
+            )<< " Field thickness has not been specified "
+            << " for patch " << this->patch().name()
+            << " in dictionary " <<  solidDict_
+            << abort(FatalError);
         }
-        else
-        {
-            thickness_ = scalarField("thickness", solidDict_, patch().size());
-            return thickness_;
-        }
+
+        return thickness_;
     }
     else
     {
+        const mapDistribute& mapDist = this->mappedPatchBase::map();
+
         const fvPatch& nbrPatch =
             patch().boundaryMesh()[samplePolyPatch().index()];
-        const thermalBaffle1DFvPatchScalarField& nbrField =
-        refCast<const thermalBaffle1DFvPatchScalarField>
-        (
-            nbrPatch.template lookupPatchField<volScalarField, scalar>(TName_)
-        );
 
-        return nbrField.thickness_;
+        const thermalBaffle1DFvPatchScalarField& nbrField =
+            refCast<const thermalBaffle1DFvPatchScalarField>
+            (
+                nbrPatch.template lookupPatchField<volScalarField, scalar>
+                (
+                    TName_
+                )
+            );
+
+        tmp<scalarField> tthickness
+        (
+            new scalarField(nbrField.baffleThickness())
+        );
+        scalarField& thickness = tthickness();
+        mapDist.distribute(thickness);
+        return tthickness;
     }
 }
 
 
 template<class solidType>
-const scalarField& thermalBaffle1DFvPatchScalarField<solidType>::Qs() const
+tmp<scalarField> thermalBaffle1DFvPatchScalarField<solidType>::Qs() const
 {
     if (this->owner())
     {
-        if (Qs_.size() > 0)
-        {
-            return Qs_;
-        }
-        else
-        {
-            Qs_ = scalarField("Qs", solidDict_, patch().size());
-            return Qs_;
-        }
+        return Qs_;
     }
     else
     {
+        const mapDistribute& mapDist = this->mappedPatchBase::map();
+
         const fvPatch& nbrPatch =
             patch().boundaryMesh()[samplePolyPatch().index()];
 
@@ -271,7 +298,11 @@ const scalarField& thermalBaffle1DFvPatchScalarField<solidType>::Qs() const
             nbrPatch.template lookupPatchField<volScalarField, scalar>(TName_)
         );
 
-        return nbrField.Qs_;
+        tmp<scalarField> tQs(new scalarField(nbrField.Qs()));
+        scalarField& Qs = tQs();
+        mapDist.distribute(Qs);
+        return tQs;
+
     }
 }
 
@@ -287,6 +318,7 @@ void thermalBaffle1DFvPatchScalarField<solidType>::autoMap
     Qs_.autoMap(m);
 }
 
+
 template<class solidType>
 void thermalBaffle1DFvPatchScalarField<solidType>::rmap
 (
@@ -299,8 +331,11 @@ void thermalBaffle1DFvPatchScalarField<solidType>::rmap
     const thermalBaffle1DFvPatchScalarField& tiptf =
         refCast<const thermalBaffle1DFvPatchScalarField>(ptf);
 
-    thickness_.rmap(tiptf.thickness_, addr);
-    Qs_.rmap(tiptf.Qs_, addr);
+    if (this->owner())
+    {
+        Qs_.rmap(tiptf.Qs_, addr);
+        thickness_.rmap(tiptf.thickness_, addr);
+    }
 }
 
 
@@ -315,6 +350,9 @@ void thermalBaffle1DFvPatchScalarField<solidType>::updateCoeffs()
     // comms underway. Change the tag we use.
     int oldTag = UPstream::msgType();
     UPstream::msgType() = oldTag+1;
+
+
+    const mapDistribute& mapDist = this->mappedPatchBase::map();
 
     const label patchi = patch().index();
 
@@ -353,8 +391,9 @@ void thermalBaffle1DFvPatchScalarField<solidType>::updateCoeffs()
         scalarField myKDelta(patch().deltaCoeffs()*kappaw);
 
         // nrb properties
-        const fvPatchScalarField& nbrTp =
+        scalarField nbrTp =
             turbModel.thermo().T().boundaryField()[nbrPatchi];
+        mapDist.distribute(nbrTp);
 
         // solid properties
         scalarField kappas(patch().size(), 0.0);
@@ -363,9 +402,9 @@ void thermalBaffle1DFvPatchScalarField<solidType>::updateCoeffs()
             kappas[i] = solid().kappa(0.0, (Tp[i] + nbrTp[i])/2.0);
         }
 
-        scalarField KDeltaSolid(kappas/baffleThickness());
+        const scalarField KDeltaSolid(kappas/baffleThickness());
 
-        scalarField alpha(KDeltaSolid - Qr/Tp);
+        const scalarField alpha(KDeltaSolid - Qr/Tp);
 
         valueFraction() = alpha/(alpha + myKDelta);
 
@@ -402,11 +441,12 @@ void thermalBaffle1DFvPatchScalarField<solidType>::write(Ostream& os) const
 
     if (this->owner())
     {
-        baffleThickness().writeEntry("thickness", os);
-        Qs().writeEntry("Qs", os);
+        baffleThickness()().writeEntry("thickness", os);
+        Qs()().writeEntry("Qs", os);
         solid().write(os);
     }
 
+    QrPrevious_.writeEntry("QrPrevious", os);
     os.writeKeyword("Qr")<< QrName_ << token::END_STATEMENT << nl;
     os.writeKeyword("QrRelaxation")<< QrRelaxation_
         << token::END_STATEMENT << nl;

@@ -173,10 +173,55 @@ void Foam::fv::interRegionExplicitPorositySource::addSup
 
     if (eqn.dimensions() == dimForce)
     {
-        const volScalarField& rhoNbr =
-            nbrMesh.lookupObject<volScalarField>(rhoName_);
-        const volScalarField& muNbr =
-            nbrMesh.lookupObject<volScalarField>(muName_);
+        const volScalarField& rho =
+            mesh_.lookupObject<volScalarField>(rhoName_);
+
+        const volScalarField& mu =
+            mesh_.lookupObject<volScalarField>(muName_);
+
+        volScalarField rhoNbr
+        (
+            IOobject
+            (
+                "rho:UNbr",
+                nbrMesh.time().timeName(),
+                nbrMesh,
+                IOobject::NO_READ,
+                IOobject::NO_WRITE
+            ),
+            nbrMesh,
+            dimensionedScalar("zero", dimDensity, 0.0)
+        );
+
+        volScalarField muNbr
+        (
+            IOobject
+            (
+                "mu:UNbr",
+                nbrMesh.time().timeName(),
+                nbrMesh,
+                IOobject::NO_READ,
+                IOobject::NO_WRITE
+            ),
+            nbrMesh,
+            dimensionedScalar("zero", mu.dimensions(), 0.0)
+        );
+
+        // map local rho onto neighbour region
+        meshInterp().mapSrcToTgt
+        (
+            rho.internalField(),
+            plusEqOp<scalar>(),
+            rhoNbr.internalField()
+        );
+
+        // map local mu onto neighbour region
+        meshInterp().mapSrcToTgt
+        (
+            mu.internalField(),
+            plusEqOp<scalar>(),
+            muNbr.internalField()
+        );
 
         porosityPtr_->addResistance(nbrEqn, rhoNbr, muNbr);
     }
