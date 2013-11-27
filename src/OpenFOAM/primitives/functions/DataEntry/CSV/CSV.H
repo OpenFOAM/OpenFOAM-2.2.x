@@ -32,7 +32,7 @@ Description
         <entryName>   csvFile;
         csvFileCoeffs
         {
-            nHeaderLines        4;
+            nHeaderLine         4;
             refColumn           0;          // reference column index
             componentColumns    (1 2 3);    // component column indices
             separator           ",";        // optional (defaults to ",")
