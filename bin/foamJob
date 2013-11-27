@@ -3,7 +3,7 @@
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
 #  \\    /   O peration     |
-#   \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+#   \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
 #    \\/     M anipulation  |
 #-------------------------------------------------------------------------------
 # License
@@ -48,6 +48,28 @@ options:
 
 USAGE
     exit 1
+}
+
+#for being able to echo strings that have single quotes
+echoArgs() {
+    addSpace=""
+
+    for stringItem in "$@"; do
+
+        echo -n "${addSpace}"
+
+        if [ "${stringItem##* }" = "$stringItem" ]
+        then
+            echo -n "$stringItem"
+            addSpace=" "
+        else
+            echo -n "'$stringItem'"
+            addSpace=" "
+        fi
+
+    done
+
+    unset stringItem addSpace
 }
 
 unset version
@@ -217,11 +239,11 @@ then
     #
     if [ "$screenOpt" = true ]
     then
-        echo "Executing: $mpirun $mpiopts $APPLICATION $@ -parallel | tee log"
-        $mpirun $mpiopts $APPLICATION $@ -parallel | tee log
+        echo "Executing: $mpirun $mpiopts $APPLICATION $(echoArgs "$@") -parallel | tee log"
+        $mpirun $mpiopts $APPLICATION "$@" -parallel | tee log
     else
-        echo "Executing: $mpirun $mpiopts $APPLICATION $@ -parallel > log 2>&1"
-        $mpirun $mpiopts $APPLICATION $@ -parallel > log 2>&1 &
+        echo "Executing: $mpirun $mpiopts $APPLICATION $(echoArgs "$@") -parallel > log 2>&1"
+        $mpirun $mpiopts $APPLICATION "$@" -parallel > log 2>&1 &
     fi
 
 else
@@ -230,12 +252,12 @@ else
     #
     if [ "$screenOpt" = true ]
     then
-        echo "Executing: $APPLICATION $@ | tee log &"
-        $APPLICATION $@ | tee log &
+        echo "Executing: $APPLICATION $(echoArgs "$@") | tee log &"
+        $APPLICATION "$@" | tee log &
         wait $!
     else
-        echo "Executing: $APPLICATION $@ > log 2>&1 &"
-        $APPLICATION $@ > log 2>&1 &
+        echo "Executing: $APPLICATION $(echoArgs "$@") > log 2>&1 &"
+        $APPLICATION "$@" > log 2>&1 &
     fi
 fi
 

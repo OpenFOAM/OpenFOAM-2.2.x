@@ -12,7 +12,8 @@ div.navigation
 
 
 div.tabs,
-div.tabs2
+div.tabs2,
+div.tabs3
 {
     width           : 100%;
     padding-top     : 5px;
@@ -22,7 +23,8 @@ div.tabs2
 }
 
 div.tabs ul,
-div.tabs2 ul
+div.tabs2 ul,
+div.tabs3 ul
 {
     margin: 0px;
     padding-left: 10px;
@@ -33,7 +35,8 @@ div.tabs2 ul
 
 
 div.tabs li, div.tabs form,
-div.tabs2 li, div.tabs2 form
+div.tabs2 li, div.tabs2 form,
+div.tabs3 li, div.tabs3 form
 {
     display         : inline;
     margin          : 0px;
@@ -41,7 +44,8 @@ div.tabs2 li, div.tabs2 form
 }
 
 div.tabs ul li,
-div.tabs2 ul li
+div.tabs2 ul li,
+div.tabs3 ul li
 {
     padding-top: 10px;
     padding-bottom: 10px;
@@ -77,14 +81,19 @@ div.tabs a:hover,
 div.tabs2 a:link,
 div.tabs2 a:visited,
 div.tabs2 a:active,
-div.tabs2 a:hover
+div.tabs2 a:hover,
+div.tabs3 a:link,
+div.tabs3 a:visited,
+div.tabs3 a:active,
+div.tabs3 a:hover
 {
     color           : #000000;
     color:#555;
 }
 
 div.tabs span,
-div.tabs2 span
+div.tabs2 span,
+div.tabs3 span
 {
     display         : inline;
     padding         : 0px 9px;
