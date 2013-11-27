@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -59,7 +59,7 @@ SourceFiles
 #include "pointField.H"
 #include "sixDoFRigidBodyMotionRestraint.H"
 #include "sixDoFRigidBodyMotionConstraint.H"
-
+#include "Tuple2.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -86,6 +86,9 @@ class sixDoFRigidBodyMotion
 
         //- Motion state data object
         sixDoFRigidBodyMotionState motionState_;
+
+        //- Motion state data object for previous time-step
+        sixDoFRigidBodyMotionState motionState0_;
 
         //- Restraints on the motion
         PtrList<sixDoFRigidBodyMotionRestraint> restraints_;
@@ -116,14 +119,8 @@ class sixDoFRigidBodyMotion
         //- Mass of the body
         scalar mass_;
 
-        //- Acceleration damping coefficient.  Modify applied acceleration:
-        //  v1 = v0 + a*dt - cDamp*a*dt
-        //     = v0 + dt*f*(1 - cDamp)/m
-        //  Increases effective mass by 1/(1 - cDamp).
-        scalar cDamp_;
-
-        //- Acceleration magnitude limit - clips large accelerations
-        scalar aLim_;
+        //- Acceleration relaxation coefficient
+        scalar aRelax_;
 
         //- Switch to turn reporting of motion data on and off
         Switch report_;
@@ -143,14 +140,21 @@ class sixDoFRigidBodyMotion
         //  frame z-axis by the given angle
         inline tensor rotationTensorZ(scalar deltaT) const;
 
-        //- Apply rotation tensors to Q for the given torque (pi) and deltaT
-        inline void rotate(tensor& Q, vector& pi, scalar deltaT) const;
+        //- Apply rotation tensors to Q0 for the given torque (pi) and deltaT
+        //  and return the rotated Q and pi as a tuple
+        inline Tuple2<tensor, vector> rotate
+        (
+            const tensor& Q0,
+            const vector& pi,
+            const scalar deltaT
+        ) const;
 
         //- Apply the restraints to the object
         void applyRestraints();
 
         //- Apply the constraints to the object
         void applyConstraints(scalar deltaT);
+
 
         // Access functions retained as private because of the risk of
         // confusion over what is a body local frame vector and what is global
@@ -199,6 +203,21 @@ class sixDoFRigidBodyMotion
             //- Return access to torque
             inline const vector& tau() const;
 
+            //- Return access to the orientation at previous time-step
+            inline const tensor& Q0() const;
+
+            //- Return access to velocity at previous time-step
+            inline const vector& v0() const;
+
+            //- Return access to acceleration at previous time-step
+            inline const vector& a0() const;
+
+            //- Return access to angular momentum at previous time-step
+            inline const vector& pi0() const;
+
+            //- Return access to torque at previous time-step
+            inline const vector& tau0() const;
+
 
         // Edit
 
@@ -244,8 +263,7 @@ public:
             const point& initialCentreOfMass,
             const tensor& initialQ,
             const diagTensor& momentOfInertia,
-            scalar cDamp = 0.0,
-            scalar aLim = VGREAT,
+            scalar aRelax = 1.0,
             bool report = false
         );
 
@@ -279,18 +297,22 @@ public:
             scalar deltaT0
         );
 
-        //- Second leapfrog velocity adjust part, required after motion and
-        // force calculation
-        void updateForce
+        //- Second leapfrog velocity adjust part
+        //  required after motion and force calculation
+        void updateAcceleration
         (
             const vector& fGlobal,
             const vector& tauGlobal,
             scalar deltaT
         );
 
+        //- Second leapfrog velocity adjust part
+        //  required after motion and force calculation
+        void updateVelocity(scalar deltaT);
+
         //- Global forces supplied at locations, calculating net force
         //  and moment
-        void updateForce
+        void updateAcceleration
         (
             const pointField& positions,
             const vectorField& forces,
@@ -354,6 +376,9 @@ public:
             //- Return const access to the centre of mass
             inline const point& centreOfMass() const;
 
+            //- Return const access to the centre of mass at previous time-step
+            inline const point& centreOfMass0() const;
+
             //- Return access to the inertia tensor
             inline const diagTensor& momentOfInertia() const;
 
@@ -365,6 +390,9 @@ public:
 
 
         // Edit
+
+            //- Store the motion state at the beginning of the time-step
+            inline void newTime();
 
             //- Return non-const access to the centre of mass
             inline point& centreOfMass();

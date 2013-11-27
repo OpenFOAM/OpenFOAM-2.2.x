@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -84,8 +84,8 @@ class sixDoFRigidBodyDisplacementPointPatchVectorField
         //- Gravity vector to store when not available from the db
         vector g_;
 
-        //- Optional under-relaxation factor for the motion
-        scalar relaxationFactor_;
+        //- Current time index (used for updating)
+        label curTimeIndex_;
 
 
 public:

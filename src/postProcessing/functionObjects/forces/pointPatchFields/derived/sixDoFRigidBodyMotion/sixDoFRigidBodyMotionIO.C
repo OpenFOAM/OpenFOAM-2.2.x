@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -40,10 +40,8 @@ void Foam::sixDoFRigidBodyMotion::write(Ostream& os) const
         << momentOfInertia_ << token::END_STATEMENT << nl;
     os.writeKeyword("mass")
         << mass_ << token::END_STATEMENT << nl;
-    os.writeKeyword("accelerationDampingCoeff")
-        << cDamp_ << token::END_STATEMENT << nl;
-    os.writeKeyword("accelerationLimit")
-        << aLim_ << token::END_STATEMENT << nl;
+    os.writeKeyword("accelerationRelaxation")
+        << aRelax_ << token::END_STATEMENT << nl;
     os.writeKeyword("report")
         << report_ << token::END_STATEMENT << nl;
 
