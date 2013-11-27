@@ -96,6 +96,11 @@ public:
         {
             return PtrList<Reaction<ThermoType> >::operator[](i);
         }
+
+        const Reaction<ThermoType>& operator [] (const label i) const
+        {
+            return PtrList<Reaction<ThermoType> >::operator[](i);
+        }
 };
 
 
