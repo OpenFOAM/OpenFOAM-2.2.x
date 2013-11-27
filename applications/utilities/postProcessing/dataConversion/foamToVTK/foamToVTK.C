@@ -366,6 +366,8 @@ int main(int argc, char *argv[])
     }
 
     word cellSetName;
+    word faceSetName;
+    word pointSetName;
     string vtkName = runTime.caseName();
 
     if (args.optionReadIfPresent("cellSet", cellSetName))
@@ -382,6 +384,9 @@ int main(int argc, char *argv[])
             vtkName = vtkName.substr(i);
         }
     }
+    args.optionReadIfPresent("faceSet", faceSetName);
+    args.optionReadIfPresent("pointSet", pointSetName);
+
 
 
     instantList timeDirs = timeSelector::select0(runTime, args);
@@ -406,6 +411,8 @@ int main(int argc, char *argv[])
             args.optionFound("time")
          || args.optionFound("latestTime")
          || cellSetName.size()
+         || faceSetName.size()
+         || pointSetName.size()
          || regionName != polyMesh::defaultRegion
         )
         {
@@ -489,10 +496,10 @@ int main(int argc, char *argv[])
 
 
         // If faceSet: write faceSet only (as polydata)
-        if (args.optionFound("faceSet"))
+        if (faceSetName.size())
         {
             // Load the faceSet
-            faceSet set(mesh, args["faceSet"]);
+            faceSet set(mesh, faceSetName);
 
             // Filename as if patch with same name.
             mkDir(fvPath/set.name());
@@ -512,10 +519,10 @@ int main(int argc, char *argv[])
             continue;
         }
         // If pointSet: write pointSet only (as polydata)
-        if (args.optionFound("pointSet"))
+        if (pointSetName.size())
         {
             // Load the pointSet
-            pointSet set(mesh, args["pointSet"]);
+            pointSet set(mesh, pointSetName);
 
             // Filename as if patch with same name.
             mkDir(fvPath/set.name());
