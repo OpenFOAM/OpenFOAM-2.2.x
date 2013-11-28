@@ -300,8 +300,8 @@ tmp<fvScalarMatrix> thermoSingleLayer::q(volScalarField& hs) const
     volScalarField htcwt = htcw_->h()();
     forAll(alpha_, i)
     {
-        htcst[i] *= max(alpha_[i], ROOTVSMALL);
-        htcwt[i] *= max(alpha_[i], ROOTVSMALL);
+        htcst[i] *= max(alpha_[i], SMALL);
+        htcwt[i] *= max(alpha_[i], SMALL);
     }
     htcst.correctBoundaryConditions();
     htcwt.correctBoundaryConditions();
@@ -324,8 +324,7 @@ void thermoSingleLayer::solveEnergy()
 
     updateSurfaceTemperatures();
 
-
-    solve
+    fvScalarMatrix hsEqn
     (
         fvm::ddt(deltaRho_, hs_)
       + fvm::div(phi_, hs_)
@@ -336,6 +335,10 @@ void thermoSingleLayer::solveEnergy()
 //      - fvm::SuSp(rhoSp_, hs_)
       - rhoSp_*hs_
     );
+
+    hsEqn.relax();
+
+    hsEqn.solve();
 
     correctThermoFields();
 }
