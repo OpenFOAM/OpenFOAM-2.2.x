@@ -3,8 +3,9 @@
     {
         fvScalarMatrix hEqn
         (
-           - fvm::laplacian(betav*alpha, h, "laplacian(alpha,h)")
-           + fvOptions(rho, h)
+          - fvm::laplacian(betav*alpha, h, "laplacian(alpha,h)")
+         ==
+            fvOptions(rho, h)
         );
 
         hEqn.relax();
