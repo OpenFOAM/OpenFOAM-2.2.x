@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -160,7 +160,11 @@ void uncoupledSixDoFRigidBodyDisplacementPointPatchVectorField::updateCoeffs()
     }
 
     // Do not modify the accelerations, except with gravity, where available
-    motion_.updateForce(gravity*motion_.mass(), vector::zero, t.deltaTValue());
+    motion_.updateAcceleration
+    (
+        gravity*motion_.mass(),
+        vector::zero, t.deltaTValue()
+    );
 
     Field<vector>::operator=
     (

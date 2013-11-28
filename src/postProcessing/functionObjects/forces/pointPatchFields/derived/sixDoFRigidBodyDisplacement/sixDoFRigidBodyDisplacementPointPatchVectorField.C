@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -53,7 +53,7 @@ sixDoFRigidBodyDisplacementPointPatchVectorField
     rhoName_("rho"),
     lookupGravity_(-1),
     g_(vector::zero),
-    relaxationFactor_(1)
+    curTimeIndex_(-1)
 {}
 
 
@@ -71,7 +71,7 @@ sixDoFRigidBodyDisplacementPointPatchVectorField
     rhoName_(dict.lookupOrDefault<word>("rhoName", "rho")),
     lookupGravity_(-1),
     g_(vector::zero),
-    relaxationFactor_(dict.lookupOrDefault<scalar>("relaxationFactor", 1))
+    curTimeIndex_(-1)
 {
     if (rhoName_ == "rhoInf")
     {
@@ -115,7 +115,7 @@ sixDoFRigidBodyDisplacementPointPatchVectorField
     rhoName_(ptf.rhoName_),
     lookupGravity_(ptf.lookupGravity_),
     g_(ptf.g_),
-    relaxationFactor_(ptf.relaxationFactor_)
+    curTimeIndex_(-1)
 {}
 
 
@@ -133,7 +133,7 @@ sixDoFRigidBodyDisplacementPointPatchVectorField
     rhoName_(ptf.rhoName_),
     lookupGravity_(ptf.lookupGravity_),
     g_(ptf.g_),
-    relaxationFactor_(ptf.relaxationFactor_)
+    curTimeIndex_(-1)
 {}
 
 
@@ -203,6 +203,13 @@ void sixDoFRigidBodyDisplacementPointPatchVectorField::updateCoeffs()
     const Time& t = mesh.time();
     const pointPatch& ptPatch = this->patch();
 
+    // Store the motion state at the beginning of the time-step
+    if (curTimeIndex_ != this->db().time().timeIndex())
+    {
+        motion_.newTime();
+        curTimeIndex_ = this->db().time().timeIndex();
+    }
+
     // Patch force data is valid for the current positions, so
     // calculate the forces on the motion object from this data, then
     // update the positions
@@ -231,7 +238,7 @@ void sixDoFRigidBodyDisplacementPointPatchVectorField::updateCoeffs()
         g_ = g.value();
     }
 
-    motion_.updateForce
+    motion_.updateAcceleration
     (
         f.forceEff() + g_*motion_.mass(),
         f.momentEff(),
@@ -240,11 +247,7 @@ void sixDoFRigidBodyDisplacementPointPatchVectorField::updateCoeffs()
 
     Field<vector>::operator=
     (
-        relaxationFactor_
-       *(
-           motion_.currentPosition(initialPoints_)
-         - initialPoints_
-       )
+        motion_.currentPosition(initialPoints_) - initialPoints_
     );
 
     fixedValuePointPatchField<vector>::updateCoeffs();
@@ -266,9 +269,6 @@ void sixDoFRigidBodyDisplacementPointPatchVectorField::write(Ostream& os) const
     {
         os.writeKeyword("g") << g_ << token::END_STATEMENT << nl;
     }
-
-    os.writeKeyword("relaxationFactor")
-        << relaxationFactor_ << token::END_STATEMENT << nl;
 
     motion_.write(os);
 
