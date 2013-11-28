@@ -164,6 +164,7 @@ void Foam::sixDoFRigidBodyMotion::applyConstraints(scalar deltaT)
 Foam::sixDoFRigidBodyMotion::sixDoFRigidBodyMotion()
 :
     motionState_(),
+    motionState0_(),
     restraints_(),
     restraintNames_(),
     constraints_(),
@@ -173,8 +174,7 @@ Foam::sixDoFRigidBodyMotion::sixDoFRigidBodyMotion()
     initialQ_(I),
     momentOfInertia_(diagTensor::one*VSMALL),
     mass_(VSMALL),
-    cDamp_(0.0),
-    aLim_(VGREAT),
+    aRelax_(1.0),
     report_(false)
 {}
 
@@ -191,8 +191,7 @@ Foam::sixDoFRigidBodyMotion::sixDoFRigidBodyMotion
     const point& initialCentreOfMass,
     const tensor& initialQ,
     const diagTensor& momentOfInertia,
-    scalar cDamp,
-    scalar aLim,
+    scalar aRelax,
     bool report
 )
 :
@@ -205,6 +204,7 @@ Foam::sixDoFRigidBodyMotion::sixDoFRigidBodyMotion
         pi,
         tau
     ),
+    motionState0_(motionState_),
     restraints_(),
     restraintNames_(),
     constraints_(),
@@ -214,8 +214,7 @@ Foam::sixDoFRigidBodyMotion::sixDoFRigidBodyMotion
     initialQ_(initialQ),
     momentOfInertia_(momentOfInertia),
     mass_(mass),
-    cDamp_(cDamp),
-    aLim_(aLim),
+    aRelax_(aRelax),
     report_(report)
 {}
 
@@ -223,6 +222,7 @@ Foam::sixDoFRigidBodyMotion::sixDoFRigidBodyMotion
 Foam::sixDoFRigidBodyMotion::sixDoFRigidBodyMotion(const dictionary& dict)
 :
     motionState_(dict),
+    motionState0_(motionState_),
     restraints_(),
     restraintNames_(),
     constraints_(),
@@ -238,8 +238,7 @@ Foam::sixDoFRigidBodyMotion::sixDoFRigidBodyMotion(const dictionary& dict)
     ),
     momentOfInertia_(dict.lookup("momentOfInertia")),
     mass_(readScalar(dict.lookup("mass"))),
-    cDamp_(dict.lookupOrDefault<scalar>("accelerationDampingCoeff", 0.0)),
-    aLim_(dict.lookupOrDefault<scalar>("accelerationLimit", VGREAT)),
+    aRelax_(dict.lookupOrDefault<scalar>("accelerationRelaxation", 1.0)),
     report_(dict.lookupOrDefault<Switch>("report", false))
 {
     addRestraints(dict);
@@ -254,6 +253,7 @@ Foam::sixDoFRigidBodyMotion::sixDoFRigidBodyMotion
 )
 :
     motionState_(sDoFRBM.motionState_),
+    motionState0_(sDoFRBM.motionState0_),
     restraints_(sDoFRBM.restraints_),
     restraintNames_(sDoFRBM.restraintNames_),
     constraints_(sDoFRBM.constraints_),
@@ -263,8 +263,7 @@ Foam::sixDoFRigidBodyMotion::sixDoFRigidBodyMotion
     initialQ_(sDoFRBM.initialQ_),
     momentOfInertia_(sDoFRBM.momentOfInertia_),
     mass_(sDoFRBM.mass_),
-    cDamp_(sDoFRBM.cDamp_),
-    aLim_(sDoFRBM.aLim_),
+    aRelax_(sDoFRBM.aRelax_),
     report_(sDoFRBM.report_)
 {}
 
@@ -376,91 +375,59 @@ void Foam::sixDoFRigidBodyMotion::updatePosition
 
     if (Pstream::master())
     {
-        vector aClip = a();
-        scalar aMag = mag(aClip);
-
-        if (aMag > SMALL)
-        {
-            aClip /= aMag;
-        }
-
-        if (aMag > aLim_)
-        {
-            WarningIn
-            (
-                "void Foam::sixDoFRigidBodyMotion::updatePosition"
-                "("
-                    "scalar, "
-                    "scalar"
-                ")"
-            )
-                << "Limited acceleration " << a()
-                << " to " << aClip*aLim_
-                << endl;
-        }
-
-        v() += 0.5*(1 - cDamp_)*deltaT0*aClip*min(aMag, aLim_);
-
-        pi() += 0.5*(1 - cDamp_)*deltaT0*tau();
+        v() = v0() + 0.5*deltaT0*a();
+        pi() = pi0() + 0.5*deltaT0*tau();
 
         // Leapfrog move part
-        centreOfMass() += deltaT*v();
+        centreOfMass() = centreOfMass0() + deltaT*v();
 
         // Leapfrog orientation adjustment
-        rotate(Q(), pi(), deltaT);
+        Tuple2<tensor, vector> Qpi = rotate(Q0(), pi(), deltaT);
+        Q() = Qpi.first();
+        pi() = Qpi.second();
     }
 
     Pstream::scatter(motionState_);
 }
 
 
-void Foam::sixDoFRigidBodyMotion::updateForce
+void Foam::sixDoFRigidBodyMotion::updateAcceleration
 (
     const vector& fGlobal,
     const vector& tauGlobal,
     scalar deltaT
 )
 {
+    static bool first = true;
+
     // Second leapfrog velocity adjust part, required after motion and
-    // force calculation
+    // acceleration calculation
 
     if (Pstream::master())
     {
+        // Save the previous iteration accelerations for relaxation
+        vector aPrevIter = a();
+        vector tauPrevIter = tau();
+
+        // Calculate new accelerations
         a() = fGlobal/mass_;
-
         tau() = (Q().T() & tauGlobal);
-
         applyRestraints();
 
+        // Relax accelerations on all but first iteration
+        if (!first)
+        {
+            a() = aRelax_*a() + (1 - aRelax_)*aPrevIter;
+            tau() = aRelax_*tau() + (1 - aRelax_)*tauPrevIter;
+        }
+        first = false;
+
+        // Apply constraints after relaxation
         applyConstraints(deltaT);
 
-        vector aClip = a();
-        scalar aMag = mag(aClip);
-
-        if (aMag > SMALL)
-        {
-            aClip /= aMag;
-        }
-
-        if (aMag > aLim_)
-        {
-            WarningIn
-            (
-                "void Foam::sixDoFRigidBodyMotion::updateForce"
-                "("
-                    "const vector&, "
-                    "const vector&, "
-                    "scalar"
-                ")"
-            )
-                << "Limited acceleration " << a()
-                << " to " << aClip*aLim_
-                << endl;
-        }
-
-        v() += 0.5*(1 - cDamp_)*deltaT*aClip*min(aMag, aLim_);
-
-        pi() += 0.5*(1 - cDamp_)*deltaT*tau();
+        // Correct velocities
+        v() += 0.5*deltaT*a();
+        pi() += 0.5*deltaT*tau();
 
         if (report_)
         {
@@ -472,7 +439,27 @@ void Foam::sixDoFRigidBodyMotion::updateForce
 }
 
 
-void Foam::sixDoFRigidBodyMotion::updateForce
+void Foam::sixDoFRigidBodyMotion::updateVelocity(scalar deltaT)
+{
+    // Second leapfrog velocity adjust part, required after motion and
+    // acceleration calculation
+
+    if (Pstream::master())
+    {
+        v() += 0.5*deltaT*a();
+        pi() += 0.5*deltaT*tau();
+
+        if (report_)
+        {
+            status();
+        }
+    }
+
+    Pstream::scatter(motionState_);
+}
+
+
+void Foam::sixDoFRigidBodyMotion::updateAcceleration
 (
     const pointField& positions,
     const vectorField& forces,
@@ -493,7 +480,7 @@ void Foam::sixDoFRigidBodyMotion::updateForce
         }
     }
 
-    updateForce(fGlobal, tauGlobal, deltaT);
+    updateAcceleration(fGlobal, tauGlobal, deltaT);
 }
 
 
@@ -506,19 +493,14 @@ Foam::point Foam::sixDoFRigidBodyMotion::predictedPosition
 ) const
 {
     vector vTemp = v() + deltaT*(a() + deltaForce/mass_);
-
     vector piTemp = pi() + deltaT*(tau() + (Q().T() & deltaMoment));
-
-    point centreOfMassTemp = centreOfMass() + deltaT*vTemp;
-
-    tensor QTemp = Q();
-
-    rotate(QTemp, piTemp, deltaT);
+    point centreOfMassTemp = centreOfMass0() + deltaT*vTemp;
+    Tuple2<tensor, vector> QpiTemp = rotate(Q0(), piTemp, deltaT);
 
     return
     (
         centreOfMassTemp
-      + (QTemp & initialQ_.T() & (pInitial - initialCentreOfMass_))
+      + (QpiTemp.first() & initialQ_.T() & (pInitial - initialCentreOfMass_))
     );
 }
 
@@ -531,12 +513,9 @@ Foam::vector Foam::sixDoFRigidBodyMotion::predictedOrientation
 ) const
 {
     vector piTemp = pi() + deltaT*(tau() + (Q().T() & deltaMoment));
+    Tuple2<tensor, vector> QpiTemp = rotate(Q0(), piTemp, deltaT);
 
-    tensor QTemp = Q();
-
-    rotate(QTemp, piTemp, deltaT);
-
-    return (QTemp & initialQ_.T() & vInitial);
+    return (QpiTemp.first() & initialQ_.T() & vInitial);
 }
 
 
