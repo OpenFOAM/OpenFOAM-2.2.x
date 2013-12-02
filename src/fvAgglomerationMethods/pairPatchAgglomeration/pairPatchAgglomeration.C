@@ -83,11 +83,19 @@ void Foam::pairPatchAgglomeration::setBasedEdgeWeights()
                     facePairWeight_[edgeCommon] = -1.0;
                 }
             }
-            else if (eFaces.size() == 3)
+            else
             {
-                facePairWeight_.insert(edge(eFaces[1], eFaces[0]), -1.0);
-                facePairWeight_.insert(edge(eFaces[2], eFaces[0]), -1.0);
-                facePairWeight_.insert(edge(eFaces[1], eFaces[2]), -1.0);
+                forAll(eFaces, j)
+                {
+                    for (label k = j+1; k<eFaces.size(); k++)
+                    {
+                        facePairWeight_.insert
+                        (
+                            edge(eFaces[j], eFaces[k]),
+                            -1.0
+                        );
+                    }
+                }
             }
         }
     }
@@ -99,7 +107,6 @@ void Foam::pairPatchAgglomeration::setEdgeWeights
     const label fineLevelIndex
 )
 {
-
     const bPatch& coarsePatch = patchLevels_[fineLevelIndex];
 
     const labelList& fineToCoarse = restrictAddressing_[fineLevelIndex];
@@ -154,11 +161,20 @@ void Foam::pairPatchAgglomeration::setEdgeWeights
                     facePairWeight_[edgeCommon] = -1.0;
                 }
             }
-            else if (eFaces.size() == 3)
+            else
             {
-                facePairWeight_.insert(edge(eFaces[1], eFaces[0]), -1.0);
-                facePairWeight_.insert(edge(eFaces[2], eFaces[0]), -1.0);
-                facePairWeight_.insert(edge(eFaces[1], eFaces[2]), -1.0);
+                // Set edge as barrier by setting weight to -1
+                forAll(eFaces, j)
+                {
+                    for (label k = j+1; k<eFaces.size(); k++)
+                    {
+                        facePairWeight_.insert
+                        (
+                            edge(eFaces[j], eFaces[k]),
+                            -1.0
+                        );
+                    }
+                }
             }
         }
     }
@@ -367,6 +383,8 @@ void Foam::pairPatchAgglomeration:: agglomerate()
                 patch
             );
 
+
+
             if (nCoarseFaces > 0)
             {
                 agglomOK = agglomeratePatch
@@ -375,6 +393,8 @@ void Foam::pairPatchAgglomeration:: agglomerate()
                     finalAgglomPtr,
                     nCreatedLevels
                 );
+
+
 
                 restrictAddressing_.set(nCreatedLevels, finalAgglomPtr);
                 mapBaseToTopAgglom(nCreatedLevels);
@@ -394,6 +414,7 @@ void Foam::pairPatchAgglomeration:: agglomerate()
             else
             {
                 agglomOK = true;
+
             }
             reduce(nCoarseFaces, sumOp<label>());
         }

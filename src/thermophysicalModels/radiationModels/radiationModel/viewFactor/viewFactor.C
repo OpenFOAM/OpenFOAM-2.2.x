@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -200,10 +200,10 @@ void Foam::radiation::viewFactor::initialise()
                 {
                     sumF += Fmatrix_()[i][j];
                 }
-                scalar delta = 1.0 - sumF;
+                scalar delta = sumF - 1.0;
                 for (label j=0; j<totalNCoarseFaces_; j++)
                 {
-                    Fmatrix_()[i][j] *= (1.0 - delta/(sumF + 0.001));
+                    Fmatrix_()[i][j] *= (1.0 - delta/sumF);
                 }
             }
         }
