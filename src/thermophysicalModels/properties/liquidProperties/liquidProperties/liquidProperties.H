@@ -64,7 +64,7 @@ class liquidProperties
         //- Critical pressure [Pa]
         scalar Pc_;
 
-        //- Critical volume [m^3/mol]
+        //- Critical volume [m^3/kmol]
         scalar Vc_;
 
         //- Critical compressibility factor []
@@ -185,7 +185,7 @@ public:
             //- Critical pressure [Pa]
             inline scalar Pc() const;
 
-            //- Critical volume [m^3/mol]
+            //- Critical volume [m^3/kmol]
             inline scalar Vc() const;
 
             //- Critical compressibilty factor
