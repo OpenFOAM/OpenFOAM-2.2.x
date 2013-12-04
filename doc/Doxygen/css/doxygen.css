@@ -122,11 +122,13 @@ a.elRef {
 }
 
 a.code {
-	color: #3030f0;
+	color: #3030f0;;
+	font-family: "Courier New", Courier, monospace, fixed;
 }
 
 a.codeRef {
-	color: #3030f0;
+	color: #3030f0;;
+	font-family: "Courier New", Courier, monospace, fixed;
 }
 
 /* @end */
@@ -136,8 +138,8 @@ dl.el {
 }
 
 .fragment {
-	font-family: monospace, fixed;
 	font-size: 105%;
+	font-family: "Courier New", Courier, monospace, fixed;
 }
 
 pre.fragment {
@@ -228,47 +230,58 @@ img.footer {
 /* @group Code Colorization */
 
 span.keyword {
-	color: #008000
+	color: #008000;
+	font-family: "Courier New", Courier, monospace, fixed;
 }
 
 span.keywordtype {
-	color: #604020
+	color: #604020;
+	font-family: "Courier New", Courier, monospace, fixed;
 }
 
 span.keywordflow {
-	color: #e08000
+	color: #e08000;
+	font-family: "Courier New", Courier, monospace, fixed;
 }
 
 span.comment {
-	color: #800000
+	color: #800000;
+	font-family: "Courier New", Courier, monospace, fixed;
 }
 
 span.preprocessor {
-	color: #806020
+	color: #806020;
+	font-family: "Courier New", Courier, monospace, fixed;
 }
 
 span.stringliteral {
-	color: #002080
+	color: #002080;
+	font-family: "Courier New", Courier, monospace, fixed;
 }
 
 span.charliteral {
-	color: #008080
+	color: #008080;
+	font-family: "Courier New", Courier, monospace, fixed;
 }
 
 span.vhdldigit {
-	color: #ff00ff
+	color: #ff00ff;
+	font-family: "Courier New", Courier, monospace, fixed;
 }
 
 span.vhdlchar {
-	color: #000000
+	color: #000000;
+	font-family: "Courier New", Courier, monospace, fixed;
 }
 
 span.vhdlkeyword {
-	color: #700070
+	color: #700070;
+	font-family: "Courier New", Courier, monospace, fixed;
 }
 
 span.vhdllogic {
-	color: #ff0000
+	color: #ff0000;
+	font-family: "Courier New", Courier, monospace, fixed;
 }
 
 /* @end */

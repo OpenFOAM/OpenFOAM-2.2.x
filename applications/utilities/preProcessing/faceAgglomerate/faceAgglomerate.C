@@ -109,6 +109,15 @@ int main(int argc, char *argv[])
         }
     }
 
+    // - All patches which are not agglomarated are identity for finalAgglom
+    forAll(boundary, patchId)
+    {
+        if (finalAgglom[patchId].size() == 0)
+        {
+            finalAgglom[patchId] = identity(boundary[patchId].size());
+        }
+    }
+
     // Sync agglomeration across coupled patches
     labelList nbrAgglom(mesh.nFaces() - mesh.nInternalFaces(), -1);
 

@@ -424,7 +424,7 @@ Foam::scalar Foam::particle::trackToFace
                 (
                     position_,
                     endPosition,
-                    triI,
+                    tI,
                     tetAreas[tI],
                     tetPlaneBasePtIs[tI],
                     cellI_,
