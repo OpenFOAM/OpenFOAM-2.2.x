@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -25,9 +25,8 @@ Class
     Foam::SolverPerformance
 
 Description
-    SolverPerformance is a general matrix class in which the coefficients are
-    stored as three arrays, one for the upper triangle, one for the
-    lower triangle and a third for the diagonal.
+    SolverPerformance is the class returned by the LduMatrix solver
+    containing performance statistics.
 
 SourceFiles
     SolverPerformance.C
@@ -72,13 +71,10 @@ Ostream& operator<<
 );
 
 
-
 /*---------------------------------------------------------------------------*\
                        Class SolverPerformance Declaration
 \*---------------------------------------------------------------------------*/
 
-//- Class returned by the solver
-//  containing performance statistics
 template<class Type>
 class SolverPerformance
 {
