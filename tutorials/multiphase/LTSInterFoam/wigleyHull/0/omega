@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.2.2                                 |
+|  \\    /   O peration     | Version:  2.2.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -23,14 +23,14 @@ boundaryField
     inlet
     {
         type            fixedValue;
-        value           uniform 2;
+        value           $internalField;
     }
 
     outlet
     {
        type            inletOutlet;
-       inletValue      uniform 2;
-       value           uniform 2;
+       inletValue      $internalField;
+       value           $internalField;
     }
 
     outlet
@@ -46,14 +46,14 @@ boundaryField
     atmosphere
     {
         type            inletOutlet;
-        inletValue      uniform 2;
-        value           uniform 2;
+        inletValue      $internalField;
+        value           $internalField;
     }
 
     hull_wall
     {
         type            omegaWallFunction;
-        value           uniform 2;
+        value           $internalField;
     }
 }
 
