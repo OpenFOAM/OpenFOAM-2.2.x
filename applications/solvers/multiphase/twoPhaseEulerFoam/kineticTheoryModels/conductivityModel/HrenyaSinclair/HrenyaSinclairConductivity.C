@@ -83,7 +83,7 @@ Foam::tmp<Foam::volScalarField> Foam::HrenyaSinclairConductivity::kappa
     return rho1*da*sqrt(Theta)*
     (
         2.0*sqr(alpha1)*g0*(1.0 + e)/sqrtPi
-      + (9.0/8.0)*sqrtPi*0.25*sqr(1.0 + e)*(2.0*e - 1.0)*sqr(alpha1)
+      + (9.0/8.0)*sqrtPi*g0*0.25*sqr(1.0 + e)*(2.0*e - 1.0)*sqr(alpha1)
        /(49.0/16.0 - 33.0*e/16.0)
       + (15.0/16.0)*sqrtPi*alpha1*(0.5*sqr(e) + 0.25*e - 0.75 + lamda)
        /((49.0/16.0 - 33.0*e/16.0)*lamda)
