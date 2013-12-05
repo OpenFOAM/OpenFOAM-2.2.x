@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.2.2                                 |
+|  \\    /   O peration     | Version:  2.2.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -25,6 +25,17 @@ regions
     boxToCell
     {
         box (-100 -100 -100) (100 100 0);
+        fieldValues
+        (
+            volScalarFieldValue alpha1 1
+        );
+    }
+
+    // Set patch values (using ==)
+    boxToFace
+    {
+        box (-100 -100 -100) (100 100 0);
+
         fieldValues
         (
             volScalarFieldValue alpha1 1
