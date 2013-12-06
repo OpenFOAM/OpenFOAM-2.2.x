@@ -28,6 +28,7 @@ License
 #include "dictionaryEntry.H"
 #include "regExp.H"
 #include "OSHA1stream.H"
+#include "DynamicList.H"
 
 /* * * * * * * * * * * * * * * Static Member Data  * * * * * * * * * * * * * */
 
@@ -259,6 +260,25 @@ Foam::SHA1Digest Foam::dictionary::digest() const
     }
 
     return os.digest();
+}
+
+
+Foam::tokenList Foam::dictionary::tokens() const
+{
+    // linearise dictionary into a string
+    OStringStream os;
+    write(os, false);
+    IStringStream is(os.str());
+
+    // parse string as tokens
+    DynamicList<token> tokens;
+    token t;
+    while (is.read(t))
+    {
+        tokens.append(t);
+    }
+
+    return tokenList(tokens.xfer());
 }
 
 

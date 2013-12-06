@@ -72,7 +72,14 @@ bool Foam::primitiveEntry::expandVariable
         // ...if defined append its tokens into this
         if (ePtr)
         {
-            append(ePtr->stream());
+            if (ePtr->isDict())
+            {
+                append(ePtr->dict().tokens());
+            }
+            else
+            {
+                append(ePtr->stream());
+            }
         }
         else
         {

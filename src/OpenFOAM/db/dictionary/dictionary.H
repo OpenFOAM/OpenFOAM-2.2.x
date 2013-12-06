@@ -259,6 +259,9 @@ public:
         //- Return the SHA1 digest of the dictionary contents
         SHA1Digest digest() const;
 
+        //- Return the dictionary as a list of tokens
+        tokenList tokens() const;
+
 
         // Search and lookup
 
