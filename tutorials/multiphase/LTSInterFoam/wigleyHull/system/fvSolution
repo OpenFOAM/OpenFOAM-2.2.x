@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.2.2                                 |
+|  \\    /   O peration     | Version:  2.2.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -50,7 +50,7 @@ solvers
         cacheAgglomeration true;
 
         tolerance       1e-6;
-        relTol          0.01;
+        relTol          0.1;
     };
 
     p_rghFinal
@@ -74,9 +74,9 @@ solvers
 
 PIMPLE
 {
-    momentumPredictor yes;
+    momentumPredictor no;
 
-    nCorrectors     1;
+    nCorrectors     2;
     nNonOrthogonalCorrectors 0;
 
     nAlphaCorr      1;
@@ -85,10 +85,12 @@ PIMPLE
 
     maxCo           0.9;
     maxAlphaCo      0.2;
-    nAlphaSweepIter 1;
 
-    rDeltaTSmoothingCoeff 0.1;
-    rDeltaTDampingCoeff 1;
+    rDeltaTSmoothingCoeff 0.05;
+    rDeltaTDampingCoeff 0.5;
+    nAlphaSweepIter  0;
+    nAlphaSpreadIter 0;
+
     maxDeltaT       1;
 }
 
@@ -99,6 +101,7 @@ relaxationFactors
     }
     equations
     {
+        ".*" 1;
     }
 }
 

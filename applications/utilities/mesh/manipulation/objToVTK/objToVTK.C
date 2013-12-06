@@ -210,6 +210,14 @@ int main(int argc, char *argv[])
         outFile << pt.x() << ' ' << pt.y() << ' ' << pt.z() << nl;
     }
 
+    outFile
+        << "VERTICES " << points.size() << ' ' << (2 * points.size()) << nl;
+
+    forAll(points, i)
+    {
+        outFile << 1 << ' ' << i << nl;
+    }
+
     label nItems = 0;
     forAll(polyLines, polyI)
     {

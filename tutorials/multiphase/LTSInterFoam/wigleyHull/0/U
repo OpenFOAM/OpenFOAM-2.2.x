@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.2.2                                 |
+|  \\    /   O peration     | Version:  2.2.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -15,21 +15,26 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+Umean 1;
+
 dimensions      [0 1 -1 0 0 0 0];
 
-internalField   uniform (1 0 0);
+internalField   uniform ($Umean 0 0);
 
 boundaryField
 {
     inlet
     {
         type            fixedValue;
-        value           uniform (1 0 0);
+        value           $internalField;
     }
 
     outlet
     {
-        type            zeroGradient;
+        type            outletPhaseMeanVelocity;
+        alpha           alpha1;
+        Umean           $Umean;
+        value           $internalField;
     }
 
     sides
@@ -40,6 +45,7 @@ boundaryField
     atmosphere
     {
         type            pressureInletOutletVelocity;
+        tangentialVelocity $internalField;
         value           uniform (0 0 0);
     }
 
