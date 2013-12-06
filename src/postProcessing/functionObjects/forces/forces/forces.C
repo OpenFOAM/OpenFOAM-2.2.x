@@ -618,7 +618,10 @@ void Foam::forces::read(const dictionary& dict)
 
         log_ = dict.lookupOrDefault<Switch>("log", true);
 
-        Info<< type() << " " << name_ << ":" << nl;
+        if (log_)
+        {
+            Info<< type() << " " << name_ << ":" << nl;
+        }
 
         directForceDensity_ = dict.lookupOrDefault("directForceDensity", false);
 
@@ -656,7 +659,7 @@ void Foam::forces::read(const dictionary& dict)
             localSystem_ = true;
         }
 
-        if (dict.readIfPresent("porosity", porosity_))
+        if (dict.readIfPresent("porosity", porosity_) && log_)
         {
             if (porosity_)
             {
