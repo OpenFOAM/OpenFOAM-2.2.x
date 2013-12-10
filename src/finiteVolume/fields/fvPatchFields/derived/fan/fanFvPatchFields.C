@@ -61,7 +61,7 @@ void Foam::fanFvPatchField<Foam::scalar>::calcFanJump()
             Un /= patch().lookupPatchField<volScalarField, scalar>("rho");
         }
 
-        this->jump_ = this->jumpTable_->value(Un);
+        this->jump_ = max(this->jumpTable_->value(Un), scalar(0));
     }
 }
 
