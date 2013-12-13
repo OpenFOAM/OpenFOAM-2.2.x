@@ -261,7 +261,7 @@ void Foam::externalWallHeatFluxTemperatureFvPatchScalarField::updateCoeffs()
                 const scalar l = thicknessLayers_[iLayer];
                 if (l > 0.0)
                 {
-                    totalSolidRes += kappaLayers_[iLayer]/l;
+                    totalSolidRes += l/kappaLayers_[iLayer];
                 }
             }
         }
