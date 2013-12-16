@@ -204,10 +204,10 @@ void sixDoFRigidBodyDisplacementPointPatchVectorField::updateCoeffs()
     const pointPatch& ptPatch = this->patch();
 
     // Store the motion state at the beginning of the time-step
-    if (curTimeIndex_ != this->db().time().timeIndex())
+    if (curTimeIndex_ != t.timeIndex())
     {
         motion_.newTime();
-        curTimeIndex_ = this->db().time().timeIndex();
+        curTimeIndex_ = t.timeIndex();
     }
 
     // Patch force data is valid for the current positions, so
