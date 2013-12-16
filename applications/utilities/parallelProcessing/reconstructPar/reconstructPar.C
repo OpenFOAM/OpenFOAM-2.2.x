@@ -677,6 +677,9 @@ int main(int argc, char *argv[])
     // the master processor
     forAll(timeDirs, timeI)
     {
+        runTime.setTime(timeDirs[timeI], timeI);
+        databases[0].setTime(timeDirs[timeI], timeI);
+
         fileName uniformDir0 = databases[0].timePath()/"uniform";
         if (isDir(uniformDir0))
         {
