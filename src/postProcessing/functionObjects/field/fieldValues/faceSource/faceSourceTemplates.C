@@ -314,19 +314,22 @@ bool Foam::fieldValues::faceSource::writeValues(const word& fieldName)
                 combineMeshGeometry(faces, points);
             }
 
-            fileName outputDir =
-                baseFileDir()/name_/"surface"/obr_.time().timeName();
+            if (Pstream::master())
+            {
+                fileName outputDir =
+                    baseFileDir()/name_/"surface"/obr_.time().timeName();
 
-            surfaceWriterPtr_->write
-            (
-                outputDir,
-                word(sourceTypeNames_[source_]) + "_" + sourceName_,
-                points,
-                faces,
-                fieldName,
-                values,
-                false
-            );
+                surfaceWriterPtr_->write
+                (
+                    outputDir,
+                    word(sourceTypeNames_[source_]) + "_" + sourceName_,
+                    points,
+                    faces,
+                    fieldName,
+                    values,
+                    false
+                );
+            }
         }
 
         // apply scale factor and weight field
