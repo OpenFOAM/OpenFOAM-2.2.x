@@ -55,7 +55,7 @@ Ostream& operator<<(Ostream& os, const porosityModelList& models);
 
 class porosityModelList
 :
-    PtrList<porosityModel>
+    public PtrList<porosityModel>
 {
 private:
 
