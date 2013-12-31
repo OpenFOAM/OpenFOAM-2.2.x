@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -240,7 +240,7 @@ void Foam::CellZoneInjection<CloudType>::updateMesh()
     Info<< "    cell zone size      = " << nCellsTotal << endl;
     Info<< "    cell zone volume    = " << VCellsTotal << endl;
 
-    if ((nCells == 0) || (VCellsTotal*numberDensity_ < 1))
+    if ((nCellsTotal == 0) || (VCellsTotal*numberDensity_ < 1))
     {
         WarningIn("Foam::CellZoneInjection<CloudType>::updateMesh()")
             << "Number of particles to be added to cellZone " << cellZoneName_
