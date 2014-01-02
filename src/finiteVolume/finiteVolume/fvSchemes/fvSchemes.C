@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2014 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -25,6 +25,7 @@ License
 
 #include "fvSchemes.H"
 #include "Time.H"
+#include "steadyStateDdtScheme.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -108,6 +109,11 @@ void Foam::fvSchemes::read(const dictionary& dict)
     )
     {
         defaultDdtScheme_ = ddtSchemes_.lookup("default");
+        steady_ =
+        (
+            word(defaultDdtScheme_)
+         == fv::steadyStateDdtScheme<scalar>::typeName
+        );
     }
 
 
@@ -364,7 +370,8 @@ Foam::fvSchemes::fvSchemes(const objectRegistry& obr)
             tokenList()
         )()
     ),
-    defaultFluxRequired_(false)
+    defaultFluxRequired_(false),
+    steady_(false)
 {
     // persistent settings across reads is incorrect
     clear();
