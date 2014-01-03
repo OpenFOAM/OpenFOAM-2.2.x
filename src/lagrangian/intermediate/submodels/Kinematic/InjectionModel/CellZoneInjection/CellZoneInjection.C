@@ -98,7 +98,7 @@ void Foam::CellZoneInjection<CloudType>::setPositions
 
             injectorCells.append(cellI);
             injectorTetFaces.append(cellTetIs[tetI].face());
-            injectorTetPts.append(cellTetIs[tetI].faceBasePt());
+            injectorTetPts.append(cellTetIs[tetI].tetPt());
         }
     }
 
