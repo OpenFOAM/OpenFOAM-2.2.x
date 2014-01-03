@@ -47,7 +47,8 @@ uncoupledSixDoFRigidBodyDisplacementPointPatchVectorField
 :
     fixedValuePointPatchField<vector>(p, iF),
     motion_(),
-    initialPoints_(p.localPoints())
+    initialPoints_(p.localPoints()),
+    curTimeIndex_(-1)
 {}
 
 
@@ -60,7 +61,8 @@ uncoupledSixDoFRigidBodyDisplacementPointPatchVectorField
 )
 :
     fixedValuePointPatchField<vector>(p, iF, dict),
-    motion_(dict)
+    motion_(dict),
+    curTimeIndex_(-1)
 {
     if (!dict.found("value"))
     {
@@ -89,7 +91,8 @@ uncoupledSixDoFRigidBodyDisplacementPointPatchVectorField
 :
     fixedValuePointPatchField<vector>(ptf, p, iF, mapper),
     motion_(ptf.motion_),
-    initialPoints_(ptf.initialPoints_, mapper)
+    initialPoints_(ptf.initialPoints_, mapper),
+    curTimeIndex_(-1)
 {}
 
 
@@ -102,7 +105,8 @@ uncoupledSixDoFRigidBodyDisplacementPointPatchVectorField
 :
     fixedValuePointPatchField<vector>(ptf, iF),
     motion_(ptf.motion_),
-    initialPoints_(ptf.initialPoints_)
+    initialPoints_(ptf.initialPoints_),
+    curTimeIndex_(-1)
 {}
 
 
@@ -147,6 +151,13 @@ void uncoupledSixDoFRigidBodyDisplacementPointPatchVectorField::updateCoeffs()
     const polyMesh& mesh = this->dimensionedInternalField().mesh()();
     const Time& t = mesh.time();
 
+    // Store the motion state at the beginning of the time-step
+    if (curTimeIndex_ != t.timeIndex())
+    {
+        motion_.newTime();
+        curTimeIndex_ = t.timeIndex();
+    }
+
     motion_.updatePosition(t.deltaTValue(), t.deltaT0Value());
 
     vector gravity = vector::zero;
@@ -163,7 +174,8 @@ void uncoupledSixDoFRigidBodyDisplacementPointPatchVectorField::updateCoeffs()
     motion_.updateAcceleration
     (
         gravity*motion_.mass(),
-        vector::zero, t.deltaTValue()
+        vector::zero,
+        t.deltaTValue()
     );
 
     Field<vector>::operator=

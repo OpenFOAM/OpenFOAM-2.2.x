@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -23,12 +23,14 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "codedBasicSourceTemplate.H"
+#include "codedFvOptionTemplate.H"
 #include "addToRunTimeSelectionTable.H"
 #include "fvPatchFieldMapper.H"
 #include "volFields.H"
 #include "surfaceFields.H"
 #include "unitConversion.H"
+#include "fvMatrix.H"
+
 //{{{ begin codeInclude
 ${codeInclude}
 //}}} end codeInclude
@@ -39,6 +41,8 @@ ${codeInclude}
 namespace Foam
 {
 
+namespace fv
+{
 // * * * * * * * * * * * * * * * Local Functions * * * * * * * * * * * * * * //
 
 //{{{ begin localCode
@@ -73,25 +77,25 @@ extern "C"
 //makeRemovablePatchTypeField
 //(
 //    fvPatch${FieldType},
-//    ${typeName}CodedBasic${SourceType}
+//    ${typeName}FvOption${SourceType}
 //);
-defineTypeNameAndDebug(${typeName}CodedBasic${SourceType}, 0);
+defineTypeNameAndDebug(${typeName}FvOption${SourceType}, 0);
 addRemovableToRunTimeSelectionTable
 (
-    basicSource,
-    ${typeName}CodedBasic${SourceType},
+    option,
+    ${typeName}FvOption${SourceType},
     dictionary
 );
 
 
-const char* const ${typeName}CodedBasic${SourceType}::SHA1sum =
+const char* const ${typeName}FvOption${SourceType}::SHA1sum =
     "${SHA1sum}";
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-${typeName}CodedBasic${SourceType}::
-${typeName}CodedBasic${SourceType}
+${typeName}FvOption${SourceType}::
+${typeName}FvOption${SourceType}
 (
     const word& name,
     const word& modelType,
@@ -99,7 +103,7 @@ ${typeName}CodedBasic${SourceType}
     const fvMesh& mesh
 )
 :
-    basicSource(name, modelType, dict, mesh)
+    option(name, modelType, dict, mesh)
 {
     if (${verbose:-false})
     {
@@ -111,8 +115,8 @@ ${typeName}CodedBasic${SourceType}
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-${typeName}CodedBasic${SourceType}::
-~${typeName}CodedBasic${SourceType}()
+${typeName}FvOption${SourceType}::
+~${typeName}FvOption${SourceType}()
 {
     if (${verbose:-false})
     {
@@ -123,14 +127,14 @@ ${typeName}CodedBasic${SourceType}::
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void ${typeName}CodedBasic${SourceType}::correct
+void ${typeName}FvOption${SourceType}::correct
 (
     GeometricField<${TemplateType}, fvPatchField, volMesh>& fld
 )
 {
     if (${verbose:-false})
     {
-        Info<<"${typeName}CodedBasic${SourceType}::correct()\n";
+        Info<<"${typeName}FvOption${SourceType}::correct()\n";
     }
 
 //{{{ begin code
@@ -139,7 +143,7 @@ void ${typeName}CodedBasic${SourceType}::correct
 }
 
 
-void ${typeName}CodedBasic${SourceType}::addSup
+void ${typeName}FvOption${SourceType}::addSup
 (
     fvMatrix<${TemplateType}>& eqn,
     const label fieldI
@@ -147,7 +151,7 @@ void ${typeName}CodedBasic${SourceType}::addSup
 {
     if (${verbose:-false})
     {
-        Info<<"${typeName}CodedBasic${SourceType}::addSup()\n";
+        Info<<"${typeName}FvOption${SourceType}::addSup()\n";
     }
 
 //{{{ begin code
@@ -156,7 +160,7 @@ void ${typeName}CodedBasic${SourceType}::addSup
 }
 
 
-void ${typeName}CodedBasic${SourceType}::setValue
+void ${typeName}FvOption${SourceType}::setValue
 (
     fvMatrix<${TemplateType}>& eqn,
     const label fieldI
@@ -164,7 +168,7 @@ void ${typeName}CodedBasic${SourceType}::setValue
 {
     if (${verbose:-false})
     {
-        Info<<"${typeName}CodedBasic${SourceType}::setValue()\n";
+        Info<<"${typeName}FvOption${SourceType}::setValue()\n";
     }
 
 //{{{ begin code
@@ -177,4 +181,5 @@ void ${typeName}CodedBasic${SourceType}::setValue
 
 } // End namespace Foam
 
+} // End namespace fv
 // ************************************************************************* //

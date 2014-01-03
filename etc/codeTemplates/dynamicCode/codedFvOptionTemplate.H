@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,32 +22,106 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
-    Template for use with dynamic code generation of a basicSource
+    Template for use with dynamic code generation of a source.
+    The hook functions take the following arguments:
 
-    - without state
+    codeCorrect
+    (
+        GeometricField<Type, fvPatchField, volMesh>& fld
+    )
+
+    codeAddSup
+    (
+        fvMatrix<Type}>& eqn,
+        const label fieldI
+    )
+
+    setValue
+    (
+         fvMatrix<Type}>& eqn,
+        const label fieldI
+    )
+
+    where :
+        fld is the field in fieldNames
+        eqn is the fvMatrix
+
+    energySource
+    {
+        type            scalarCodedSource;
+
+        active          true;
+        selectionMode   all;
+
+        scalarCodedSourceCoeffs
+        {
+            fieldNames      (h);
+            redirectType    sourceTime;
+
+            codeInclude
+            #{
+
+            #};
+
+            codeCorrect
+            #{
+                Pout<< "**codeCorrect**" << endl;
+            #};
+
+            codeAddSup
+            #{
+                const Time& time = mesh().time();
+                const scalarField& V = mesh_.V();
+                scalarField& heSource = eqn.source();
+                heSource -= 0.1*sqr(time.value())*V;
+            #};
+
+            codeSetValue
+            #{
+                Pout<< "**codeSetValue**" << endl;
+            #};
+
+            // Dummy entry. Make dependent on above to trigger recompilation
+            code
+            #{
+                $codeInclude
+                $codeCorrect
+                $codeAddSup
+                $codeSetValue
+            #};
+        }
+
+        sourceTimeCoeffs
+        {
+            // Dummy entry
+        }
+    }
 
 SourceFiles
-    codedBasicSourceTemplate.C
+    codedFvOptionTemplate.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef codedBasicSourceTemplate_H
-#define codedBasicSourceTemplate_H
+#ifndef codedFvOptionTemplate_H
+#define codedFvOptionTemplate_H
 
-#include "basicSource.H"
+#include "fvOption.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
 
+namespace fv
+{
+
 /*---------------------------------------------------------------------------*\
-                         A templated CodedBasicSource
+                         A templated CodedFvOption
 \*---------------------------------------------------------------------------*/
 
-class ${typeName}CodedBasic${SourceType}
+class ${typeName}FvOption${SourceType}
 :
-    public basicSource
+    public option
 {
 public:
 
@@ -61,7 +135,7 @@ public:
     // Constructors
 
         //- Construct from patch and internal field
-        ${typeName}CodedBasic${SourceType}
+        ${typeName}FvOption${SourceType}
         (
             const word& name,
             const word& modelType,
@@ -70,7 +144,7 @@ public:
         );
 
     //- Destructor
-    virtual ~${typeName}CodedBasic${SourceType}();
+    virtual ~${typeName}FvOption${SourceType}();
 
 
     // Member functions
@@ -100,6 +174,8 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // End namespace Foam
+
+} // End namespace fv
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

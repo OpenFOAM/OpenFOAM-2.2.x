@@ -45,7 +45,7 @@ Foam::IOobject Foam::fv::IOoptionList::createIOobject
 
     if (io.headerOk())
     {
-        Info<< "Creating fintite volume options from " << io.name() << nl
+        Info<< "Creating finite volume options from " << io.name() << nl
             << endl;
 
         io.readOpt() = IOobject::MUST_READ_IF_MODIFIED;

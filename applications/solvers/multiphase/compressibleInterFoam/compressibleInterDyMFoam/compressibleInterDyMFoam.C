@@ -65,6 +65,10 @@ int main(int argc, char *argv[])
     #include "CourantNo.H"
     #include "setInitialDeltaT.H"
 
+    // Create old-time absolute flux for ddtPhiCorr
+    surfaceScalarField phiAbs("phiAbs", phi);
+
+
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
     Info<< "\nStarting time loop\n" << endl;
 
@@ -76,6 +80,9 @@ int main(int argc, char *argv[])
 
         // Make the fluxes absolute
         fvc::makeAbsolute(phi, U);
+
+        // Update absolute flux for ddtPhiCorr
+        phiAbs = phi;
 
         #include "setDeltaT.H"
 
@@ -138,9 +145,6 @@ int main(int argc, char *argv[])
             while (pimple.correct())
             {
                 #include "pEqn.H"
-
-                // Make the fluxes relative to the mesh motion
-                fvc::makeRelative(phi, U);
             }
         }
 
