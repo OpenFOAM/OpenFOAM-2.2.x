@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2014 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -84,7 +84,6 @@ protected:
             :
                 DynamicList<word>(0)
             {}
-
         };
 
 
@@ -105,6 +104,16 @@ protected:
 
             //- Names of fields to probe
             wordReList fieldSelection_;
+
+            //- Fixed locations, default = yes
+            //  Note: set to false for moving mesh calations where locations
+            //        should move with the mesh
+            bool fixedLocations_;
+
+            //- Interpolation scheme name
+            /// Note: only possible when fixedLocations_ is true
+            word interpolationScheme_;
+
 
         // Calculated
 
@@ -143,12 +152,13 @@ protected:
         //- Classify field types, returns the number of fields
         label classifyFields();
 
-        //- Find cells containing probes
+        //- Find cells and faces containing probes
         virtual void findElements(const fvMesh&);
 
         //- Classify field type and Open/close file streams,
-        //  returns number of fields
+        //  returns number of fields to sample
         label prepare();
+
 
 private:
 
@@ -253,12 +263,10 @@ public:
         virtual void read(const dictionary&);
 
         //- Update for changes of mesh
-        virtual void updateMesh(const mapPolyMesh&)
-        {}
+        virtual void updateMesh(const mapPolyMesh&);
 
         //- Update for changes of mesh
-        virtual void movePoints(const polyMesh&)
-        {}
+        virtual void movePoints(const polyMesh&);
 
         //- Update for changes of mesh due to readUpdate
         virtual void readUpdate(const polyMesh::readUpdateState state)
@@ -285,7 +293,6 @@ public:
         (
             const GeometricField<Type, fvsPatchField, surfaceMesh>&
         ) const;
-
 };
 
 

@@ -27,6 +27,7 @@ License
 #include "volFields.H"
 #include "surfaceFields.H"
 #include "IOmanip.H"
+#include "interpolation.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -226,11 +227,36 @@ Foam::probes::sample
 
     Field<Type>& values = tValues();
 
-    forAll(*this, probeI)
+    if (fixedLocations_)
     {
-        if (elementList_[probeI] >= 0)
+        autoPtr<interpolation<Type> > interpolator
+        (
+            interpolation<Type>::New(interpolationScheme_, vField)
+        );
+
+        forAll(*this, probeI)
         {
-            values[probeI] = vField[elementList_[probeI]];
+            if (elementList_[probeI] >= 0)
+            {
+                const vector& position = operator[](probeI);
+
+                values[probeI] = interpolator().interpolate
+                (
+                    position,
+                    elementList_[probeI],
+                    -1
+                );
+            }
+        }
+    }
+    else
+    {
+        forAll(*this, probeI)
+        {
+            if (elementList_[probeI] >= 0)
+            {
+                values[probeI] = vField[elementList_[probeI]];
+            }
         }
     }
 
