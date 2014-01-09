@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2014 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -125,15 +125,6 @@ private:
             const labelList& oldToNew,
             const polyPatch& newPatch,
             const label unmappedIndex
-        );
-
-        //- Map from old to new according to map. Handles map = -1.
-        template<class Type>
-        static void map
-        (
-            const Field<Type>&,
-            const labelList& map,
-            Field<Type>&
         );
 
         //- Update single volField.
