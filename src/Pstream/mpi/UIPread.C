@@ -229,7 +229,7 @@ Foam::label Foam::UIPstream::read
             (
                 buf,
                 bufSize,
-                MPI_PACKED,
+                MPI_BYTE,
                 procID(fromProcNo),
                 tag,
                 MPI_COMM_WORLD,
@@ -285,7 +285,7 @@ Foam::label Foam::UIPstream::read
             (
                 buf,
                 bufSize,
-                MPI_PACKED,
+                MPI_BYTE,
                 procID(fromProcNo),
                 tag,
                 MPI_COMM_WORLD,
