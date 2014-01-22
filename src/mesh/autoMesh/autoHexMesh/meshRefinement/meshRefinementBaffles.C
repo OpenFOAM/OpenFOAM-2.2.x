@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2014 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -128,96 +128,6 @@ Foam::label Foam::meshRefinement::createBaffle
         );
     }
     return dupFaceI;
-}
-
-
-// Get an estimate for the patch the internal face should get. Bit heuristic.
-Foam::label Foam::meshRefinement::getBafflePatch
-(
-    const labelList& facePatch,
-    const label faceI
-) const
-{
-    const polyBoundaryMesh& patches = mesh_.boundaryMesh();
-
-    // Loop over face points
-    // for each point check all faces patch IDs
-    // as soon as an ID >= 0 is found, break and assign that ID
-    // to the current face.
-    // Check first for real patch (so proper surface intersection and then
-    // in facePatch array for patches to block off faces
-
-    forAll(mesh_.faces()[faceI], fp)
-    {
-        label pointI = mesh_.faces()[faceI][fp];
-
-        forAll(mesh_.pointFaces()[pointI], pf)
-        {
-            label pFaceI = mesh_.pointFaces()[pointI][pf];
-
-            label patchI = patches.whichPatch(pFaceI);
-
-            if (patchI != -1 && !patches[patchI].coupled())
-            {
-                return patchI;
-            }
-            else if (facePatch[pFaceI] != -1)
-            {
-                return facePatch[pFaceI];
-            }
-        }
-    }
-
-    // Loop over owner and neighbour cells, looking for the first face with a
-    // valid patch number
-    const cell& ownFaces = mesh_.cells()[mesh_.faceOwner()[faceI]];
-
-    forAll(ownFaces, i)
-    {
-        label cFaceI = ownFaces[i];
-
-        label patchI = patches.whichPatch(cFaceI);
-
-        if (patchI != -1 && !patches[patchI].coupled())
-        {
-            return patchI;
-        }
-        else if (facePatch[cFaceI] != -1)
-        {
-            return facePatch[cFaceI];
-        }
-    }
-
-    if (mesh_.isInternalFace(faceI))
-    {
-        const cell& neiFaces = mesh_.cells()[mesh_.faceNeighbour()[faceI]];
-
-        forAll(neiFaces, i)
-        {
-            label cFaceI = neiFaces[i];
-
-            label patchI = patches.whichPatch(cFaceI);
-
-            if (patchI != -1 && !patches[patchI].coupled())
-            {
-                return patchI;
-            }
-            else if (facePatch[cFaceI] != -1)
-            {
-                return facePatch[cFaceI];
-            }
-        }
-    }
-
-    WarningIn
-    (
-        "meshRefinement::getBafflePatch(const labelList&, const label)"
-    )   << "Could not find boundary face neighbouring internal face "
-        << faceI << " with face centre " << mesh_.faceCentres()[faceI]
-        << nl
-        << "Using arbitrary patch " << 0 << " instead." << endl;
-
-    return 0;
 }
 
 

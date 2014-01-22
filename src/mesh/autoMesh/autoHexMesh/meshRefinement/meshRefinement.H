@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2014 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -357,14 +357,6 @@ private:
                 labelList& neiPatch
             ) const;
 
-            //- Determine patch for baffle using some heuristic (and not
-            //  surface)
-            label getBafflePatch
-            (
-                const labelList& facePatch,
-                const label faceI
-            ) const;
-
             //- Repatches external face or creates baffle for internal face
             //  with user specified patches (might be different for both sides).
             //  Returns label of added face.
@@ -418,6 +410,11 @@ private:
                 const scalar volFraction,
                 const label cellI
             ) const;
+
+            //- Returns list with for every face the label of the nearest
+            //  patch. Any unreached face (disconnected mesh?) becomes
+            //  adaptPatchIDs[0]
+            labelList nearestPatch(const labelList& adaptPatchIDs) const;
 
             //- Returns list with for every internal face -1 or the patch
             //  they should be baffled into. If removeEdgeConnectedCells is set

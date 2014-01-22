@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2014 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -36,6 +36,8 @@ License
 #include "polyMeshGeometry.H"
 #include "IOmanip.H"
 #include "unitConversion.H"
+#include "topoDistanceData.H"
+#include "FaceCellWave.H"
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
@@ -368,6 +370,82 @@ bool Foam::meshRefinement::isCollapsedCell
 }
 
 
+Foam::labelList Foam::meshRefinement::nearestPatch
+(
+    const labelList& adaptPatchIDs
+) const
+{
+    const polyBoundaryMesh& patches = mesh_.boundaryMesh();
+
+    // Count number of faces in adaptPatchIDs
+    label nFaces = 0;
+    forAll(adaptPatchIDs, i)
+    {
+        const polyPatch& pp = patches[adaptPatchIDs[i]];
+        nFaces += pp.size();
+    }
+
+    // Field on cells and faces.
+    List<topoDistanceData> cellData(mesh_.nCells());
+    List<topoDistanceData> faceData(mesh_.nFaces());
+
+    // Start of changes
+    labelList patchFaces(nFaces);
+    List<topoDistanceData> patchData(nFaces);
+    nFaces = 0;
+    forAll(adaptPatchIDs, i)
+    {
+        label patchI = adaptPatchIDs[i];
+        const polyPatch& pp = patches[patchI];
+
+        forAll(pp, i)
+        {
+            patchFaces[nFaces] = pp.start()+i;
+            patchData[nFaces] = topoDistanceData(patchI, 0);
+            nFaces++;
+        }
+    }
+
+    // Propagate information inwards
+    FaceCellWave<topoDistanceData> deltaCalc
+    (
+        mesh_,
+        patchFaces,
+        patchData,
+        faceData,
+        cellData,
+        mesh_.globalData().nTotalCells()+1
+    );
+
+    // And extract
+    labelList nearestAdaptPatch(mesh_.nFaces(), adaptPatchIDs[0]);
+
+    bool haveWarned = false;
+    forAll(faceData, faceI)
+    {
+        if (!faceData[faceI].valid(deltaCalc.data()))
+        {
+            if (!haveWarned)
+            {
+                WarningIn("meshRefinement::nearestPatch(..)")
+                    << "Did not visit some faces, e.g. face " << faceI
+                    << " at " << mesh_.faceCentres()[faceI] << endl
+                    << "Assigning  these cells to patch "
+                    << adaptPatchIDs[0]
+                    << endl;
+                haveWarned = true;
+            }
+        }
+        else
+        {
+            nearestAdaptPatch[faceI] = faceData[faceI].data();
+        }
+    }
+
+    return nearestAdaptPatch;
+}
+
+
 // Returns list with for every internal face -1 or the patch they should
 // be baffled into. Gets run after createBaffles so all the unzoned surface
 // intersections have already been turned into baffles. (Note: zoned surfaces
@@ -386,9 +464,6 @@ Foam::labelList Foam::meshRefinement::markFacesOnProblemCells
     const labelList& pointLevel = meshCutter_.pointLevel();
     const polyBoundaryMesh& patches = mesh_.boundaryMesh();
 
-    // Per internal face (boundary faces not used) the patch that the
-    // baffle should get (or -1)
-    labelList facePatch(mesh_.nFaces(), -1);
 
     // Mark all points and edges on baffle patches (so not on any inlets,
     // outlets etc.)
@@ -402,9 +477,7 @@ Foam::labelList Foam::meshRefinement::markFacesOnProblemCells
 
     forAll(adaptPatchIDs, i)
     {
-        label patchI = adaptPatchIDs[i];
-
-        const polyPatch& pp = patches[patchI];
+        const polyPatch& pp = patches[adaptPatchIDs[i]];
 
         label faceI = pp.start();
 
@@ -421,6 +494,15 @@ Foam::labelList Foam::meshRefinement::markFacesOnProblemCells
             faceI++;
         }
     }
+
+
+    // Per face the nearest adaptPatch
+    const labelList nearestAdaptPatch(nearestPatch(adaptPatchIDs));
+
+
+    // Per internal face (boundary faces not used) the patch that the
+    // baffle should get (or -1)
+    labelList facePatch(mesh_.nFaces(), -1);
 
     // Swap neighbouring cell centres and cell level
     labelList neiLevel(mesh_.nFaces()-mesh_.nInternalFaces());
@@ -463,7 +545,7 @@ Foam::labelList Foam::meshRefinement::markFacesOnProblemCells
 
                 if (facePatch[faceI] == -1 && mesh_.isInternalFace(faceI))
                 {
-                    facePatch[faceI] = getBafflePatch(facePatch, faceI);
+                    facePatch[faceI] = nearestAdaptPatch[faceI];
                     nBaffleFaces++;
 
                     // Mark face as a 'boundary'
@@ -699,7 +781,7 @@ Foam::labelList Foam::meshRefinement::markFacesOnProblemCells
                          && mesh_.isInternalFace(faceI)
                         )
                         {
-                            facePatch[faceI] = getBafflePatch(facePatch, faceI);
+                            facePatch[faceI] = nearestAdaptPatch[faceI];
                             nBaffleFaces++;
 
                             // Mark face as a 'boundary'
@@ -786,11 +868,7 @@ Foam::labelList Foam::meshRefinement::markFacesOnProblemCells
                              && mesh_.isInternalFace(faceI)
                             )
                             {
-                                facePatch[faceI] = getBafflePatch
-                                (
-                                    facePatch,
-                                    faceI
-                                );
+                                facePatch[faceI] = nearestAdaptPatch[faceI];
                                 nBaffleFaces++;
 
                                 // Mark face as a 'boundary'
@@ -877,7 +955,7 @@ Foam::labelList Foam::meshRefinement::markFacesOnProblemCells
                 }
                 else
                 {
-                    facePatch[faceI] = getBafflePatch(facePatch, faceI);
+                    facePatch[faceI] = nearestAdaptPatch[faceI];
                     nBaffleFaces++;
 
                     // Do NOT update boundary data since this would grow blocked
@@ -934,7 +1012,7 @@ Foam::labelList Foam::meshRefinement::markFacesOnProblemCells
                         }
                         else
                         {
-                            facePatch[faceI] = getBafflePatch(facePatch, faceI);
+                            facePatch[faceI] = nearestAdaptPatch[faceI];
                             if (isMasterFace[faceI])
                             {
                                 nBaffleFaces++;
@@ -1111,7 +1189,7 @@ Foam::labelList Foam::meshRefinement::markFacesOnProblemCells
 //
 //            if (patchI == -1 || mesh_.boundaryMesh()[patchI].coupled())
 //            {
-//                facePatch[iter.key()] = getBafflePatch(facePatch, iter.key());
+//                facePatch[iter.key()] = nearestAdaptPatch[iter.key()];
 //                nBaffleFaces++;
 //
 //                //Pout<< "    " << iter.key()
