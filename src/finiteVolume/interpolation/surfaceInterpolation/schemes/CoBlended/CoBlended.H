@@ -63,6 +63,7 @@ SourceFiles
 #define CoBlended_H
 
 #include "surfaceInterpolationScheme.H"
+#include "surfaceInterpolate.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -188,6 +189,26 @@ public:
         tmp<surfaceScalarField> blendingFactor() const
         {
             const fvMesh& mesh = faceFlux_.mesh();
+            tmp<surfaceScalarField> tUflux = faceFlux_;
+
+            if (faceFlux_.dimensions() == dimDensity*dimVelocity*dimArea)
+            {
+                // Currently assume that the density field
+                // corresponding to the mass-flux is named "rho"
+                const volScalarField& rho =
+                    mesh.objectRegistry::template lookupObject<volScalarField>
+                    ("rho");
+
+                tUflux = faceFlux_/fvc::interpolate(rho);
+            }
+            else if (faceFlux_.dimensions() != dimVelocity*dimArea)
+            {
+                FatalErrorIn
+                (
+                    "CoBlended::blendingFactor()"
+                )   << "dimensions of faceFlux are not correct"
+                    << exit(FatalError);
+            }
 
             return
             (
@@ -198,7 +219,7 @@ public:
                     (
                         (
                             mesh.time().deltaT()*mesh.deltaCoeffs()
-                           *mag(faceFlux_)/mesh.magSf()
+                           *mag(tUflux)/mesh.magSf()
                           - Co1_
                         )/(Co2_ - Co1_),
                         scalar(1)
@@ -217,8 +238,6 @@ public:
         ) const
         {
             surfaceScalarField bf(blendingFactor());
-
-            Info<< "weights " << max(bf) << " " << min(bf) << endl;
 
             return
                 bf*tScheme1_().weights(vf)
