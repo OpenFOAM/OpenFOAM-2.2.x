@@ -46,15 +46,15 @@ solvers
     "(U|k|epsilon)"
     {
         solver          smoothSolver;
-        smoother        GaussSeidel;
+        smoother        symGaussSeidel;
         tolerance       1e-6;
         relTol          0.1;
     }
 
     "(U|k|epsilon)Final"
     {
-        solver          PBiCG;
-        preconditioner  DILU;
+        solver          smoothSolver;
+        smoother        symGaussSeidel;
         tolerance       1e-6;
         relTol          0;
     }

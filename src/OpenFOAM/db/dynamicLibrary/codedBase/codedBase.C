@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2014 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -30,6 +30,15 @@ License
 #include "dlLibraryTable.H"
 #include "PstreamReduceOps.H"
 #include "OSspecific.H"
+#include "regIOobject.H"
+
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
+
+namespace Foam
+{
+    defineTypeNameAndDebug(codedBase, 0);
+}
+
 
 // * * * * * * * * * * * * * Static Member Functions * * * * * * * * * * * * //
 
@@ -169,7 +178,9 @@ void Foam::codedBase::createLibrary
     const dynamicCodeContext& context
 ) const
 {
-    bool create = Pstream::master();
+    bool create =
+        Pstream::master()
+     || (regIOobject::fileModificationSkew <= 0);   // not NFS
 
     if (create)
     {
@@ -206,6 +217,71 @@ void Foam::codedBase::createLibrary
 
 
     // all processes must wait for compile to finish
+    if (regIOobject::fileModificationSkew > 0)
+    {
+        //- Since the library has only been compiled on the master the
+        //  other nodes need to pick this library up through NFS
+        //  We do this by just polling a few times using the
+        //  fileModificationSkew.
+
+        const fileName libPath = dynCode.libPath();
+
+        off_t mySize = Foam::fileSize(libPath);
+        off_t masterSize = mySize;
+        Pstream::scatter(masterSize);
+
+        if (debug)
+        {
+            Pout<< endl<< "on processor " << Pstream::myProcNo()
+                << " have masterSize:" << masterSize
+                << " and localSize:" << mySize
+                << endl;
+        }
+
+
+        if (mySize < masterSize)
+        {
+            if (debug)
+            {
+                Pout<< "Local file " << libPath
+                    << " not of same size (" << mySize
+                    << ") as master ("
+                    << masterSize << "). Waiting for "
+                    << regIOobject::fileModificationSkew
+                    << " seconds." << endl;
+            }
+            Foam::sleep(regIOobject::fileModificationSkew);
+
+            // Recheck local size
+            mySize = Foam::fileSize(libPath);
+
+            if (mySize < masterSize)
+            {
+                FatalIOErrorIn
+                (
+                    "functionEntries::codeStream::execute(..)",
+                    context.dict()
+                )   << "Cannot read (NFS mounted) library " << nl
+                    << libPath << nl
+                    << "on processor " << Pstream::myProcNo()
+                    << " detected size " << mySize
+                    << " whereas master size is " << masterSize
+                    << " bytes." << nl
+                    << "If your case is not NFS mounted"
+                    << " (so distributed) set fileModificationSkew"
+                    << " to 0"
+                    << exit(FatalIOError);
+            }
+        }
+
+        if (debug)
+        {
+            Pout<< endl<< "on processor " << Pstream::myProcNo()
+                << " after waiting: have masterSize:" << masterSize
+                << " and localSize:" << mySize
+                << endl;
+        }
+    }
     reduce(create, orOp<bool>());
 }
 

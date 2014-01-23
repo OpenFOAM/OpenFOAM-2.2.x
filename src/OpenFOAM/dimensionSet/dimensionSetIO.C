@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2014 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -652,7 +652,7 @@ Foam::Ostream& Foam::dimensionSet::write
 
     os << token::BEGIN_SQR;
 
-    if (writeUnits.valid())
+    if (writeUnits.valid() && os.format() == IOstream::ASCII)
     {
         scalarField exponents(dimensionSet::nDimensions);
         for (int d=0; d<dimensionSet::nDimensions; d++)

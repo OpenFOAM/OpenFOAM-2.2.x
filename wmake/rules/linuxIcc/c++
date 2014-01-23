@@ -1,6 +1,6 @@
 .SUFFIXES: .C .cxx .cc .cpp
 
-c++WARN     = -wd327,654,819,1125,1476,1505,1572
+c++WARN     = -wd327,525,654,819,1125,1476,1505,1572
 
 #CC          = icpc -gcc-version=400
 CC          = icpc -std=c++0x
