@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2013 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2013-2014 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -31,12 +31,11 @@ License
 #include "wallFvPatch.H"
 #include "nearWallDist.H"
 
-
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
 namespace Foam
 {
-defineTypeNameAndDebug(yPlusLES, 0);
+    defineTypeNameAndDebug(yPlusLES, 0);
 }
 
 
@@ -69,23 +68,23 @@ void Foam::yPlusLES::calcIncompressibleYPlus
     const volScalarField nuLam(model.nu());
 
     bool foundPatch = false;
-    forAll(patches, patchI)
+    forAll(patches, patchi)
     {
-        const fvPatch& currPatch = patches[patchI];
+        const fvPatch& currPatch = patches[patchi];
 
         if (isA<wallFvPatch>(currPatch))
         {
             foundPatch = true;
-            yPlus.boundaryField()[patchI] =
-                d[patchI]
+            yPlus.boundaryField()[patchi] =
+                d[patchi]
                *sqrt
                 (
-                    nuEff.boundaryField()[patchI]
-                   *mag(U.boundaryField()[patchI].snGrad())
+                    nuEff.boundaryField()[patchi]
+                   *mag(U.boundaryField()[patchi].snGrad())
                 )
-               /nuLam.boundaryField()[patchI];
+               /nuLam.boundaryField()[patchi];
 
-            const scalarField& Yp = yPlus.boundaryField()[patchI];
+            const scalarField& Yp = yPlus.boundaryField()[patchi];
 
             scalar minYp = gMin(Yp);
             scalar maxYp = gMax(Yp);
@@ -127,29 +126,30 @@ void Foam::yPlusLES::calcCompressibleYPlus
 
     volScalarField::GeometricBoundaryField d = nearWallDist(mesh).y();
     volScalarField muEff(model.muEff());
+    const volScalarField& rho(model.rho());
 
     const fvPatchList& patches = mesh.boundary();
 
     const volScalarField muLam(model.mu());
 
     bool foundPatch = false;
-    forAll(patches, patchI)
+    forAll(patches, patchi)
     {
-        const fvPatch& currPatch = patches[patchI];
+        const fvPatch& currPatch = patches[patchi];
 
         if (isA<wallFvPatch>(currPatch))
         {
             foundPatch = true;
-            yPlus.boundaryField()[patchI] =
-                d[patchI]
+            yPlus.boundaryField()[patchi] =
+                d[patchi]
                *sqrt
                 (
-                    muEff.boundaryField()[patchI]
-                   *mag(U.boundaryField()[patchI].snGrad())
+                    (muEff.boundaryField()[patchi]/rho.boundaryField()[patchi])
+                   *mag(U.boundaryField()[patchi].snGrad())
                 )
-               /muLam.boundaryField()[patchI];
+               /(muLam.boundaryField()[patchi]/rho.boundaryField()[patchi]);
 
-            const scalarField& Yp = yPlus.boundaryField()[patchI];
+            const scalarField& Yp = yPlus.boundaryField()[patchi];
 
             scalar minYp = gMin(Yp);
             scalar maxYp = gMax(Yp);
