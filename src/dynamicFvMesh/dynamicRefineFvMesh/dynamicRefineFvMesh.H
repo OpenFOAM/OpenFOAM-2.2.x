@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2014 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -148,6 +148,12 @@ protected:
             //- Extend markedCell with cell-face-cell.
             void extendMarkedCells(PackedBoolList& markedCell) const;
 
+            //- Check all cells have 8 anchor points
+            void checkEightAnchorPoints
+            (
+                PackedBoolList& protectedCell,
+                label& nProtected
+            ) const;
 
 private:
 
