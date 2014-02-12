@@ -69,7 +69,7 @@ public:
             LOOKUP
         };
 
-private:
+protected:
 
     // Private data
 
