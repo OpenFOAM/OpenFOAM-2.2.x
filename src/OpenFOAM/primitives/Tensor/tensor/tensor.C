@@ -87,7 +87,6 @@ const tensor tensor::I
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-// Return eigenvalues in ascending order of absolute values
 vector eigenValues(const tensor& t)
 {
     scalar i = 0;
@@ -288,7 +287,6 @@ tensor eigenVectors(const tensor& t)
 }
 
 
-// Return eigenvalues in ascending order of absolute values
 vector eigenValues(const symmTensor& t)
 {
     scalar i = 0;
