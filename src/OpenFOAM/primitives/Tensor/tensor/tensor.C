@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2014 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -87,7 +87,6 @@ const tensor tensor::I
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-// Return eigenvalues in ascending order of absolute values
 vector eigenValues(const tensor& t)
 {
     scalar i = 0;
@@ -230,7 +229,7 @@ vector eigenVector(const tensor& t, const scalar lambda)
     scalar magSd2 = mag(sd2);
 
     // Evaluate the eigenvector using the largest sub-determinant
-    if (magSd0 > magSd1 && magSd0 > magSd2 && magSd0 > SMALL)
+    if (magSd0 >= magSd1 && magSd0 >= magSd2 && magSd0 > SMALL)
     {
         vector ev
         (
@@ -242,7 +241,7 @@ vector eigenVector(const tensor& t, const scalar lambda)
 
         return ev;
     }
-    else if (magSd1 > magSd2 && magSd1 > SMALL)
+    else if (magSd1 >= magSd2 && magSd1 > SMALL)
     {
         vector ev
         (
@@ -288,7 +287,6 @@ tensor eigenVectors(const tensor& t)
 }
 
 
-// Return eigenvalues in ascending order of absolute values
 vector eigenValues(const symmTensor& t)
 {
     scalar i = 0;
@@ -431,7 +429,7 @@ vector eigenVector(const symmTensor& t, const scalar lambda)
     scalar magSd2 = mag(sd2);
 
     // Evaluate the eigenvector using the largest sub-determinant
-    if (magSd0 > magSd1 && magSd0 > magSd2 && magSd0 > SMALL)
+    if (magSd0 >= magSd1 && magSd0 >= magSd2 && magSd0 > SMALL)
     {
         vector ev
         (
@@ -443,7 +441,7 @@ vector eigenVector(const symmTensor& t, const scalar lambda)
 
         return ev;
     }
-    else if (magSd1 > magSd2 && magSd1 > SMALL)
+    else if (magSd1 >= magSd2 && magSd1 > SMALL)
     {
         vector ev
         (
