@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2014 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -42,6 +42,7 @@ Description
 #include "surfaceFields.H"
 #include "pointFields.H"
 #include "ReadFields.H"
+#include "fvIOoptionList.H"
 
 #include "incompressible/singlePhaseTransportModel/singlePhaseTransportModel.H"
 
@@ -166,6 +167,8 @@ void calc
             ),
             mesh
         );
+
+        #include "createFvOptions.H"
 
         if (phi.dimensions() == dimVolume/dimTime)
         {
