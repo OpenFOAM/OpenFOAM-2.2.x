@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2014 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -65,10 +65,7 @@ void Foam::fieldCoordinateSystemTransform::transformField
 
     dimensionedTensor R("R", field.dimensions(), coordSys_.R());
 
-    forAll(field, i)
-    {
-        Foam::transform(transField, R, transField);
-    }
+    Foam::transform(transField, R, transField);
 
     Info<< "    writing field " << transField.name() << nl << endl;
 
