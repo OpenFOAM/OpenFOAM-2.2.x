@@ -40,26 +40,29 @@ volScalarField heatTransferCoeff
 
     if (dispersedPhase == phase1Name)
     {
-        dragCoeff = drag1->K(magUr);
-        heatTransferCoeff = heatTransfer1->K(magUr);
+        volScalarField alphaCoeff(max(alpha1, residualPhaseFraction));
+
+        dragCoeff = alphaCoeff*drag1->K(magUr);
+        heatTransferCoeff = alphaCoeff*heatTransfer1->K(magUr);
     }
     else if (dispersedPhase == phase2Name)
     {
-        dragCoeff = drag2->K(magUr);
-        heatTransferCoeff = heatTransfer2->K(magUr);
+        volScalarField alphaCoeff(max(alpha2, residualPhaseFraction));
+
+        dragCoeff = alphaCoeff*drag2->K(magUr);
+        heatTransferCoeff = alphaCoeff*heatTransfer2->K(magUr);
     }
     else if (dispersedPhase == "both")
     {
-        dragCoeff =
-        (
-            alpha2*drag1->K(magUr)
-          + alpha1*drag2->K(magUr)
-        );
+        // Blend with the phase-fraction of the continuous phase
+        volScalarField alphaCoeff(max(alpha1*alpha2, residualPhaseFraction));
 
-        heatTransferCoeff =
+        dragCoeff = alphaCoeff*(drag1->K(magUr) + drag2->K(magUr));
+
+        heatTransferCoeff = alphaCoeff*
         (
-            alpha2*heatTransfer1->K(magUr)
-          + alpha1*heatTransfer2->K(magUr)
+            heatTransfer1->K(magUr)
+          + heatTransfer2->K(magUr)
         );
     }
     else
@@ -68,10 +71,6 @@ volScalarField heatTransferCoeff
             << "dispersedPhase: " << dispersedPhase << " is incorrect"
             << exit(FatalError);
     }
-
-    volScalarField alphaCoeff(max(alpha1*alpha2, residualPhaseFraction));
-    dragCoeff *= alphaCoeff;
-    heatTransferCoeff *= alphaCoeff;
 
     liftForce = Cl*(alpha1*rho1 + alpha2*rho2)*(Ur ^ fvc::curl(U));
 
