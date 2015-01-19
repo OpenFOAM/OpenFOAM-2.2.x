@@ -110,6 +110,7 @@ unset OPAL_PREFIX
 # unset Ensight/ParaView-related environment variables
 
 unset ENSIGHT9_READER
+unset ENSIGHT10_READER
 unset CMAKE_HOME
 unset ParaView_DIR
 unset ParaView_INCLUDE_DIR

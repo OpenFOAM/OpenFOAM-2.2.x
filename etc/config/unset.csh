@@ -123,6 +123,7 @@ unsetenv OPAL_PREFIX
 # unset Ensight/ParaView-related environment variables
 
 unsetenv ENSIGHT9_READER
+unsetenv ENSIGHT10_READER
 unsetenv CMAKE_HOME
 unsetenv ParaView_DIR
 unsetenv ParaView_INCLUDE_DIR
